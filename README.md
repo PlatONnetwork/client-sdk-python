@@ -1,72 +1,47 @@
-# Web3.py
+# client-sdk-python
 
-[![Join the chat at https://gitter.im/ethereum/web3.py](https://badges.gitter.im/ethereum/web3.py.svg)](https://gitter.im/ethereum/web3.py?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/ethereum/web3.py](https://badges.gitter.im/ethereum/web3.py.svg)](https://github.com/PlatONnetwork/client-sdk-python)
 
-[![Build Status](https://circleci.com/gh/ethereum/web3.py.svg?style=shield)](https://circleci.com/gh/ethereum/web3.py.svg?style=shield)
+[![Build Status](https://circleci.com/gh/ethereum/web3.py.svg?style=shield)](https://github.com/PlatONnetwork/client-sdk-python)
 
 
 A Python implementation of [web3.js](https://github.com/ethereum/web3.js)
 
-* Python 3.5+ support
+* Python 3.6+ support
 
 Read more in the [documentation on ReadTheDocs](http://web3py.readthedocs.io/). [View the change log on Github](docs/releases.rst).
 
 ## Quickstart
 
 ```python
-import json
-import web3
 
-from web3 import Web3, HTTPProvider, TestRPCProvider
-from solc import compile_source
-from web3.contract import ConciseContract
 
-# Solidity source code
-contract_source_code = '''
-pragma solidity ^0.4.0;
+from web3 import Web3, HTTPProvider
+from web3.eth import PlatON
+from hexbytes import HexBytes
 
-contract Greeter {
-    string public greeting;
+# get blockNumber
+w3 = Web3(HTTPProvider("http://localhost:6789"))
+platon = PlatON(w3)
+block_number = platon.blockNumber
+print(block_number)
 
-    function Greeter() {
-        greeting = 'Hello';
-    }
+# get Balance
+address = '0x493301712671Ada506ba6Ca7891F436D29185821'
+balance = platon.getBalance(address)
+print(balance)
 
-    function setGreeting(string _greeting) public {
-        greeting = _greeting;
-    }
-
-    function greet() constant returns (string) {
-        return greeting;
-    }
+# sendtransaction
+to = '0xC1f330B214668beAc2E6418Dd651B09C759a4Bf5'
+w3.personal.unlockAccount(address, "password", 60)
+data = {
+    "from": address,
+    "to": to,
+    "value": 0x10909,
 }
-'''
-
-compiled_sol = compile_source(contract_source_code) # Compiled source code
-contract_interface = compiled_sol['<stdin>:Greeter']
-
-# web3.py instance
-w3 = Web3(TestRPCProvider())
-
-# Instantiate and deploy contract
-contract = w3.eth.contract(abi=contract_interface['abi'], bytecode=contract_interface['bin'])
-
-# Get transaction hash from deployed contract
-tx_hash = contract.deploy(transaction={'from': w3.eth.accounts[0], 'gas': 410000})
-
-# Get tx receipt to get contract address
-tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
-contract_address = tx_receipt['contractAddress']
-
-# Contract instance in concise mode
-abi = contract_interface['abi']
-contract_instance = w3.eth.contract(address=contract_address, abi=abi,ContractFactoryClass=ConciseContract)
-
-# Getters + Setters for web3.eth.contract object
-print('Contract value: {}'.format(contract_instance.greet()))
-contract_instance.setGreeting('Nihao', transact={'from': w3.eth.accounts[0]})
-print('Setting value to: Nihao')
-print('Contract value: {}'.format(contract_instance.greet()))
+transaction_hex = HexBytes(platon.sendTransaction(data)).hex()
+result = platon.waitForTransactionReceipt(transaction_hex)
+print(result)
 ```
 
 ## Developer Setup
