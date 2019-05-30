@@ -13,7 +13,7 @@ from eth_utils import (
 from ens import ENS
 
 from client_sdk_python.admin import Admin
-from client_sdk_python.eth import Eth,PlatON
+from client_sdk_python.eth import Eth, PlatON
 from client_sdk_python.iban import Iban
 from client_sdk_python.miner import Miner
 from client_sdk_python.net import Net
@@ -67,7 +67,7 @@ from client_sdk_python.utils.normalizers import (
 
 def get_default_modules():
     return {
-        "platon":PlatON,
+        "platon": PlatON,
         "eth": Eth,
         "net": Net,
         "personal": Personal,
