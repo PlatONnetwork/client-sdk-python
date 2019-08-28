@@ -5,13 +5,23 @@
 @usage:platon合约部署、合约交易
 """
 import json
-import rlp
-from platon import encoder
-import ethereum.tools.keys as keys
 
-from hexbytes import HexBytes
-from client_sdk_python import Web3
-from client_sdk_python.eth import Eth
+import ethereum.tools.keys as keys
+from hexbytes import (
+    HexBytes,
+)
+import rlp
+
+from client_sdk_python import (
+    Web3,
+)
+from client_sdk_python.eth import (
+    Eth,
+)
+from platon import (
+    encoder,
+)
+
 
 def getPrivateKey(keystorePath, password):
     """
@@ -121,7 +131,7 @@ class PlatonContractTransaction:
         bytecode = bytecode
         abi = abi
         rlpList = [txType, bytecode, abi]
-        signedData = self.getSigedData(fromAddress, '',rlpList, privateKey)
+        signedData = self.getSigedData(fromAddress, '', rlpList, privateKey)
         transactionHash = self.eth.sendRawTransaction(signedData)
         transactionHash = HexBytes(transactionHash).hex().lower()
         return transactionHash
@@ -139,5 +149,3 @@ class PlatonContractTransaction:
         transactionHash = self.eth.sendRawTransaction(signedData)
         transactionHash = HexBytes(transactionHash).hex().lower()
         return transactionHash
-
-

@@ -5,6 +5,7 @@
 @usage:platon encode工具
 """
 
+
 def encodeType(i: int):
     return decodeByte('int64', i)
 
@@ -17,7 +18,7 @@ def decodeByte(bt):
     :return:HexBytes
     """
     try:
-        return int.from_bytes(bt, byteorder = 'big')
+        return int.from_bytes(bt, byteorder='big')
     except:
         raise Exception('unsupported type')
 
@@ -58,6 +59,6 @@ def dec2Bin(dec):
     else:
         return result
 
+
 if __name__ == '__main__':
     pass
-

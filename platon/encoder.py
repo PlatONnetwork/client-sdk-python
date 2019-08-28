@@ -18,7 +18,7 @@ def encodeInt(typ, i: int):
     :param i: int数字
     :return:HexBytes
     """
-    num = int(re.sub('\D', '', typ))//8
+    num = int(re.sub('\D', '', typ)) // 8
     try:
         intByte = i.to_bytes(length=num, byteorder='big', signed=True)
         return intByte
@@ -42,6 +42,6 @@ def encodeBoolean(boolean: bool):
     else:
         raise Exception('please input a bool')
 
+
 if __name__ == '__main__':
     encodeInt('uint64', 20)
-

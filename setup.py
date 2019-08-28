@@ -58,11 +58,11 @@ extras_require['dev'] = (
 )
 
 setup(
-    name='web3',
+    name='client_sdk_python',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='4.9.2',
-    description="""Web3.py""",
-    long_description_markdown_filename='README.md',
+    version='0.1.2',
+    description="""PlatON Client SDK python""",
+    # long_description_markdown_filename='README.md',
     author='Piper Merriam',
     author_email='pipermerriam@gmail.com',
     url='https://github.com/PlatONnetwork/client-sdk-python',
@@ -83,7 +83,7 @@ setup(
     setup_requires=['setuptools-markdown'],
     python_requires='>=3.6,<4',
     extras_require=extras_require,
-    py_modules=['web3', 'ens'],
+    py_modules=['web3', 'ens', 'platon'],
     license="MIT",
     zip_safe=False,
     keywords='platon',

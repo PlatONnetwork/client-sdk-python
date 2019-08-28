@@ -9,13 +9,23 @@ import json
 import os
 import re
 
+from hexbytes import (
+    HexBytes,
+)
 import rlp
-from hexbytes import HexBytes
-from client_sdk_python import Web3
-from client_sdk_python.eth import Eth
-from client_sdk_python.personal import Personal
 
-from platon.event import Event
+from client_sdk_python import (
+    Web3,
+)
+from client_sdk_python.eth import (
+    Eth,
+)
+from client_sdk_python.personal import (
+    Personal,
+)
+from platon.event import (
+    Event,
+)
 
 
 class PlatonPpos:
@@ -349,7 +359,8 @@ class PlatonPpos:
             ret: []ticketIds 多个节点的选票的Id列表
             error: string 错误信息
         '''
-        encode_list = [int(10).to_bytes(8, 'big'), self.GetBatchCandidateTicketIds.__name__, ':'.join(node_ids)]
+        encode_list = [int(10).to_bytes(8, 'big'),
+                       self.GetBatchCandidateTicketIds.__name__, ':'.join(node_ids)]
         data = rlp.encode(encode_list)
         recive = self.eth.call({
             "from": self.address,
@@ -461,4 +472,3 @@ class PlatonPpos:
         except Exception as e:
             raise e
         return recive
-
