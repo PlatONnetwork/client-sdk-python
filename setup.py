@@ -83,7 +83,7 @@ setup(
     setup_requires=['setuptools-markdown'],
     python_requires='>=3.6,<4',
     extras_require=extras_require,
-    py_modules=['web3', 'ens', 'platon'],
+    py_modules=['client_sdk_python', 'ens', 'platon'],
     license="MIT",
     zip_safe=False,
     keywords='platon',
