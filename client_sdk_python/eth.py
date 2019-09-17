@@ -1,3 +1,4 @@
+import json
 from eth_account import (
     Account,
 )
@@ -100,6 +101,19 @@ class Eth(Module):
     @property
     def blockNumber(self):
         return self.web3.manager.request_blocking("platon_blockNumber", [])
+
+    @property
+    def evidences(self):
+        data = self.web3.manager.request_blocking("platon_evidences", [])
+        return json.loads(data)
+
+    @property
+    def consensusStatus(self):
+        data = self.web3.manager.request_blocking("platon_consensusStatus", [])
+        return json.loads(data)
+
+    def getPrepareQC(self, block_number):
+        return self.web3.manager.request_blocking("platon_getPrepareQC", [block_number])
 
     def getBalance(self, account, block_identifier=None):
         if block_identifier is None:

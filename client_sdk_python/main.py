@@ -22,6 +22,7 @@ from client_sdk_python.personal import Personal
 from client_sdk_python.testing import Testing
 from client_sdk_python.txpool import TxPool
 from client_sdk_python.version import Version
+from client_sdk_python.debug import Debug
 
 from client_sdk_python.providers.eth_tester import (
     EthereumTesterProvider,
@@ -77,6 +78,7 @@ def get_default_modules():
         "admin": Admin,
         "parity": Parity,
         "testing": Testing,
+        "debug": Debug,
     }
 
 
