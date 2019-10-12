@@ -24,6 +24,12 @@ class Personal(Module):
             "personal_listAccounts", [],
         )
 
+    @property
+    def listWallets(self):
+        return self.web3.manager.request_blocking(
+            "personal_listWallets", [],
+        )
+
     def sendTransaction(self, transaction, passphrase):
         return self.web3.manager.request_blocking(
             "personal_sendTransaction",
@@ -55,8 +61,20 @@ class Personal(Module):
             [message, signer, passphrase],
         )
 
+    def signTransaction(self, transaction_dict, passphrase):
+        return self.web3.manager.request_blocking(
+            'personal_signTransaction',
+            [transaction_dict, passphrase],
+        )
+
     def ecRecover(self, message, signature):
         return self.web3.manager.request_blocking(
             'personal_ecRecover',
             [message, signature],
+        )
+
+    def openWallet(self, url, passphrase):
+        return self.web3.manager.request_blocking(
+            'personal_openWallet',
+            [url, passphrase],
         )

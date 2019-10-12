@@ -5,7 +5,7 @@ from client_sdk_python.module import (
 
 class Debug(Module):
     def economicConfig(self):
-        self.web3.manager.request_blocking("debug_economicConfig", [])
+        return self.web3.manager.request_blocking("debug_economicConfig", [])
 
     def getBuildMsg(self):
         return self.web3.manager.request_blocking("debug_getBuildMsg", [])

@@ -210,6 +210,12 @@ class Eth(Module):
             [transaction_hash],
         )
 
+    def getRawTransaction(self, transaction_hash):
+        return self.web3.manager.request_blocking(
+            "platon_getRawTransactionByHash",
+            [transaction_hash],
+        )
+
     @deprecated_for("w3.eth.getTransactionByBlock")
     def getTransactionFromBlock(self, block_identifier, transaction_index):
         """
