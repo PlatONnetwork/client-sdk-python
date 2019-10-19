@@ -9,6 +9,8 @@ from client_sdk_python.utils.toolz import (
     merge,
 )
 
+from hexbytes import HexBytes
+
 VALID_TRANSACTION_PARAMS = [
     'from',
     'to',
@@ -28,6 +30,42 @@ TRANSACTION_DEFAULTS = {
     'chainId': lambda web3, tx: web3.net.chainId,
 }
 
+
+def send_obj_transaction(obj, data, from_address, to_address, gas_price, gas, value, pri_key, nonce):
+    if not gas_price:
+        gas_price = obj.gas_price
+    if not nonce:
+        nonce = obj.platon.getTransactionCount(from_address)
+    if not gas:
+        transaction_data = {"to": to_address, "data": data}
+        gas = obj.platon.estimateGas(transaction_data)
+    if value > 0:
+        transaction_dict = {
+            "to": to_address,
+            "gas_price": gas_price,
+            "gas": gas,
+            "nonce": nonce,
+            "data": data,
+            "chain_id": obj.chain_id,
+            "value": obj.web3.toWei(value, "ether")
+        }
+    else:
+        transaction_dict = {
+            "to": to_address,
+            "gas_price": gas_price,
+            "gas": gas,
+            "nonce": nonce,
+            "data": data,
+            "chain_id": obj.chain_id
+        }
+    signed_transaction_dict = obj.platon.account.signTransaction(
+        transaction_dict, pri_key
+    )
+    signed_data = signed_transaction_dict.rawTransaction
+    tx_hash = HexBytes(obj.platon.sendRawTransaction(signed_data)).hex()
+    if obj.need_analyze:
+        return obj.platon.analyzeReceiptByHash(tx_hash)
+    return tx_hash
 
 @curry
 def fill_nonce(web3, transaction):

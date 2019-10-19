@@ -60,6 +60,7 @@ from client_sdk_python.utils.encoding import (
     to_int,
     to_hex,
     to_text,
+    analyze,
 )
 from client_sdk_python.utils.normalizers import (
     abi_ens_resolver,
@@ -105,6 +106,8 @@ class Web3:
     # Currency Utility
     toWei = staticmethod(to_wei)
     fromWei = staticmethod(from_wei)
+
+    analyzeReceipt = staticmethod(analyze)
 
     # Address Utility
     isAddress = staticmethod(is_address)

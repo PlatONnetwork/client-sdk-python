@@ -409,6 +409,14 @@ class Eth(Module):
     def setGasPriceStrategy(self, gas_price_strategy):
         self.gasPriceStrategy = gas_price_strategy
 
+    # add to platon
+    def analyzeReceiptByHash(self, tx_hash):
+        receipt = self.waitForTransactionReceipt(tx_hash)
+        return self.analyzeReceipt(receipt)
+
+    def analyzeReceipt(self, transaction_receipt):
+        return self.web3.analyzeReceipt(transaction_receipt)
+
 
 class PlatON(Eth):
     pass

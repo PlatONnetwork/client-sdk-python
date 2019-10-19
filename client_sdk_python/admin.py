@@ -60,7 +60,7 @@ class Admin(Module):
         return self.web3.manager.request_blocking("admin_stopWS", [])
 
     def getProgramVersion(self):
-        return self.web3.manager.request_blocking("admin_getProgramVersion",[])
+        return self.web3.manager.request_blocking("admin_getProgramVersion", [])
 
     def getSchnorrNIZKProve(self):
         return self.web3.manager.request_blocking("admin_getSchnorrNIZKProve", [])
