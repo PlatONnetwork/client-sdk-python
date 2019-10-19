@@ -31,40 +31,49 @@ TRANSACTION_DEFAULTS = {
 }
 
 
+def call_obj(obj, from_address, to_address, data):
+    to_address = obj.web3.toChecksumAddress(to_address)
+    if from_address is None:
+        return obj.web3.platon.call({"to": to_address, "data": data})
+    from_address = obj.web3.toChecksumAddress(from_address)
+    return obj.web3.platon.call({"from": from_address, "to": to_address, "data": data})
+
+
 def send_obj_transaction(obj, data, from_address, to_address, gas_price, gas, value, pri_key, nonce):
+    from_address = obj.web3.toChecksumAddress(from_address)
     if not gas_price:
-        gas_price = obj.gas_price
+        gas_price = obj.web3.platon.gasPrice
     if not nonce:
-        nonce = obj.platon.getTransactionCount(from_address)
+        nonce = obj.web3.platon.getTransactionCount(from_address)
     if not gas:
         transaction_data = {"to": to_address, "data": data}
-        gas = obj.platon.estimateGas(transaction_data)
+        gas = obj.web3.platon.estimateGas(transaction_data)
     if value > 0:
         transaction_dict = {
             "to": to_address,
-            "gas_price": gas_price,
+            "gasPrice": gas_price,
             "gas": gas,
             "nonce": nonce,
             "data": data,
-            "chain_id": obj.chain_id,
+            "chainId": obj.web3.chainId,
             "value": obj.web3.toWei(value, "ether")
         }
     else:
         transaction_dict = {
             "to": to_address,
-            "gas_price": gas_price,
+            "gasPrice": gas_price,
             "gas": gas,
             "nonce": nonce,
             "data": data,
-            "chain_id": obj.chain_id
+            "chainId": obj.web3.chainId
         }
-    signed_transaction_dict = obj.platon.account.signTransaction(
+    signed_transaction_dict = obj.web3.platon.account.signTransaction(
         transaction_dict, pri_key
     )
     signed_data = signed_transaction_dict.rawTransaction
-    tx_hash = HexBytes(obj.platon.sendRawTransaction(signed_data)).hex()
+    tx_hash = HexBytes(obj.web3.platon.sendRawTransaction(signed_data)).hex()
     if obj.need_analyze:
-        return obj.platon.analyzeReceiptByHash(tx_hash)
+        return obj.web3.platon.analyzeReceiptByHash(tx_hash)
     return tx_hash
 
 @curry

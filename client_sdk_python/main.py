@@ -114,7 +114,13 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty):
+    # platon
+    restrictingAddress = "0x1000000000000000000000000000000000000001"
+    stakingAddress = "0x1000000000000000000000000000000000000002"
+    penaltyAddress = "0x1000000000000000000000000000000000000004"
+    pipAddress = "0x1000000000000000000000000000000000000005"
+
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=101):
         self.manager = RequestManager(self, providers, middlewares)
 
         if modules is None:
@@ -124,6 +130,15 @@ class Web3:
             module_class.attach(self, module_name)
 
         self.ens = ens
+
+        self.chain_id = chain_id
+
+    def setChainId(self, chain_id):
+        self.chain_id = chain_id
+
+    @property
+    def chainId(self):
+        return self.chain_id
 
     @property
     def middleware_stack(self):
