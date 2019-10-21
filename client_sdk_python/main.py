@@ -23,6 +23,8 @@ from client_sdk_python.testing import Testing
 from client_sdk_python.txpool import TxPool
 from client_sdk_python.version import Version
 from client_sdk_python.debug import Debug
+from client_sdk_python.ppos import Ppos
+from client_sdk_python.pip import Pip
 
 from client_sdk_python.providers.eth_tester import (
     EthereumTesterProvider,
@@ -80,6 +82,8 @@ def get_default_modules():
         "parity": Parity,
         "testing": Testing,
         "debug": Debug,
+        "pip": Pip,
+        "ppos": Ppos
     }
 
 
@@ -114,7 +118,7 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    # platon
+    # platon contract address
     restrictingAddress = "0x1000000000000000000000000000000000000001"
     stakingAddress = "0x1000000000000000000000000000000000000002"
     penaltyAddress = "0x1000000000000000000000000000000000000004"
