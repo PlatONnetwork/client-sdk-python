@@ -50,6 +50,8 @@ def apply_formatters(
         response = make_request(method, params)
 
     if 'result' in response and method in result_formatters:
+        if response['result'] == None:
+            return response
         formatter = result_formatters[method]
         formatted_response = assoc(
             response,
