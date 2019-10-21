@@ -175,8 +175,15 @@ def prepare_replacement_transaction(web3, current_transaction, new_transaction):
     if current_transaction['blockHash'] is not None:
         raise ValueError('Supplied transaction with hash {} has already been mined'
                          .format(current_transaction['hash']))
-    if 'nonce' in new_transaction and new_transaction['nonce'] != current_transaction['nonce']:
-        raise ValueError('Supplied nonce in new_transaction must match the pending transaction')
+
+    if 'nonce' in new_transaction:
+        if isinstance(new_transaction['nonce'], int) :
+            if new_transaction['nonce'] != int(current_transaction['nonce'], 16):
+                raise ValueError('Supplied nonce in new_transaction must match the pending transaction')
+        else:
+            if '0x' in new_transaction['nonce']:
+                if int(new_transaction['nonce'], 16) != int(current_transaction['nonce'], 16):
+                    raise ValueError('Supplied nonce in new_transaction must match the pending transaction')
 
     if 'nonce' not in new_transaction:
         new_transaction = assoc(new_transaction, 'nonce', current_transaction['nonce'])
