@@ -172,7 +172,7 @@ def assert_valid_transaction_params(transaction_params):
 
 
 def prepare_replacement_transaction(web3, current_transaction, new_transaction):
-    if current_transaction['blockHash'] is not None:
+    if current_transaction['blockHash'] !=  HexBytes('0x0000000000000000000000000000000000000000000000000000000000000000'):
         raise ValueError('Supplied transaction with hash {} has already been mined'
                          .format(current_transaction['hash']))
 
