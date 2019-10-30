@@ -42,24 +42,25 @@ def call_obj(obj, from_address, to_address, data):
 
 
 def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
+    transaction_dict = {}
     if transaction_cfg is None:
         transaction_cfg = {}
     if transaction_cfg.get("gasPrice", None) is None:
-        transaction_cfg["gasPrice"] = obj.web3.platon.gasPrice
+        transaction_dict["gasPrice"] = obj.web3.platon.gasPrice
     if transaction_cfg.get("nonce", None) is None:
         raw_from_address = PrivateKey(bytes.fromhex(pri_key)).public_key.to_address()
         from_address = obj.web3.toChecksumAddress(raw_from_address)
-        transaction_cfg["nonce"] = obj.web3.platon.getTransactionCount(from_address)
+        transaction_dict["nonce"] = obj.web3.platon.getTransactionCount(from_address)
     if transaction_cfg.get("gas", None) is None:
         transaction_data = {"to": to_address, "data": data}
-        transaction_cfg["gas"] = obj.web3.platon.estimateGas(transaction_data)
-    transaction_cfg["chainId"] = obj.web3.chainId
-    transaction_cfg["to"] = to_address
-    transaction_cfg["data"] = data
+        transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
+    transaction_dict["chainId"] = obj.web3.chainId
+    transaction_dict["to"] = to_address
+    transaction_dict["data"] = data
     if transaction_cfg.get("value", 0) > 0:
-        transaction_cfg["value"] = int(transaction_cfg.get("value", 0))
+        transaction_dict["value"] = int(transaction_cfg.get("value", 0))
     signed_transaction_dict = obj.web3.platon.account.signTransaction(
-        transaction_cfg, pri_key
+        transaction_dict, pri_key
     )
     signed_data = signed_transaction_dict.rawTransaction
     tx_hash = HexBytes(obj.web3.platon.sendRawTransaction(signed_data)).hex()
