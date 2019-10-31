@@ -331,7 +331,7 @@ class Ppos(Module):
         plan_list = []
         for dict_ in plan:
             v = [dict_[k] for k in dict_]
-            # plan_list.append(dict_.values())
+            plan_list.append(v)
         rlp_list = rlp.encode(plan_list)
         data = rlp.encode([rlp.encode(int(4000)), rlp.encode(bytes.fromhex(account)), rlp_list])
         return send_obj_transaction(self, data, self.web3.restrictingAddress, pri_key, transaction_cfg)
