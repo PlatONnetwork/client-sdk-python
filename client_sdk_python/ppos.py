@@ -351,7 +351,7 @@ class Ppos(Module):
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         raw_data_dict = receive["Data"]
         if raw_data_dict != "":
-            data = json.loads(data)
+            data = json.loads(raw_data_dict)
             data["balance"] = int(data["balance"], 16)
             data["Pledge"] = int(data["Pledge"], 16)
             data["debt"] = int(data["debt"], 16)
