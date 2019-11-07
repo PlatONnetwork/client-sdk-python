@@ -166,8 +166,12 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1100))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        for i in parse['Data']:
-            i["Shares"] = int(i["Shares"], 16)
+        raw_data = parse["Ret"]
+        try:
+            for i in raw_data:
+                i["Shares"] = int(i["Shares"], 16)
+        except:
+            pass
         return parse
 
     def getValidatorList(self, from_address=None):
@@ -180,8 +184,12 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1101))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        for i in parse['Data']:
-            i["Shares"] = int(i["Shares"], 16)
+        raw_data = parse["Ret"]
+        try:
+            for i in raw_data:
+                i["Shares"] = int(i["Shares"], 16)
+        except:
+            pass
         return parse
 
     def getCandidateList(self, from_address=None):
@@ -194,12 +202,16 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1102))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        for i in parse['Data']:
-            i["Shares"] = int(i["Shares"], 16)
-            i["Released"] = int(i["Released"], 16)
-            i["ReleasedHes"] = int(i["ReleasedHes"], 16)
-            i["RestrictingPlan"] = int(i["RestrictingPlan"], 16)
-            i["RestrictingPlanHes"] = int(i["RestrictingPlanHes"], 16)
+        raw_data = parse["Ret"]
+        try:
+            for i in raw_data:
+                i["Shares"] = int(i["Shares"], 16)
+                i["Released"] = int(i["Released"], 16)
+                i["ReleasedHes"] = int(i["ReleasedHes"], 16)
+                i["RestrictingPlan"] = int(i["RestrictingPlan"], 16)
+                i["RestrictingPlanHes"] = int(i["RestrictingPlanHes"], 16)
+        except:
+            pass
         return parse
 
     def getRelatedListByDelAddr(self, del_addr, from_address=None):
@@ -230,17 +242,19 @@ class Ppos(Module):
             del_address = del_address[2:]
         data = rlp.encode([rlp.encode(int(1104)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(del_address)), rlp.encode(bytes.fromhex(node_id))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
-        parse = json.loads(str(raw_data, encoding="utf8"))
-        raw_data_dict = parse["Data"]
-        if raw_data_dict != "":
+        receive = json.loads(str(raw_data, encoding="utf8"))
+        raw_data_dict = receive["Ret"]
+        try:
             data = json.loads(raw_data_dict)
             data["Released"] = int(data["Released"], 16)
             data["ReleasedHes"] = int(data["ReleasedHes"], 16)
             data["RestrictingPlan"] = int(data["RestrictingPlan"], 16)
             data["RestrictingPlanHes"] = int(data["RestrictingPlanHes"], 16)
             data["Reduction"] = int(data["Reduction"], 16)
-            parse["Data"] = data
-        return parse
+            receive["Ret"] = data
+        except:
+            pass
+        return receive
 
     def getCandidateInfo(self, node_id, from_address=None):
         """
@@ -253,14 +267,18 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1105)), rlp.encode(bytes.fromhex(node_id))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = str(raw_data, encoding="utf8").replace('\\', '').replace('"{', '{').replace('}"', '}')
-        raw_data_dict = json.loads(parse)
-        if raw_data_dict["Data"] != "":
-            raw_data_dict["Data"]["Shares"] = int(raw_data_dict["Data"]["Shares"], 16)
-            raw_data_dict["Data"]["Released"] = int(raw_data_dict["Data"]["Released"], 16)
-            raw_data_dict["Data"]["ReleasedHes"] = int(raw_data_dict["Data"]["ReleasedHes"], 16)
-            raw_data_dict["Data"]["RestrictingPlan"] = int(raw_data_dict["Data"]["RestrictingPlan"], 16)
-            raw_data_dict["Data"]["RestrictingPlanHes"] = int(raw_data_dict["Data"]["RestrictingPlanHes"], 16)
-        return raw_data_dict
+        receive = json.loads(parse)
+        raw_data_dict = receive["Ret"]
+        try:
+            raw_data_dict["Shares"] = int(raw_data_dict["Shares"], 16)
+            raw_data_dict["Released"] = int(raw_data_dict["Released"], 16)
+            raw_data_dict["ReleasedHes"] = int(raw_data_dict["ReleasedHes"], 16)
+            raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
+            raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
+            receive["Ret"] = raw_data_dict
+        except:
+            pass
+        return receive
 
     def reportDuplicateSign(self, typ, data, pri_key, transaction_cfg=None):
         """
@@ -349,8 +367,8 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(4100)), rlp.encode(bytes.fromhex(account))])
         raw_data = call_obj(self, from_address, self.web3.restrictingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
-        raw_data_dict = receive["Data"]
-        if raw_data_dict != "":
+        raw_data_dict = receive["Ret"]
+        try:
             data = json.loads(raw_data_dict)
             data["balance"] = int(data["balance"], 16)
             data["Pledge"] = int(data["Pledge"], 16)
@@ -358,5 +376,7 @@ class Ppos(Module):
             if data["plans"]:
                 for i in data["plans"]:
                     i["amount"] = int(i["amount"], 16)
-            receive["Data"] = data
+            receive["Ret"] = data
+        except:
+            pass
         return receive

@@ -241,12 +241,15 @@ class Pip(Module):
         data = rlp.encode([rlp.encode(int(2104)), rlp.encode(module), rlp.encode(name)])
         return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))
 
-    def listParam(self, from_address=None):
+    def listGovernParam(self, module=None, from_address=None):
         """
-        todo fill
+        Query governance parameter list
+        :param module
         :param from_address: Used to call the rpc call method
         :return:
         todo fill
         """
-        data = rlp.encode([rlp.encode(int(2105))])
+        if module is None:
+            module = ""
+        data = rlp.encode([rlp.encode(int(2106)), rlp.encode(module)])
         return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))
