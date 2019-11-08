@@ -137,12 +137,13 @@ class Web3:
 
         self.chain_id = chain_id
 
-    def setChainId(self, chain_id):
-        self.chain_id = chain_id
-
     @property
     def chainId(self):
         return self.chain_id
+
+    @chainId.setter
+    def chainId(self, chain_id):
+        self.chain_id = chain_id
 
     @property
     def middleware_stack(self):
