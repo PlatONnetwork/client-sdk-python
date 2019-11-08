@@ -170,8 +170,7 @@ class Ppos(Module):
         try:
             for i in raw_data:
                 i["Shares"] = int(i["Shares"], 16)
-        except:
-            pass
+        except:...
         return parse
 
     def getValidatorList(self, from_address=None):
@@ -188,8 +187,7 @@ class Ppos(Module):
         try:
             for i in raw_data:
                 i["Shares"] = int(i["Shares"], 16)
-        except:
-            pass
+        except:...
         return parse
 
     def getCandidateList(self, from_address=None):
@@ -210,8 +208,7 @@ class Ppos(Module):
                 i["ReleasedHes"] = int(i["ReleasedHes"], 16)
                 i["RestrictingPlan"] = int(i["RestrictingPlan"], 16)
                 i["RestrictingPlanHes"] = int(i["RestrictingPlanHes"], 16)
-        except:
-            pass
+        except:...
         return parse
 
     def getRelatedListByDelAddr(self, del_addr, from_address=None):
@@ -252,8 +249,7 @@ class Ppos(Module):
             data["RestrictingPlanHes"] = int(data["RestrictingPlanHes"], 16)
             data["Reduction"] = int(data["Reduction"], 16)
             receive["Ret"] = data
-        except:
-            pass
+        except:...
         return receive
 
     def getCandidateInfo(self, node_id, from_address=None):
@@ -276,8 +272,7 @@ class Ppos(Module):
             raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
             raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
             receive["Ret"] = raw_data_dict
-        except:
-            pass
+        except:...
         return receive
 
     def reportDuplicateSign(self, typ, data, pri_key, transaction_cfg=None):
@@ -377,6 +372,5 @@ class Ppos(Module):
                 for i in data["plans"]:
                     i["amount"] = int(i["amount"], 16)
             receive["Ret"] = data
-        except:
-            pass
+        except:...
         return receive
