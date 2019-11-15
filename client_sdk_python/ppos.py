@@ -166,8 +166,8 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1100))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        raw_data = parse["Ret"]
         try:
+            raw_data = parse["Ret"]
             for i in raw_data:
                 i["Shares"] = int(i["Shares"], 16)
         except:...
@@ -183,8 +183,8 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1101))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        raw_data = parse["Ret"]
         try:
+            raw_data = parse["Ret"]
             for i in raw_data:
                 i["Shares"] = int(i["Shares"], 16)
         except:...
@@ -200,8 +200,8 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1102))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = parse_str(raw_data)
-        raw_data = parse["Ret"]
         try:
+            raw_data = parse["Ret"]
             for i in raw_data:
                 i["Shares"] = int(i["Shares"], 16)
                 i["Released"] = int(i["Released"], 16)
@@ -240,15 +240,14 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1104)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(del_address)), rlp.encode(bytes.fromhex(node_id))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="utf8"))
-        raw_data_dict = receive["Ret"]
         try:
-            data = json.loads(raw_data_dict)
-            data["Released"] = int(data["Released"], 16)
-            data["ReleasedHes"] = int(data["ReleasedHes"], 16)
-            data["RestrictingPlan"] = int(data["RestrictingPlan"], 16)
-            data["RestrictingPlanHes"] = int(data["RestrictingPlanHes"], 16)
-            data["Reduction"] = int(data["Reduction"], 16)
-            receive["Ret"] = data
+            raw_data_dict = receive["Ret"]
+            raw_data_dict["Released"] = int(raw_data_dict["Released"], 16)
+            raw_data_dict["ReleasedHes"] = int(raw_data_dict["ReleasedHes"], 16)
+            raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
+            raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
+            # raw_data_dict["Reduction"] = int(raw_data_dict["Reduction"], 16)
+            receive["Ret"] = raw_data_dict
         except:...
         return receive
 
@@ -264,8 +263,8 @@ class Ppos(Module):
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         parse = str(raw_data, encoding="utf8").replace('\\', '').replace('"{', '{').replace('}"', '}')
         receive = json.loads(parse)
-        raw_data_dict = receive["Ret"]
         try:
+            raw_data_dict = receive["Ret"]
             raw_data_dict["Shares"] = int(raw_data_dict["Shares"], 16)
             raw_data_dict["Released"] = int(raw_data_dict["Released"], 16)
             raw_data_dict["ReleasedHes"] = int(raw_data_dict["ReleasedHes"], 16)
@@ -362,15 +361,14 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(4100)), rlp.encode(bytes.fromhex(account))])
         raw_data = call_obj(self, from_address, self.web3.restrictingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
-        raw_data_dict = receive["Ret"]
         try:
-            data = json.loads(raw_data_dict)
-            data["balance"] = int(data["balance"], 16)
-            data["Pledge"] = int(data["Pledge"], 16)
-            data["debt"] = int(data["debt"], 16)
-            if data["plans"]:
-                for i in data["plans"]:
+            raw_data_dict = receive["Ret"]
+            raw_data_dict["balance"] = int(raw_data_dict["balance"], 16)
+            raw_data_dict["Pledge"] = int(raw_data_dict["Pledge"], 16)
+            raw_data_dict["debt"] = int(raw_data_dict["debt"], 16)
+            if raw_data_dict["plans"]:
+                for i in raw_data_dict["plans"]:
                     i["amount"] = int(i["amount"], 16)
-            receive["Ret"] = data
+            receive["Ret"] = raw_data_dict
         except:...
         return receive
