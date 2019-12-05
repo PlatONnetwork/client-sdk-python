@@ -372,3 +372,21 @@ class Ppos(Module):
             receive["Ret"] = raw_data_dict
         except:...
         return receive
+
+    def getPackageReward(self, from_address=None):
+        data = rlp.encode([rlp.encode(int(1200))])
+        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        return receive
+
+    def getStakingReward(self, from_address=None):
+        data = rlp.encode([rlp.encode(int(1201))])
+        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        return receive
+
+    def getAvgPackTime(self, from_address=None):
+        data = rlp.encode([rlp.encode(int(1202))])
+        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        return receive
