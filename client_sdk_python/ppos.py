@@ -375,18 +375,22 @@ class Ppos(Module):
 
     def getPackageReward(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1200))])
-        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        ret = receive["Ret"]
+        receive["Ret"] = int(str(ret), 16)
         return receive
 
     def getStakingReward(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1201))])
-        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        ret = receive["Ret"]
+        receive["Ret"] = int(str(ret), 16)
         return receive
 
     def getAvgPackTime(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1202))])
-        raw_data = call_obj(self, from_address, self.web3.restrictingAddress,data)
+        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         return receive

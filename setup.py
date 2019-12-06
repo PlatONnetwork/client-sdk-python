@@ -60,11 +60,11 @@ extras_require['dev'] = (
 setup(
     name='client_sdk_python',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.4.8',
+    version='0.5.0',
     description="""PlatON Client SDK python""",
     # long_description_markdown_filename='README.md',
-    author='Piper Merriam',
-    author_email='pipermerriam@gmail.com',
+    author='Piper awake',
+    author_email='hietel366435@gmail.com',
     url='https://github.com/PlatONnetwork/client-sdk-python',
     include_package_data=True,
     install_requires=[
