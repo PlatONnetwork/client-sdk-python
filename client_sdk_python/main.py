@@ -123,6 +123,7 @@ class Web3:
     stakingAddress = "0x1000000000000000000000000000000000000002"
     penaltyAddress = "0x1000000000000000000000000000000000000004"
     pipAddress = "0x1000000000000000000000000000000000000005"
+    delegateRewardAddress = "0x1000000000000000000000000000000000000006"
 
     def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=101):
         self.manager = RequestManager(self, providers, middlewares)

@@ -54,7 +54,9 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
         from_address = obj.web3.toChecksumAddress(raw_from_address)
         transaction_dict["nonce"] = obj.web3.platon.getTransactionCount(from_address)
     if transaction_cfg.get("gas", None) is None:
-        transaction_data = {"to": to_address, "data": data}
+        raw_from_address = PrivateKey(bytes.fromhex(pri_key)).public_key.to_address()
+        from_address = obj.web3.toChecksumAddress(raw_from_address)
+        transaction_data = {"to": to_address, "data": data, "from": from_address}
         transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
     else:
         transaction_dict["gas"] = transaction_cfg["gas"]

@@ -5,6 +5,7 @@ from hexbytes import HexBytes
 from client_sdk_python.module import (
     Module,
 )
+from eth_utils.hexadecimal import remove_0x_prefix
 from client_sdk_python.utils.encoding import parse_str
 from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
 
@@ -15,7 +16,7 @@ class Ppos(Module):
     need_analyze = True
 
     def createStaking(self, typ, benifit_address, node_id, external_id, node_name, website, details, amount,
-                      program_version, program_version_sign, bls_pubkey, bls_proof, pri_key, transaction_cfg=None):
+                      program_version, program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, transaction_cfg=None):
         """
         Initiate Staking
         :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount
@@ -31,6 +32,7 @@ class Ppos(Module):
         :param bls_pubkey: Bls public key
         :param bls_proof: Proof of bls, obtained by pulling the proof interface, admin_getSchnorrNIZKProve
         :param pri_key: Private key for transaction
+        :param reward_per: Proportion of the reward share obtained from the commission, using BasePoint 1BP = 0.01%
         :param transaction_cfg: Transaction basic configuration
               type: dict
               example:cfg = {
@@ -47,12 +49,13 @@ class Ppos(Module):
             program_version_sign = program_version_sign[2:]
         data = HexBytes(rlp.encode([rlp.encode(int(1000)), rlp.encode(typ), rlp.encode(bytes.fromhex(benifit_address)),
                                     rlp.encode(bytes.fromhex(node_id)), rlp.encode(external_id), rlp.encode(node_name),
-                                    rlp.encode(website), rlp.encode(details), rlp.encode(amount), rlp.encode(program_version),
+                                    rlp.encode(website), rlp.encode(details),
+                                    rlp.encode(amount), rlp.encode(reward_per), rlp.encode(program_version),
                                     rlp.encode(bytes.fromhex(program_version_sign)), rlp.encode(bytes.fromhex(bls_pubkey)),
                                     rlp.encode(bytes.fromhex(bls_proof))])).hex()
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
-    def editCandidate(self, benifit_address, node_id, external_id, node_name, website, details, pri_key, transaction_cfg=None):
+    def editCandidate(self, benifit_address, node_id, external_id, node_name, website, details, pri_key, reward_per, transaction_cfg=None):
         """
         Modify staking information
         :param benifit_address: Income account for accepting block rewards and staking rewards
@@ -62,6 +65,7 @@ class Ppos(Module):
         :param website: The third-party home page of the node (with a length limit indicating the home page of the node)
         :param details: Description of the node (with a length limit indicating the description of the node)
         :param pri_key: Private key for transaction
+        :param reward_per: Proportion of the reward share obtained from the commission, using BasePoint 1BP = 0.01%
         :param transaction_cfg: Transaction basic configuration
               type: dict
               example:cfg = {
@@ -75,6 +79,7 @@ class Ppos(Module):
         if benifit_address[:2] == '0x':
             benifit_address = benifit_address[2:]
         data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp.encode(bytes.fromhex(benifit_address)), rlp.encode(bytes.fromhex(node_id)),
+                                    rlp.encode(reward_per),
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
@@ -246,6 +251,7 @@ class Ppos(Module):
             raw_data_dict["ReleasedHes"] = int(raw_data_dict["ReleasedHes"], 16)
             raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
             raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
+            raw_data_dict["CumulativeIncome"] = int(raw_data_dict["CumulativeIncome"], 16)
             # raw_data_dict["Reduction"] = int(raw_data_dict["Reduction"], 16)
             receive["Ret"] = raw_data_dict
         except:...
@@ -270,6 +276,9 @@ class Ppos(Module):
             raw_data_dict["ReleasedHes"] = int(raw_data_dict["ReleasedHes"], 16)
             raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
             raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
+            raw_data_dict["DelegateRewardTotal"] = int(raw_data_dict["DelegateRewardTotal"], 16)
+            raw_data_dict["DelegateTotal"] = int(raw_data_dict["DelegateTotal"], 16)
+            raw_data_dict["DelegateTotalHes"] = int(raw_data_dict["DelegateTotalHes"], 16)
             receive["Ret"] = raw_data_dict
         except:...
         return receive
@@ -394,3 +403,23 @@ class Ppos(Module):
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         return receive
+
+    def getDelegateReward(self, from_address, node_ids=[]):
+        node_id_bytes = [bytes.fromhex(node_id) for node_id in node_ids]
+        data = [rlp.encode(int(5100)), rlp.encode(bytes.fromhex(remove_0x_prefix(from_address))), rlp.encode(node_id_bytes)]
+        data = rlp.encode(data)
+        raw_data = call_obj(self, from_address, self.web3.delegateRewardAddress, data)
+        receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
+        try:
+            raw_data_dict = receive["Ret"]
+            result = []
+            for d in raw_data_dict:
+                d["reward"] = int(d["reward"], 16)
+                result.append(d)
+            receive["Ret"] = result
+        except:...
+        return receive
+
+    def withdrawDelegateReward(self, pri_key, transaction_cfg=None):
+        data = rlp.encode([rlp.encode(int(5000))])
+        return send_obj_transaction(self, data, self.web3.delegateRewardAddress, pri_key, transaction_cfg)
