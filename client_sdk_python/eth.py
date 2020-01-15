@@ -1,4 +1,7 @@
 import json
+import sha3
+import rlp
+from eth_utils.hexadecimal import remove_0x_prefix
 from eth_account import (
     Account,
 )
@@ -51,6 +54,9 @@ from client_sdk_python.utils.transactions import (
     wait_for_transaction_receipt,
 )
 
+from eth_account.internal.signing import (
+    to_standard_signature_bytes,
+)
 
 class Eth(Module):
     account = Account()
@@ -416,6 +422,30 @@ class Eth(Module):
 
     def analyzeReceipt(self, transaction_receipt):
         return self.web3.analyzeReceipt(transaction_receipt)
+
+    def ecrecover(self, block_identifier):
+        block = self.getBlock(block_identifier)
+        extra = block.proofOfAuthorityData[0:32]
+        sign = block.proofOfAuthorityData[32:]
+        raw_data = [bytes.fromhex(remove_0x_prefix(block.parentHash.hex())),
+                    bytes.fromhex(remove_0x_prefix(block.miner)),
+                    bytes.fromhex(remove_0x_prefix(block.stateRoot.hex())),
+                    bytes.fromhex(remove_0x_prefix(block.transactionsRoot.hex())),
+                    bytes.fromhex(remove_0x_prefix(block.receiptsRoot.hex())),
+                    bytes.fromhex(remove_0x_prefix(block.logsBloom.hex())),
+                    block.number,
+                    block.gasLimit,
+                    block.gasUsed,
+                    block.timestamp,
+                    extra,
+                    bytes.fromhex(remove_0x_prefix(block.nonce))
+                    ]
+        message_hash = sha3.keccak_256(rlp.encode(raw_data)).digest()
+        hash_bytes = HexBytes(message_hash)
+        signature_bytes = HexBytes(sign)
+        signature_bytes_standard = to_standard_signature_bytes(signature_bytes)
+        signature_obj = self.account._keys.Signature(signature_bytes=signature_bytes_standard)
+        return remove_0x_prefix(signature_obj.recover_public_key_from_msg_hash(hash_bytes).to_hex())
 
 
 class PlatON(Eth):
