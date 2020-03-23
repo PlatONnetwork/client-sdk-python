@@ -115,8 +115,7 @@ class Eth(Module):
 
     @property
     def consensusStatus(self):
-        data = self.web3.manager.request_blocking("platon_consensusStatus", [])
-        return json.loads(data)
+        return self.web3.manager.request_blocking("platon_consensusStatus", [])
 
     def getPrepareQC(self, block_number):
         return self.web3.manager.request_blocking("platon_getPrepareQC", [block_number])
