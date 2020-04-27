@@ -87,6 +87,17 @@ def get_default_modules():
     }
 
 
+def default_address(mainnet, testnet):
+    return {"MAINNET": mainnet, "TESTNET": testnet}
+
+
+restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
+staking = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
+penalty = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
+pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
+delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
+
+
 class Web3:
     # Providers
     HTTPProvider = HTTPProvider
@@ -118,14 +129,7 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    # platon contract address
-    restrictingAddress = "0x1000000000000000000000000000000000000001"
-    stakingAddress = "0x1000000000000000000000000000000000000002"
-    penaltyAddress = "0x1000000000000000000000000000000000000004"
-    pipAddress = "0x1000000000000000000000000000000000000005"
-    delegateRewardAddress = "0x1000000000000000000000000000000000000006"
-
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=101):
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
         self.manager = RequestManager(self, providers, middlewares)
 
         if modules is None:
@@ -133,6 +137,17 @@ class Web3:
 
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
+
+        if chain_id == 100:
+            self.net = "mainnet"
+        else:
+            self.net = "testnet"
+        # platon contract address
+        self.restrictingAddress = restricting[self.net.upper()]
+        self.stakingAddress = staking[self.net.upper()]
+        self.penaltyAddress = penalty[self.net.upper()]
+        self.pipAddress = pipAddr[self.net.upper()]
+        self.delegateRewardAddress = delegateReward[self.net.upper()]
 
         self.ens = ens
 
@@ -217,3 +232,8 @@ class Web3:
     @ens.setter
     def ens(self, new_ens):
         self._ens = new_ens
+
+    def pubkey_to_address(self, pubkey):
+        addr_dict = {"MAINNET": pubkey.to_bech32_address(),
+                     "TESTNET": pubkey.to_bech32_test_address()}
+        return addr_dict[self.net.upper()]

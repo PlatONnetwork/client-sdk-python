@@ -11,7 +11,7 @@ from client_sdk_python.utils.toolz import (
 
 from hexbytes import HexBytes
 
-from eth_keys.datatypes import PrivateKey
+from platon_keys.datatypes import PrivateKey
 
 VALID_TRANSACTION_PARAMS = [
     'from',
@@ -34,10 +34,10 @@ TRANSACTION_DEFAULTS = {
 
 
 def call_obj(obj, from_address, to_address, data):
-    to_address = obj.web3.toChecksumAddress(to_address)
+    # to_address = obj.web3.toChecksumAddress(to_address)
     if from_address is None:
         return obj.web3.platon.call({"to": to_address, "data": data})
-    from_address = obj.web3.toChecksumAddress(from_address)
+    # from_address = obj.web3.toChecksumAddress(from_address)
     return obj.web3.platon.call({"from": from_address, "to": to_address, "data": data})
 
 
@@ -50,14 +50,12 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
     else:
         transaction_dict["gasPrice"] = transaction_cfg["gasPrice"]
     if transaction_cfg.get("nonce", None) is None:
-        raw_from_address = PrivateKey(bytes.fromhex(pri_key)).public_key.to_address()
-        from_address = obj.web3.toChecksumAddress(raw_from_address)
+        from_address = obj.web3.pubkey_to_address(PrivateKey(bytes.fromhex(pri_key)).public_key)
         transaction_dict["nonce"] = obj.web3.platon.getTransactionCount(from_address)
     else:
         transaction_dict["nonce"] = transaction_cfg["nonce"]
     if transaction_cfg.get("gas", None) is None:
-        raw_from_address = PrivateKey(bytes.fromhex(pri_key)).public_key.to_address()
-        from_address = obj.web3.toChecksumAddress(raw_from_address)
+        from_address = obj.web3.pubkey_to_address(PrivateKey(bytes.fromhex(pri_key)).public_key)
         transaction_data = {"to": to_address, "data": data, "from": from_address}
         transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
     else:
@@ -181,7 +179,7 @@ def assert_valid_transaction_params(transaction_params):
 
 
 def prepare_replacement_transaction(web3, current_transaction, new_transaction):
-    if current_transaction['blockHash'] !=  HexBytes('0x0000000000000000000000000000000000000000000000000000000000000000'):
+    if current_transaction['blockHash'] != HexBytes('0x0000000000000000000000000000000000000000000000000000000000000000'):
         raise ValueError('Supplied transaction with hash {} has already been mined'
                          .format(current_transaction['hash']))
 

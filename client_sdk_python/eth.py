@@ -2,7 +2,7 @@ import json
 import sha3
 import rlp
 from eth_utils.hexadecimal import remove_0x_prefix
-from eth_account import (
+from platon_account import (
     Account,
 )
 from eth_utils import (
@@ -54,7 +54,7 @@ from client_sdk_python.utils.transactions import (
     wait_for_transaction_receipt,
 )
 
-from eth_account.internal.signing import (
+from platon_account.internal.signing import (
     to_standard_signature_bytes,
 )
 
