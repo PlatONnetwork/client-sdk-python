@@ -3,10 +3,10 @@ from eth_utils import (
     add_0x_prefix,
     from_wei,
     is_address,
-    is_checksum_address,
+    # is_checksum_address,
     keccak,
     remove_0x_prefix,
-    to_checksum_address,
+    # to_checksum_address,
     to_wei,
 )
 
@@ -98,6 +98,12 @@ pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqq
 delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
 
 
+def to_checksum_address(val):
+    return val
+
+def is_checksum_address(val):
+    return True
+
 class Web3:
     # Providers
     HTTPProvider = HTTPProvider
@@ -139,15 +145,15 @@ class Web3:
             module_class.attach(self, module_name)
 
         if chain_id == 100:
-            self.net = "mainnet"
+            self.net_type = "mainnet"
         else:
-            self.net = "testnet"
+            self.net_type = "testnet"
         # platon contract address
-        self.restrictingAddress = restricting[self.net.upper()]
-        self.stakingAddress = staking[self.net.upper()]
-        self.penaltyAddress = penalty[self.net.upper()]
-        self.pipAddress = pipAddr[self.net.upper()]
-        self.delegateRewardAddress = delegateReward[self.net.upper()]
+        self.restrictingAddress = restricting[self.net_type.upper()]
+        self.stakingAddress = staking[self.net_type.upper()]
+        self.penaltyAddress = penalty[self.net_type.upper()]
+        self.pipAddress = pipAddr[self.net_type.upper()]
+        self.delegateRewardAddress = delegateReward[self.net_type.upper()]
 
         self.ens = ens
 
@@ -236,4 +242,4 @@ class Web3:
     def pubkey_to_address(self, pubkey):
         addr_dict = {"MAINNET": pubkey.to_bech32_address(),
                      "TESTNET": pubkey.to_bech32_test_address()}
-        return addr_dict[self.net.upper()]
+        return addr_dict[self.net_type.upper()]
