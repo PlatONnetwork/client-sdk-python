@@ -60,7 +60,7 @@ extras_require['dev'] = (
 setup(
     name='client_sdk_python',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.6.6',
+    version='0.6.9',
     description="""PlatON Client SDK python""",
     # long_description_markdown_filename='README.md',
     author='Piper awake',
@@ -71,7 +71,7 @@ setup(
         "toolz>=0.9.0,<1.0.0;implementation_name=='pypy'",
         "cytoolz>=0.9.0,<1.0.0;implementation_name=='cpython'",
         "eth-abi>=1.2.0,<2.0.0",
-        "eth-account>=0.2.1,<0.4.0",
+        "platon-account>=0.1.1",
         "eth-utils>=1.2.0,<2.0.0",
         "hexbytes>=0.1.0,<1.0.0",
         "lru-dict>=1.1.6,<2.0.0",

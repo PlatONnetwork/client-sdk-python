@@ -66,7 +66,7 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
     if transaction_cfg.get("value", 0) > 0:
         transaction_dict["value"] = int(transaction_cfg.get("value", 0))
     signed_transaction_dict = obj.web3.platon.account.signTransaction(
-        transaction_dict, pri_key
+        transaction_dict, pri_key, net_type=obj.web3.net_type
     )
     signed_data = signed_transaction_dict.rawTransaction
     tx_hash = HexBytes(obj.web3.platon.sendRawTransaction(signed_data)).hex()

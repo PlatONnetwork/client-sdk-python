@@ -8,6 +8,7 @@ from client_sdk_python.module import (
 from eth_utils.hexadecimal import remove_0x_prefix
 from client_sdk_python.utils.encoding import parse_str
 from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
+from platon_account.internal.transactions import bech32_address_bytes
 
 
 class Ppos(Module):
@@ -43,11 +44,10 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                 if is not need analyze return transaction hash
         """
-        if benifit_address[:2] == '0x':
-            benifit_address = benifit_address[2:]
+        benifit_address = bech32_address_bytes(benifit_address)
         if program_version_sign[:2] == '0x':
             program_version_sign = program_version_sign[2:]
-        data = HexBytes(rlp.encode([rlp.encode(int(1000)), rlp.encode(typ), rlp.encode(bytes.fromhex(benifit_address)),
+        data = HexBytes(rlp.encode([rlp.encode(int(1000)), rlp.encode(typ), rlp.encode(benifit_address),
                                     rlp.encode(bytes.fromhex(node_id)), rlp.encode(external_id), rlp.encode(node_name),
                                     rlp.encode(website), rlp.encode(details),
                                     rlp.encode(amount), rlp.encode(reward_per), rlp.encode(program_version),
@@ -76,9 +76,10 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                 if is not need analyze return transaction hash
         """
-        if benifit_address[:2] == '0x':
-            benifit_address = benifit_address[2:]
-        data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp.encode(bytes.fromhex(benifit_address)), rlp.encode(bytes.fromhex(node_id)),
+        # if benifit_address[:2] == '0x':
+        #     benifit_address = benifit_address[2:]
+        benifit_address = bech32_address_bytes(benifit_address)
+        data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp.encode(benifit_address), rlp.encode(bytes.fromhex(node_id)),
                                     rlp.encode(reward_per),
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
@@ -224,9 +225,8 @@ class Ppos(Module):
         :return:
         todo fill
         """
-        if del_addr[:2] == '0x':
-            del_addr = del_addr[2:]
-        data = rlp.encode([rlp.encode(int(1103)), rlp.encode(bytes.fromhex(del_addr))])
+        del_addr = bech32_address_bytes(del_addr)
+        data = rlp.encode([rlp.encode(int(1103)), rlp.encode(del_addr)])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         return parse_str(raw_data)
 
@@ -240,9 +240,8 @@ class Ppos(Module):
         :return:
         todo fill
         """
-        if del_address[:2] == '0x':
-            del_address = del_address[2:]
-        data = rlp.encode([rlp.encode(int(1104)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(del_address)), rlp.encode(bytes.fromhex(node_id))])
+        del_address = bech32_address_bytes(del_address)
+        data = rlp.encode([rlp.encode(int(1104)), rlp.encode(staking_blocknum), rlp.encode(del_address), rlp.encode(bytes.fromhex(node_id))])
         raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="utf8"))
         try:
@@ -302,7 +301,7 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(3000)), rlp.encode(typ), rlp.encode(data)])
         return send_obj_transaction(self, data, self.web3.penaltyAddress, pri_key, transaction_cfg)
 
-    def checkDuplicateSign(self, typ, check_address, block_number, from_address=None):
+    def checkDuplicateSign(self, typ, node_id, block_number, from_address=None):
         """
         Check if the node has been reported too much
         :param typ: Represents double sign type, 1:prepareBlock, 2: prepareVote, 3:viewChange
@@ -312,9 +311,7 @@ class Ppos(Module):
         :return:
         todo fill
         """
-        if check_address[:2] == '0x':
-            check_address = check_address[2:]
-        data = rlp.encode([rlp.encode(int(3001)), rlp.encode(int(typ)), rlp.encode(bytes.fromhex(check_address)), rlp.encode(block_number)])
+        data = rlp.encode([rlp.encode(int(3001)), rlp.encode(int(typ)), rlp.encode(bytes.fromhex(node_id)), rlp.encode(block_number)])
         raw_data = call_obj(self, from_address, self.web3.penaltyAddress, data)
         receive = str(raw_data, encoding="ISO-8859-1")
         if receive == "":
@@ -347,14 +344,15 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                 if is not need analyze return transaction hash
         """
-        if account[:2] == '0x':
-            account = account[2:]
+        # if account[:2] == '0x':
+        #     account = account[2:]
+        account = bech32_address_bytes(account)
         plan_list = []
         for dict_ in plan:
             v = [dict_[k] for k in dict_]
             plan_list.append(v)
         rlp_list = rlp.encode(plan_list)
-        data = rlp.encode([rlp.encode(int(4000)), rlp.encode(bytes.fromhex(account)), rlp_list])
+        data = rlp.encode([rlp.encode(int(4000)), rlp.encode(account), rlp_list])
         return send_obj_transaction(self, data, self.web3.restrictingAddress, pri_key, transaction_cfg)
 
     def getRestrictingInfo(self, account, from_address=None):
@@ -365,9 +363,10 @@ class Ppos(Module):
         :return:
         todo fill
         """
-        if account[:2] == '0x':
-            account = account[2:]
-        data = rlp.encode([rlp.encode(int(4100)), rlp.encode(bytes.fromhex(account))])
+        # if account[:2] == '0x':
+        #     account = account[2:]
+        account = bech32_address_bytes(account)
+        data = rlp.encode([rlp.encode(int(4100)), rlp.encode(account)])
         raw_data = call_obj(self, from_address, self.web3.restrictingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         try:
@@ -406,7 +405,8 @@ class Ppos(Module):
 
     def getDelegateReward(self, from_address, node_ids=[]):
         node_id_bytes = [bytes.fromhex(node_id) for node_id in node_ids]
-        data = [rlp.encode(int(5100)), rlp.encode(bytes.fromhex(remove_0x_prefix(from_address))), rlp.encode(node_id_bytes)]
+        tmp_from_address = bech32_address_bytes(from_address)
+        data = [rlp.encode(int(5100)), rlp.encode(tmp_from_address), rlp.encode(node_id_bytes)]
         data = rlp.encode(data)
         raw_data = call_obj(self, from_address, self.web3.delegateRewardAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))

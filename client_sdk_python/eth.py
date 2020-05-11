@@ -5,6 +5,7 @@ from eth_utils.hexadecimal import remove_0x_prefix
 from platon_account import (
     Account,
 )
+from platon_account.internal.transactions import bech32_address_bytes
 from eth_utils import (
     apply_to_return_value,
     is_checksum_address,
@@ -426,8 +427,9 @@ class Eth(Module):
         block = self.getBlock(block_identifier)
         extra = block.proofOfAuthorityData[0:32]
         sign = block.proofOfAuthorityData[32:]
+        miner = bech32_address_bytes(remove_0x_prefix(block.miner))
         raw_data = [bytes.fromhex(remove_0x_prefix(block.parentHash.hex())),
-                    bytes.fromhex(remove_0x_prefix(block.miner)),
+                    miner,
                     bytes.fromhex(remove_0x_prefix(block.stateRoot.hex())),
                     bytes.fromhex(remove_0x_prefix(block.transactionsRoot.hex())),
                     bytes.fromhex(remove_0x_prefix(block.receiptsRoot.hex())),

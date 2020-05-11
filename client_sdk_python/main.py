@@ -9,6 +9,7 @@ from eth_utils import (
     # to_checksum_address,
     to_wei,
 )
+from platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from ens import ENS
 
@@ -88,7 +89,7 @@ def get_default_modules():
 
 
 def default_address(mainnet, testnet):
-    return {"MAINNET": mainnet, "TESTNET": testnet}
+    return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
 
 
 restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
@@ -145,15 +146,15 @@ class Web3:
             module_class.attach(self, module_name)
 
         if chain_id == 100:
-            self.net_type = "mainnet"
+            self.net_type = MIANNETHRP
         else:
-            self.net_type = "testnet"
+            self.net_type = TESTNETHRP
         # platon contract address
-        self.restrictingAddress = restricting[self.net_type.upper()]
-        self.stakingAddress = staking[self.net_type.upper()]
-        self.penaltyAddress = penalty[self.net_type.upper()]
-        self.pipAddress = pipAddr[self.net_type.upper()]
-        self.delegateRewardAddress = delegateReward[self.net_type.upper()]
+        self.restrictingAddress = restricting[self.net_type]
+        self.stakingAddress = staking[self.net_type]
+        self.penaltyAddress = penalty[self.net_type]
+        self.pipAddress = pipAddr[self.net_type]
+        self.delegateRewardAddress = delegateReward[self.net_type]
 
         self.ens = ens
 
@@ -240,6 +241,6 @@ class Web3:
         self._ens = new_ens
 
     def pubkey_to_address(self, pubkey):
-        addr_dict = {"MAINNET": pubkey.to_bech32_address(),
-                     "TESTNET": pubkey.to_bech32_test_address()}
-        return addr_dict[self.net_type.upper()]
+        addr_dict = {MIANNETHRP: pubkey.to_bech32_address(),
+                     TESTNETHRP: pubkey.to_bech32_test_address()}
+        return addr_dict[self.net_type]
