@@ -16,5 +16,5 @@ def name_to_address_middleware(w3):
         abi_ens_resolver(w3),
     ]
     return construct_formatting_middleware(
-        request_formatters=abi_request_formatters(normalizers, RPC_ABIS)
+        # request_formatters=abi_request_formatters(normalizers, RPC_ABIS)
     )

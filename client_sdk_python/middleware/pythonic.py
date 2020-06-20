@@ -10,7 +10,7 @@ from eth_utils.curried import (
     is_string,
     remove_0x_prefix,
     text_if_str,
-    to_checksum_address,
+    # to_checksum_address,
 )
 from hexbytes import (
     HexBytes,
@@ -61,6 +61,10 @@ is_false = partial(operator.is_, False)
 
 is_not_false = complement(is_false)
 is_not_null = complement(is_null)
+
+
+def to_checksum_address(val):
+    return val
 
 
 @curry

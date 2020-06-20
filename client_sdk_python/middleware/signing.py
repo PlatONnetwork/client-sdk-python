@@ -3,13 +3,13 @@ from functools import (
 )
 import operator
 
-from eth_account import (
+from platon_account import (
     Account,
 )
-from eth_account.local import (
+from platon_account.local import (
     LocalAccount,
 )
-from eth_keys.datatypes import (
+from platon_keys.datatypes import (
     PrivateKey,
 )
 from eth_utils import (
@@ -63,7 +63,7 @@ def gen_normalized_accounts(val):
 def to_account(val):
     raise TypeError(
         "key must be one of the types: "
-        "eth_keys.datatype.PrivateKey, eth_account.local.LocalAccount, "
+        "platon_keys.datatype.PrivateKey, platon_account.local.LocalAccount, "
         "or raw private key as a hex string or byte string. "
         "Was of type {0}".format(type(val)))
 
@@ -99,8 +99,8 @@ def construct_sign_and_send_raw_middleware(private_key_or_account):
     Keyword arguments:
     private_key_or_account -- A single private key or a tuple,
     list or set of private keys. Keys can be any of the following formats:
-      - An eth_account.LocalAccount object
-      - An eth_keys.PrivateKey object
+      - An platon_account.LocalAccount object
+      - An platon_keys.PrivateKey object
       - A raw private key as a hex string or byte string
     """
 

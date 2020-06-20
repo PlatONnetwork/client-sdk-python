@@ -66,16 +66,14 @@ class Pip(Module):
                            rlp.encode(int(new_version)), rlp.encode(int(end_voting_rounds))])
         return send_obj_transaction(self, data, self.web3.pipAddress, pri_key, transaction_cfg)
 
-    def submitParam(self, verifier, url, end_voting_block, param_name, current_value, new_value,
-                    pri_key, transaction_cfg=None):
+    def submitParam(self, verifier, pip_id, module, name, new_value, pri_key, transaction_cfg=None):
         """
-        todo fill
-        :param verifier:
-        :param url:
-        :param end_voting_block:
-        :param param_name:
-        :param current_value:
-        :param new_value:
+        Submit an param proposal
+        :param verifier: The certified submitting the proposal
+        :param pip_id: PIPID
+        :param module: parameter module
+        :param name: parameter name
+        :param new_value: New parameter value
         :param pri_key: Private key for transaction
         :param transaction_cfg: Transaction basic configuration
               type: dict
@@ -87,8 +85,8 @@ class Pip(Module):
         :return: if is need analyze return transaction result dict
                 if is not need analyze return transaction hash
         """
-        data = rlp.encode([rlp.encode(int(2002)), rlp.encode(bytes.fromhex(verifier)), rlp.encode(url), rlp.encode(int(end_voting_block)),
-                           rlp.encode(param_name), rlp.encode(str(current_value)), rlp.encode(str(new_value))])
+        data = rlp.encode([rlp.encode(int(2002)), rlp.encode(bytes.fromhex(verifier)), rlp.encode(pip_id), rlp.encode(module),
+                           rlp.encode(name), rlp.encode(new_value)])
         return send_obj_transaction(self, data, self.web3.pipAddress, pri_key, transaction_cfg)
 
     def submitCancel(self, verifier, pip_id, end_voting_rounds, tobe_canceled_proposal_id, pri_key, transaction_cfg=None):
@@ -232,16 +230,26 @@ class Pip(Module):
         data = rlp.encode([rlp.encode(int(2103))])
         return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))
 
-    # def getProgramVersion(self, from_address=None):
-    #     data = rlp.encode([rlp.encode(int(2104))])
-    #     return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))
-
-    def listParam(self, from_address=None):
+    def getGovernParamValue(self, module, name, from_address=None):
         """
-        todo fill
+        Query the current block height governance parameter value
+        :param module: Parameter module
+        :param name: parameter name
+        :param from_address:
+        :return:
+        """
+        data = rlp.encode([rlp.encode(int(2104)), rlp.encode(module), rlp.encode(name)])
+        return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))
+
+    def listGovernParam(self, module=None, from_address=None):
+        """
+        Query governance parameter list
+        :param module
         :param from_address: Used to call the rpc call method
         :return:
         todo fill
         """
-        data = rlp.encode([rlp.encode(int(2105))])
+        if module is None:
+            module = ""
+        data = rlp.encode([rlp.encode(int(2106)), rlp.encode(module)])
         return parse_data(call_obj(self, from_address, self.web3.pipAddress, data))

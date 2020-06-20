@@ -60,25 +60,25 @@ extras_require['dev'] = (
 setup(
     name='client_sdk_python',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.3.0',
+    version='0.7.0',
     description="""PlatON Client SDK python""",
     # long_description_markdown_filename='README.md',
-    author='Piper Merriam',
-    author_email='pipermerriam@gmail.com',
+    author='Piper awake',
+    author_email='hietel366435@gmail.com',
     url='https://github.com/PlatONnetwork/client-sdk-python',
     include_package_data=True,
     install_requires=[
         "toolz>=0.9.0,<1.0.0;implementation_name=='pypy'",
         "cytoolz>=0.9.0,<1.0.0;implementation_name=='cpython'",
         "eth-abi>=1.2.0,<2.0.0",
-        "eth-account>=0.2.1,<0.4.0",
+        "platon-account>=0.1.2",
         "eth-utils>=1.2.0,<2.0.0",
         "hexbytes>=0.1.0,<1.0.0",
         "lru-dict>=1.1.6,<2.0.0",
         "eth-hash[pycryptodome]>=0.2.0,<1.0.0",
         "requests>=2.16.0,<3.0.0",
         "websockets>=6.0.0,<7.0.0",
-        "pypiwin32>=223;platform_system=='Windows'", 'rlp'
+        "pypiwin32>=223;platform_system=='Windows'", 'rlp', 'pysha3'
     ],
     setup_requires=['setuptools-markdown'],
     python_requires='>=3.6,<4',
