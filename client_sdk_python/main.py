@@ -3,12 +3,13 @@ from eth_utils import (
     add_0x_prefix,
     from_wei,
     is_address,
-    is_checksum_address,
+    # is_checksum_address,
     keccak,
     remove_0x_prefix,
-    to_checksum_address,
+    # to_checksum_address,
     to_wei,
 )
+from platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from ens import ENS
 
@@ -87,6 +88,23 @@ def get_default_modules():
     }
 
 
+def default_address(mainnet, testnet):
+    return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
+
+
+restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
+staking = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
+penalty = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
+pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
+delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
+
+
+def to_checksum_address(val):
+    return val
+
+def is_checksum_address(val):
+    return True
+
 class Web3:
     # Providers
     HTTPProvider = HTTPProvider
@@ -118,13 +136,7 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    # platon contract address
-    restrictingAddress = "0x1000000000000000000000000000000000000001"
-    stakingAddress = "0x1000000000000000000000000000000000000002"
-    penaltyAddress = "0x1000000000000000000000000000000000000004"
-    pipAddress = "0x1000000000000000000000000000000000000005"
-
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=101):
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
         self.manager = RequestManager(self, providers, middlewares)
 
         if modules is None:
@@ -133,16 +145,28 @@ class Web3:
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
 
+        if chain_id == 100:
+            self.net_type = MIANNETHRP
+        else:
+            self.net_type = TESTNETHRP
+        # platon contract address
+        self.restrictingAddress = restricting[self.net_type]
+        self.stakingAddress = staking[self.net_type]
+        self.penaltyAddress = penalty[self.net_type]
+        self.pipAddress = pipAddr[self.net_type]
+        self.delegateRewardAddress = delegateReward[self.net_type]
+
         self.ens = ens
 
-        self.chain_id = chain_id
-
-    def setChainId(self, chain_id):
         self.chain_id = chain_id
 
     @property
     def chainId(self):
         return self.chain_id
+
+    @chainId.setter
+    def chainId(self, chain_id):
+        self.chain_id = chain_id
 
     @property
     def middleware_stack(self):
@@ -215,3 +239,8 @@ class Web3:
     @ens.setter
     def ens(self, new_ens):
         self._ens = new_ens
+
+    def pubkey_to_address(self, pubkey):
+        addr_dict = {MIANNETHRP: pubkey.to_bech32_address(),
+                     TESTNETHRP: pubkey.to_bech32_test_address()}
+        return addr_dict[self.net_type]

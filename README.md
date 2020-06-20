@@ -16,8 +16,8 @@ Read more in the [documentation on ReadTheDocs](http://web3py.readthedocs.io/). 
 ```python
 
 
-from web3 import Web3, HTTPProvider
-from web3.eth import PlatON
+from client_sdk_python import Web3, HTTPProvider
+from client_sdk_python.eth import PlatON
 from hexbytes import HexBytes
 
 # get blockNumber
