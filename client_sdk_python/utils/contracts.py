@@ -157,14 +157,13 @@ def encode_abi(web3, abi, arguments, data=None):
             else:
                 raise Exception("wrong address[]")
 
-
-    # if not check_if_arguments_can_be_encoded(abi, arguments, {}):
-    #     raise TypeError(
-    #         "One or more arguments could not be encoded to the necessary "
-    #         "ABI type.  Expected types are: {0}".format(
-    #             ', '.join(argument_types),
-    #         )
-    #     )
+    if not check_if_arguments_can_be_encoded(abi, arguments, {}):
+        raise TypeError(
+            "One or more arguments could not be encoded to the necessary "
+            "ABI type.  Expected types are: {0}".format(
+                ', '.join(argument_types),
+            )
+        )
 
     try:
         normalizers = [

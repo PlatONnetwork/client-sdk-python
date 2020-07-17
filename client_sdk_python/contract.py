@@ -63,6 +63,7 @@ from client_sdk_python.utils.empty import (
 from client_sdk_python.utils.encoding import (
     to_4byte_hex,
     to_hex,
+    tobech32address,
 )
 from client_sdk_python.utils.events import (
     get_event_data,
@@ -86,7 +87,8 @@ from client_sdk_python.utils.toolz import (
 from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
-# from client_sdk_python.eth import PlatON
+from platon_keys.utils import bech32
+
 
 DEPRECATED_SIGNATURE_MESSAGE = (
     "The constructor signature for the `Contract` object has changed. "
@@ -1399,11 +1401,17 @@ def call_contract_function(
         normalizers,
     )
     normalized_data = map_abi_data(_normalizers, output_types, output_data)
+    laxdata=[]
+    if output_types == ['address']:
+        laxdata=tobech32address(address[:3],normalized_data[0])
+    elif output_types == ['address[]']:
+        for i in range(len(normalized_data[0])):
+            laxdata.append(tobech32address(address[:3],normalized_data[0][i]))
 
-    if len(normalized_data) == 1:
-        return normalized_data[0]
+    if len(laxdata) == 1:
+        return laxdata[0]
     else:
-        return normalized_data
+        return laxdata
 
 
 def parse_block_identifier(web3, block_identifier):

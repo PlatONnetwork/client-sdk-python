@@ -15,6 +15,7 @@ from eth_utils import (
     is_list_like,
     remove_0x_prefix,
     to_hex,
+    is_address,
 )
 
 from client_sdk_python.utils.abi import (
@@ -36,7 +37,34 @@ from client_sdk_python.utils.validation import (
     validate_abi_type,
     validate_abi_value,
 )
+from platon_keys.utils import bech32
 
+def str2bytes(address: str):
+    pos = 0
+    len_str = len(address)
+    if len_str % 2 != 0:
+        return None
+    len_str = round(len_str/2)
+    hexa = []
+    for i in range(len_str):
+        s1 = address[pos:pos+2]
+        if s1 == '0x' or s1 == '0X':
+            pos +=2
+            continue
+        sv = int(s1, 16)
+        hexa.append(sv)
+        pos += 2
+    return hexa
+
+def encodeaddress(hrp, address):
+    program = str2bytes(address)
+    ret = bech32.encode(hrp,program)
+    return ret
+def tobech32address(hrp, address):
+    if is_address(address):
+        return encodeaddress(hrp,address)
+    else:
+        return None
 
 def parse_str(raw_data):
     data = str(raw_data, encoding="utf-8").replace('\\', '').replace('"[', '[').replace(']"', ']')
