@@ -124,10 +124,10 @@ def is_encodable(_type, value):
             return False
         sub_type = (base, sub, arrlist[:-1])
         return all(is_encodable(sub_type, sub_value) for sub_value in value)
-    elif base == 'address' and is_ens_name(value):
-        # ENS names can be used anywhere an address is needed
-        # Web3.py will resolve the name to an address before encoding it
-        return True
+    # elif base == 'address' and is_ens_name(value):
+    #     # ENS names can be used anywhere an address is needed
+    #     # Web3.py will resolve the name to an address before encoding it
+    #     return True
     elif base == 'bytes' and isinstance(value, str):
         # Hex-encoded bytes values can be used anywhere a bytes value is needed
         if is_hex(value) and len(value) % 2 == 0:
@@ -153,7 +153,7 @@ def filter_by_encodability(args, kwargs, contract_abi):
         function_abi
         for function_abi
         in contract_abi
-        if check_if_arguments_can_be_encoded(function_abi, args, kwargs)
+        # if check_if_arguments_can_be_encoded(function_abi, args, kwargs)
     ]
 
 

@@ -86,6 +86,7 @@ from client_sdk_python.utils.toolz import (
 from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
+# from client_sdk_python.eth import PlatON
 
 DEPRECATED_SIGNATURE_MESSAGE = (
     "The constructor signature for the `Contract` object has changed. "
@@ -234,7 +235,7 @@ class Contract:
             )
 
         if address:
-            self.address = normalize_address(self.web3.ens, address)
+            self.address = address #normalize_address(self.web3.ens, address)
 
         if not self.address:
             raise TypeError("The address argument is required to instantiate a contract.")
@@ -250,11 +251,11 @@ class Contract:
 
         normalizers = {
             'abi': normalize_abi,
-            'address': partial(normalize_address, kwargs['web3'].ens),
+            'address': normalize_address,
             'bytecode': normalize_bytecode,
             'bytecode_runtime': normalize_bytecode,
         }
-
+#partial(normalize_address, kwargs['web3'].ens)
         contract = PropertyCheckingFactory(
             class_name or cls.__name__,
             (cls,),

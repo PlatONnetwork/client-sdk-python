@@ -21,7 +21,7 @@ from client_sdk_python.utils.toolz import (
     dissoc,
 )
 
-MAX_EXTRADATA_LENGTH = 32
+MAX_EXTRADATA_LENGTH = 32 #32
 
 
 is_not_null = complement(is_null)
@@ -41,7 +41,7 @@ def validate_chain_id(web3, chain_id):
         )
 
 
-def check_extradata_length(val):
+def check_extradata_length(val: object) -> object:
     if not isinstance(val, (str, int, bytes)):
         return val
     result = HexBytes(val)
