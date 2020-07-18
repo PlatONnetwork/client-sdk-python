@@ -1404,14 +1404,16 @@ def call_contract_function(
     laxdata=[]
     if output_types == ['address']:
         laxdata=tobech32address(address[:3],normalized_data[0])
+        return laxdata[0]
     elif output_types == ['address[]']:
         for i in range(len(normalized_data[0])):
             laxdata.append(tobech32address(address[:3],normalized_data[0][i]))
-
-    if len(laxdata) == 1:
-        return laxdata[0]
-    else:
         return laxdata
+    else :
+        if len(normalized_data) == 1:
+            return normalized_data[0]
+        else:
+            return normalized_data
 
 
 def parse_block_identifier(web3, block_identifier):

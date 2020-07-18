@@ -153,7 +153,7 @@ def filter_by_encodability(args, kwargs, contract_abi):
         function_abi
         for function_abi
         in contract_abi
-        # if check_if_arguments_can_be_encoded(function_abi, args, kwargs)
+        if check_if_arguments_can_be_encoded(function_abi, args, kwargs)
     ]
 
 

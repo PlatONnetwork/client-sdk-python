@@ -133,29 +133,30 @@ def find_matching_fn_abi(abi, fn_identifier=None, args=None, kwargs=None):
 
 def encode_abi(web3, abi, arguments, data=None):
     argument_types = get_abi_input_types(abi)
-    if argument_types[0]=='address':
-        if arguments[0][:3]=='lax':
-           hrpgot, data1 = bech32.decode("lax", arguments[0])
-           addr = to_checksum_address(bytes(data1))
-           arguments = tuple(addr.split(","))
-        elif arguments[0][:3]=='lat':
-            hrpgot, data1 = bech32.decode("lat", arguments[0])
-            addr = to_checksum_address(bytes(data1))
-            arguments = tuple(addr.split(","))
-        else:
-            raise Exception("wrong address")
-    elif argument_types[0] =='address[]':
-        for i in range(len(arguments[0])):
-            if arguments[0][i][:3] == 'lax':
-                hrpgot, data1 = bech32.decode("lax", arguments[0][i])
+    if argument_types:
+        if argument_types[0]=='address':
+            if arguments[0][:3]=='lax':
+               hrpgot, data1 = bech32.decode("lax", arguments[0])
+               addr = to_checksum_address(bytes(data1))
+               arguments = tuple(addr.split(","))
+            elif arguments[0][:3]=='lat':
+                hrpgot, data1 = bech32.decode("lat", arguments[0])
                 addr = to_checksum_address(bytes(data1))
-                arguments[0][i] = addr
-            elif arguments[0][i][:3] == 'lat':
-                hrpgot, data1 = bech32.decode("lat", arguments[0][i])
-                addr = to_checksum_address(bytes(data1))
-                arguments[0][i] = addr
+                arguments = tuple(addr.split(","))
             else:
-                raise Exception("wrong address[]")
+                raise Exception("wrong address")
+        elif argument_types[0] =='address[]':
+            for i in range(len(arguments[0])):
+                if arguments[0][i][:3] == 'lax':
+                    hrpgot, data1 = bech32.decode("lax", arguments[0][i])
+                    addr = to_checksum_address(bytes(data1))
+                    arguments[0][i] = addr
+                elif arguments[0][i][:3] == 'lat':
+                    hrpgot, data1 = bech32.decode("lat", arguments[0][i])
+                    addr = to_checksum_address(bytes(data1))
+                    arguments[0][i] = addr
+                else:
+                    raise Exception("wrong address[]")
 
     if not check_if_arguments_can_be_encoded(abi, arguments, {}):
         raise TypeError(
