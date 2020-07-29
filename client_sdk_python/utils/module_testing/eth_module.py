@@ -2,10 +2,10 @@
 
 import pytest
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     decode_single,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_boolean,
     is_bytes,
     is_checksum_address,

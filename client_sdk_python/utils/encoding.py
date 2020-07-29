@@ -2,7 +2,7 @@
 import json
 import re
 import rlp
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     add_0x_prefix,
     big_endian_to_int,
     decode_hex,

@@ -5,7 +5,7 @@ from hexbytes import HexBytes
 from client_sdk_python.module import (
     Module,
 )
-from eth_utils.hexadecimal import remove_0x_prefix
+from client_sdk_python.packages.eth_utils.hexadecimal import remove_0x_prefix
 from client_sdk_python.utils.encoding import parse_str
 from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
 from platon_account.internal.transactions import bech32_address_bytes

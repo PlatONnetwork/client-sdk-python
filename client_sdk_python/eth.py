@@ -1,12 +1,12 @@
 import json
 import sha3
 import rlp
-from eth_utils.hexadecimal import remove_0x_prefix
+from client_sdk_python.packages.eth_utils.hexadecimal import remove_0x_prefix
 from platon_account import (
     Account,
 )
 from platon_account.internal.transactions import bech32_address_bytes
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     apply_to_return_value,
     is_checksum_address,
     is_string,

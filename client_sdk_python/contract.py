@@ -5,13 +5,13 @@ import copy
 import functools
 import itertools
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     decode_abi,
 )
-from eth_abi.exceptions import (
+from client_sdk_python.packages.eth_abi.exceptions import (
     DecodingError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     add_0x_prefix,
     encode_hex,
     function_abi_to_4byte_selector,

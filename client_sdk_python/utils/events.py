@@ -1,14 +1,14 @@
 import itertools
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     decode_abi,
     decode_single,
     encode_single,
 )
-from eth_abi.abi import (
+from client_sdk_python.packages.eth_abi.abi import (
     process_type,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     encode_hex,
     event_abi_to_log_topic,
     is_list_like,

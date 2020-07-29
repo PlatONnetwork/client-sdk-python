@@ -4,14 +4,14 @@ from collections import (
 import itertools
 import re
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     is_encodable as eth_abi_is_encodable,
 )
-from eth_abi.abi import (
+from client_sdk_python.packages.eth_abi.abi import (
     collapse_type,
     process_type,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_hex,
     is_list_like,
     to_bytes,

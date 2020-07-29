@@ -1,12 +1,12 @@
 import functools
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     encode_abi as eth_abi_encode_abi,
 )
-from eth_abi.exceptions import (
+from client_sdk_python.packages.eth_abi.exceptions import (
     EncodingError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     add_0x_prefix,
     encode_hex,
     function_abi_to_4byte_selector,
@@ -49,7 +49,7 @@ from client_sdk_python.utils.toolz import (
     valmap,
 )
 from platon_keys.utils import bech32,address
-from eth_utils import to_checksum_address
+from client_sdk_python.packages.eth_utils import to_checksum_address
 
 
 def find_matching_event_abi(abi, event_name=None, argument_names=None):

@@ -6,14 +6,14 @@ from distutils.version import (
 import functools
 import json
 
-import eth_abi
-from eth_abi.abi import (
+import client_sdk_python.packages.eth_abi
+from client_sdk_python.packages.eth_abi.abi import (
     process_type,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_checksum_address,
 )
-from eth_utils.address import (
+from client_sdk_python.packages.eth_utils.address import (
     is_binary_address,
 )
 from hexbytes import (
@@ -160,8 +160,8 @@ BASE_RETURN_NORMALIZERS = [
 ]
 
 
-if LooseVersion(eth_abi.__version__) < LooseVersion("2"):
-    BASE_RETURN_NORMALIZERS.append(decode_abi_strings)
+# if LooseVersion(eth_abi.__version__) < LooseVersion("2"):
+BASE_RETURN_NORMALIZERS.append(decode_abi_strings)
 
 
 #

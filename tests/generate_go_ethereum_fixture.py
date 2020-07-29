@@ -10,7 +10,7 @@ import sys
 import tempfile
 import time
 
-from eth_utils.curried import (
+from client_sdk_python.packages.eth_utils.curried import (
     apply_formatter_if,
     is_bytes,
     is_checksum_address,

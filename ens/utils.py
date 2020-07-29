@@ -3,7 +3,7 @@ import copy
 import datetime
 import functools
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_same_address,
     remove_0x_prefix,
     to_normalized_address,
