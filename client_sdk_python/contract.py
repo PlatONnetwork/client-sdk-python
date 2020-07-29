@@ -87,8 +87,8 @@ from client_sdk_python.utils.toolz import (
 from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
-from platon_keys.utils import bech32
 
+from platon_keys.utils import bech32
 
 DEPRECATED_SIGNATURE_MESSAGE = (
     "The constructor signature for the `Contract` object has changed. "
@@ -237,7 +237,7 @@ class Contract:
             )
 
         if address:
-            self.address = address #normalize_address(self.web3.ens, address)
+            self.address = normalize_address(address)
 
         if not self.address:
             raise TypeError("The address argument is required to instantiate a contract.")
@@ -253,11 +253,11 @@ class Contract:
 
         normalizers = {
             'abi': normalize_abi,
-            'address': normalize_address,
+            'address': partial(normalize_address, kwargs['web3'].ens),
             'bytecode': normalize_bytecode,
             'bytecode_runtime': normalize_bytecode,
         }
-#partial(normalize_address, kwargs['web3'].ens)
+
         contract = PropertyCheckingFactory(
             class_name or cls.__name__,
             (cls,),
@@ -1373,6 +1373,7 @@ def call_contract_function(
 
     try:
         output_data = decode_abi(output_types, return_data)
+
     except DecodingError as e:
         # Provide a more helpful error message than the one provided by
         # eth-abi-utils
@@ -1401,15 +1402,15 @@ def call_contract_function(
         normalizers,
     )
     normalized_data = map_abi_data(_normalizers, output_types, output_data)
-    laxdata=[]
+    laxdata = []
     if output_types == ['address']:
-        laxdata=tobech32address(address[:3],normalized_data[0])
+        laxdata = tobech32address(address[:3], normalized_data[0])
         return laxdata[0]
     elif output_types == ['address[]']:
         for i in range(len(normalized_data[0])):
-            laxdata.append(tobech32address(address[:3],normalized_data[0][i]))
+            laxdata.append(tobech32address(address[:3], normalized_data[0][i]))
         return laxdata
-    else :
+    else:
         if len(normalized_data) == 1:
             return normalized_data[0]
         else:

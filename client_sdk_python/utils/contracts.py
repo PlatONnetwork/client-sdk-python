@@ -48,7 +48,9 @@ from client_sdk_python.utils.toolz import (
     pipe,
     valmap,
 )
+
 from platon_keys.utils import bech32,address
+
 from client_sdk_python.packages.eth_utils import to_checksum_address
 
 
@@ -77,7 +79,6 @@ def find_matching_event_abi(abi, event_name=None, argument_names=None):
 
 
 def find_matching_fn_abi(abi, fn_identifier=None, args=None, kwargs=None):
-
     args = args or tuple()
     kwargs = kwargs or dict()
     filters = []
@@ -134,18 +135,18 @@ def find_matching_fn_abi(abi, fn_identifier=None, args=None, kwargs=None):
 def encode_abi(web3, abi, arguments, data=None):
     argument_types = get_abi_input_types(abi)
     if argument_types:
-        if argument_types[0]=='address':
-            if arguments[0][:3]=='lax':
-               hrpgot, data1 = bech32.decode("lax", arguments[0])
-               addr = to_checksum_address(bytes(data1))
-               arguments = tuple(addr.split(","))
-            elif arguments[0][:3]=='lat':
+        if argument_types[0] == 'address':
+            if arguments[0][:3] == 'lax':
+                hrpgot, data1 = bech32.decode("lax", arguments[0])
+                addr = to_checksum_address(bytes(data1))
+                arguments = tuple(addr.split(","))
+            elif arguments[0][:3] == 'lat':
                 hrpgot, data1 = bech32.decode("lat", arguments[0])
                 addr = to_checksum_address(bytes(data1))
                 arguments = tuple(addr.split(","))
             else:
                 raise Exception("wrong address")
-        elif argument_types[0] =='address[]':
+        elif argument_types[0] == 'address[]':
             for i in range(len(arguments[0])):
                 if arguments[0][i][:3] == 'lax':
                     hrpgot, data1 = bech32.decode("lax", arguments[0][i])
@@ -157,7 +158,7 @@ def encode_abi(web3, abi, arguments, data=None):
                     arguments[0][i] = addr
                 else:
                     raise Exception("wrong address[]")
-
+    
     if not check_if_arguments_can_be_encoded(abi, arguments, {}):
         raise TypeError(
             "One or more arguments could not be encoded to the necessary "
@@ -252,7 +253,7 @@ def encode_transaction_data(
     else:
         raise TypeError("Unsupported function identifier")
 
-    return add_0x_prefix(encode_abi(web3, fn_abi, fn_arguments, fn_selector))  #
+    return add_0x_prefix(encode_abi(web3, fn_abi, fn_arguments, fn_selector))
 
 
 def get_fallback_function_info(contract_abi=None, fn_abi=None):

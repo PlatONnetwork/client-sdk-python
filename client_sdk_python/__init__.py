@@ -21,6 +21,7 @@ from client_sdk_python.providers.ipc import (  # noqa: E402
 from client_sdk_python.providers.websocket import (  # noqa: E402
     WebsocketProvider,
 )
+
 try:
     __version__ = pkg_resources.get_distribution("client_sdk_python").version
 except:
