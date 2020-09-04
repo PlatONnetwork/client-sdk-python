@@ -183,7 +183,9 @@ def normalize_address(address):
     #     else:
     #         validate_address(address)
     return address
+def normalize_vmtype(vmtype):
 
+    return vmtype
 
 def normalize_bytecode(bytecode):
     if bytecode:

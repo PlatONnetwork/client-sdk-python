@@ -21,7 +21,6 @@ from client_sdk_python.packages.eth_abi.utils.parsing import (  # noqa: F401
     collapse_type,
 )
 
-
 def encode_single(typ, arg):
     if isinstance(typ, str):
         type_str = typ
@@ -94,3 +93,4 @@ def decode_abi(types, data):
     stream = ContextFramesBytesIO(data)
 
     return decoder(stream)
+

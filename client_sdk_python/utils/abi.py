@@ -58,11 +58,17 @@ def get_abi_input_types(abi):
         return [arg['type'] for arg in abi['inputs']]
 
 
-def get_abi_output_types(abi):
+def get_abi_output_types(abi,vmtype):
     if abi['type'] == 'fallback':
         return []
     else:
-        return [arg['type'] for arg in abi['outputs']]
+        if isinstance(abi['outputs'],dict):
+            if vmtype==1:
+               return abi['outputs']
+            else :
+                return abi['outputs']['type']
+        else :
+            return [arg['type'] for arg in abi['outputs']]
 
 
 def get_abi_input_names(abi):

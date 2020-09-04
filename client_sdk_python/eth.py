@@ -1,6 +1,7 @@
 import json
 import sha3
 import rlp
+import copy
 from client_sdk_python.packages.eth_utils.hexadecimal import remove_0x_prefix
 from platon_account import (
     Account,
@@ -17,6 +18,9 @@ from hexbytes import (
 
 from client_sdk_python.contract import (
     Contract,
+)
+from  client_sdk_python.wasmcontract import (
+    WasmContract,
 )
 from client_sdk_python.iban import (
     Iban,
@@ -58,7 +62,8 @@ from client_sdk_python.utils.transactions import (
 from platon_account.internal.signing import (
     to_standard_signature_bytes,
 )
-
+true = True
+false = False
 class Eth(Module):
     account = Account()
     defaultAccount = empty
@@ -385,12 +390,56 @@ class Eth(Module):
         return self.web3.manager.request_blocking(
             "platon_uninstallFilter", [filter_id],
         )
+    def wasm_type(self,abi_data):
+        for i in range(len(abi_data)):
+            if abi_data[i]['type']=='Action':
+                abi_data[i]['type']='function'
+            if abi_data[i]['type']=='Event':
+                abi_data[i]['type'] = 'event'
+                abi_data[i]['anonymous'] = False
+                if len(abi_data[i]['input']) > 0:
+                    for j in range(len(abi_data[i]['input'])):
+                       abi_data[i]['input'][j]['indexed'] = ((j+1) <= abi_data[i]['topic'])
+            if abi_data[i]['type'] == 'struct':
+                if 'fields' in abi_data[i] and 'inputs' not in abi_data[i]:
+                    abi_data[i]['inputs'] = abi_data[i].pop('fields')
+                    if len(abi_data[i]['baseclass'])>0:
+                        for j in range(len(abi_data[i]['baseclass'])):
+                           abi_data[i]['inputs'].insert(j,{'name':abi_data[i]['baseclass'][j],'type':'struct'})
+                    # else :
+                    #     abi_data[i]['inputs'].insert(0, {'name': abi_data[i]['baseclass'], 'type': 'struct'})
+                    del abi_data[i]['baseclass']
+            if abi_data[i]['name']== 'init':
+                abi_data[i]['type']='constructor'
+            if 'input' in abi_data[i]:
+                abi_data[i]['inputs'] = abi_data[i].pop('input')
+            if 'output' in abi_data[i]:
+                abi_data[i]['outputs'] = {'name':"",'type':abi_data[i]['output']}
+                del abi_data[i]['output']
+        return abi_data
+
 
     def contract(self,
                  address=None,
                  **kwargs):
-        ContractFactoryClass = kwargs.pop('ContractFactoryClass', self.defaultContractFactory)
 
+        ContractFactoryClass = kwargs.pop('ContractFactoryClass', self.defaultContractFactory)
+        ContractFactory = ContractFactoryClass.factory(self.web3, **kwargs)
+
+        if address:
+            return ContractFactory(address)
+        else:
+            return ContractFactory
+
+    def wasmcontract(self,
+                 address=None,
+                 **kwargs):
+        if 'vmtype' in kwargs:
+            if kwargs['vmtype'] == 1:
+                abi_data=copy.deepcopy(kwargs['abi'])
+                kwargs['abi']= self.wasm_type(abi_data)
+            # del kwargs['vmtype']
+        ContractFactoryClass = kwargs.pop('ContractFactoryClass', self.defaultContractFactory)
         ContractFactory = ContractFactoryClass.factory(self.web3, **kwargs)
 
         if address:
