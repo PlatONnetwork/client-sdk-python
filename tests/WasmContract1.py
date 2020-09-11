@@ -51,12 +51,12 @@ payable = platon.wasmcontract(address=tx_receipt.contractAddress, abi=cabi,vmtyp
 #     }
 # )
 #
-tx_hash2 = payable.functions.setUint64(18446744073709551615).transact(
-    {
-        'from':from_address,
-        'gas':1500000,
-    }
-)
+# tx_hash2 = payable.functions.setUint64(18446744073709551615).transact(
+#     {
+#         'from':from_address,
+#         'gas':1500000,
+#     }
+# )
 
 # tx_hash3 = payable.functions.setInt32(-2147483648).transact(
 #     {
@@ -142,7 +142,7 @@ tx_hash2 = payable.functions.setUint64(18446744073709551615).transact(
 # tx_receipt = platon.waitForTransactionReceipt(tx_hash1)
 # print(platon.waitForTransactionReceipt(tx_hash0))
 # print(platon.waitForTransactionReceipt(tx_hash1))
-print(platon.waitForTransactionReceipt(tx_hash2))
+# print(platon.waitForTransactionReceipt(tx_hash2))
 # print(platon.waitForTransactionReceipt(tx_hash3))
 # print(platon.waitForTransactionReceipt(tx_hash4))
 # print(platon.waitForTransactionReceipt(tx_hash5))
@@ -169,9 +169,9 @@ print(platon.waitForTransactionReceipt(tx_hash2))
 #     payable.functions.getInt64().call()
 # ))
 # # get : -9223372036854775808
-print('get : {}'.format(
-    payable.functions.getUint64().call()
-))
+# print('get : {}'.format(
+#     payable.functions.getUint64().call()
+# ))
 # # get : 18446744073709551615
 # print('get : {}'.format(
 #     payable.functions.getInt32().call()

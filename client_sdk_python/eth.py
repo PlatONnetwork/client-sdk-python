@@ -440,6 +440,7 @@ class Eth(Module):
                 kwargs['abi']= self.wasm_type(abi_data)
             # del kwargs['vmtype']
         ContractFactoryClass = kwargs.pop('ContractFactoryClass', self.defaultContractFactory)
+        # 若kwargs中有'ContractFactoryClass'这个key，则返回对应的value值，若无这个key，则返回self.defaultContractFactory
         ContractFactory = ContractFactoryClass.factory(self.web3, **kwargs)
 
         if address:

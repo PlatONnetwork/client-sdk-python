@@ -369,6 +369,10 @@ def stringtohex(str1:bytes):
     strhex=[]
     if str1:
         for i in str1:
-            strhex=strhex+[hex(i).replace('0x','')]
+            temp = hex(i).replace('0x','')
+            if len(temp) == 1:
+                temp = '0'+temp
+            strhex = strhex+[temp]
+            del temp
         return strhex
     else: return []

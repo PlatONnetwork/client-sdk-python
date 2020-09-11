@@ -157,7 +157,7 @@ class ContractEvents:
     def __init__(self, abi, web3,vmtype=None, address=None):
         if abi:
             self.abi = abi
-            self.vmtype=vmtype
+            self.vmtype = vmtype
             self._events = filter_by_type('event', self.abi)
             for event in self._events:
                 setattr(
@@ -168,6 +168,7 @@ class ContractEvents:
                         web3=web3,
                         contract_abi=self.abi,
                         address=address,
+                        vmtype=vmtype,
                         event_name=event['name']))
 
     def __getattr__(self, event_name):
@@ -263,7 +264,7 @@ class Contract:
                 normalizers = {
                     'abi': normalize_abi,
                     'address': normalize_address,
-                    'vmtype':normalize_vmtype,
+                    'vmtype': normalize_vmtype,
                     'bytecode': normalize_bytecode,
                     'bytecode_runtime': normalize_bytecode,
                 }
@@ -1287,7 +1288,7 @@ class ContractEvent:
     web3 = None
     contract_abi = None
     abi = None
-    vmtype=None
+    vmtype = None
 
     def __init__(self, *argument_names):
 
@@ -1312,7 +1313,7 @@ class ContractEvent:
     def _parse_logs(self, txn_receipt):
         for log in txn_receipt['logs']:
             try:
-                decoded_log = get_event_data(self.abi, log)
+                decoded_log = get_event_data(self.abi, log, self.vmtype)
             except MismatchedABI:
                 continue
             yield decoded_log

@@ -8,6 +8,7 @@ from .abi import (  # noqa: F401
     event_signature_to_log_topic,
     function_abi_to_4byte_selector,
     function_signature_to_4byte_selector,
+    topic_decode,
 )
 from .address import (  # noqa: F401
     is_address,

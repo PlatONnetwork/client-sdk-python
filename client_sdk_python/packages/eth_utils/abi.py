@@ -1,8 +1,18 @@
 from typing import Any, Dict
 
 from .crypto import keccak
-
-
+from client_sdk_python.param_encode import (
+    stringfnv,
+    rlp_encode,
+    rlp_decode,
+    hexstr2bytes,
+    tostring_hex,
+    stringtohex,
+)
+from eth_hash.auto import keccak as keccak_256
+from hexbytes import (
+    HexBytes,
+)
 def collapse_if_tuple(abi: Dict[str, Any]) -> str:
     """Converts a tuple from a dict to a parenthesized list of its types.
 
@@ -55,6 +65,37 @@ def event_signature_to_log_topic(event_signature: str) -> bytes:
     return keccak(text=event_signature.replace(" ", ""))
 
 
-def event_abi_to_log_topic(event_abi: Dict[str, Any]) -> bytes:
-    event_signature = _abi_to_signature(event_abi)
-    return event_signature_to_log_topic(event_signature)
+def event_abi_to_log_topic(event_abi: Dict[str, Any], vmtype=None) -> bytes:
+    if vmtype:
+        event_signature = event_abi['name']
+        temp = stringtohex(bytes(event_signature, 'utf-8'))
+        if len(temp)<32:
+            data1=tostring_hex(temp)
+            data1=data1.rjust(64,'0')
+            data=HexBytes('0x'+data1)
+        elif len(temp)>32:
+            data1=[]
+            for i in range(len(temp)):
+                data1.append(int(event_signature[i], 16))
+                data=keccak_256(bytes(data1))
+        else:
+            data=tostring_hex(temp)
+            data=HexBytes('0x'+data)
+        return data
+
+        # event_signature = rlp_encode(temp)
+        # event_signature1 = []
+        # for i in range(len(event_signature)):
+        #     event_signature1.append(int(event_signature[i], 16))
+        # keccak_256(bytes(event_signature1))
+        # return keccak_256(bytes(event_signature1))
+    else:
+        event_signature = _abi_to_signature(event_abi)
+        return event_signature_to_log_topic(event_signature)
+def topic_decode(data):
+    temp = []
+    for i in data[0]:
+        if i:
+            temp.append(bytes.decode(HexBytes(i)))
+    data1 = ''.join(temp)
+    return [data1]

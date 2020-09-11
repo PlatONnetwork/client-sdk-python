@@ -194,6 +194,8 @@ def tuplearrlp(arrlp,temp):
     return arrlp
 def encodeparameters(types,params,setabi=None):
     arrlp = []
+    if isinstance(params,set):
+        params = list(params)
     for i in range(len(params)):
         param = params[i]
         type = types[i]['type']
@@ -333,7 +335,7 @@ def encodeparameters(types,params,setabi=None):
             i2 = type.index('>')
             stype=type[i1+1:i2]
             for j in param:
-                temp.append(encodeparameters([{'type':stype,'name':''}],param, setabi))
+                temp.append(encodeparameters([{'type':stype,'name':''}],[j], setabi))
             if len(params) <= 1:
                 arrlp = tuple(temp)  ##转化为字节数组列表模式
             else:
@@ -409,7 +411,7 @@ def decodeuint(param):
         data1 = digit
     return data1
 def wasmdecode_abi(types, data, setabi=None):
-    if isinstance(data, HexBytes):
+    if isinstance(data, HexBytes) or isinstance(data, bytes):
         buf = rlp_decode(hexstr2bytes(to_hex(data)))
     else:
         buf = data
@@ -421,11 +423,21 @@ def wasmdecode_abi(types, data, setabi=None):
     if type == 'string':
         tem = []
         if isinstance(buf,list):
-            for i in buf:
-                tem.append(bytes.decode(HexBytes(i)))
-            data1 = ''.join(tem)
-        elif isinstance(buf,str):
-            data1=bytes.decode(HexBytes(buf))
+            if not isinstance(buf[0],list):
+                for i in buf:
+                    tem.append(bytes.decode(HexBytes(i)))
+                data1 = ''.join(tem)
+            else:
+                data1 = [0 for x in range(len(buf))]
+                for j in range(len(buf)):
+                    data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+        elif isinstance(buf, str):
+            data1 = bytes.decode(HexBytes(buf))
+        elif isinstance(buf,tuple):
+            data1 = [0 for x in range(len(buf))]
+            for j in range(len(buf)):
+                data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+
     elif type.startswith('uint') and not type.endswith(']'):
         digit = 0
         if len(buf) <= 1:
@@ -460,6 +472,8 @@ def wasmdecode_abi(types, data, setabi=None):
     elif type.endswith(']'):
         lasti=type.rindex('[')
         vectype=type[0:lasti]
+        if isinstance(buf, tuple) and len(buf) <= 1:
+            buf =buf[0]
         data1 = [0 for x in range(len(buf))]
         if vectype == 'uint8':
             for i in range(len(buf)):
@@ -467,10 +481,13 @@ def wasmdecode_abi(types, data, setabi=None):
         else:
             for i in range(len(buf)):
                 data1[i] = wasmdecode_abi({'type':vectype,'name':''}, buf[i], setabi)
+
     elif type.startswith('list'):
         i1 = type.index('<')
         i2 = type.index('>')
         itype = type[i1 + 1:i2]
+        if isinstance(buf, tuple) and len(buf) <= 1:
+            buf =buf[0]
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
             data1[j] = (wasmdecode_abi({'type': itype, 'name': ''}, buf[j], setabi))
@@ -482,8 +499,12 @@ def wasmdecode_abi(types, data, setabi=None):
         vtype = type[i2 + 1:i3]
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
-            kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0], setabi)
-            vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][1], setabi)
+            if len(buf[j])<=1 and len(buf[j][0])>=2:
+                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0][0], setabi)
+                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][0][1], setabi)
+            else:
+                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0], setabi)
+                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][1], setabi)
             data1[j] = [kvalue,vvalue]
     elif type.startswith('pair'):
         i1=type.index('<')
@@ -491,6 +512,8 @@ def wasmdecode_abi(types, data, setabi=None):
         i3=type.index('>')
         ktype=type[i1+1:i2]
         vtype=type[i2+1:i3]
+        if isinstance(buf, tuple) and len(buf) <= 1:
+            buf = buf[0]
         data1 = [0 for x in range(len(buf))]
         data1[0]=wasmdecode_abi({'type':ktype, 'name':''}, buf[0], setabi)
         data1[1]=wasmdecode_abi({'type':vtype, 'name':''}, buf[1], setabi)
@@ -498,9 +521,12 @@ def wasmdecode_abi(types, data, setabi=None):
         i1=type.index('<')
         i2 = type.index('>')
         stype=type[i1+1:i2]
+        if isinstance(buf, tuple) and len(buf) <= 1:
+            buf = buf[0]
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
             data1[j] = wasmdecode_abi({'type':stype,'name':''},buf[j], setabi)
+        data1=set(data1)
     elif type == 'struct':
         structtype = [item for item in setabi if item['type'] == 'struct' and item['name'] == name]
         if not structtype:
@@ -626,6 +652,99 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         else:
             return encode_hex(encoded_arguments)
 
+def wasmevent_decode(types, data,):
+    if isinstance(data, HexBytes) or isinstance(data, bytes):
+        bufs = rlp_decode(hexstr2bytes(to_hex(data)))
+    else:
+        bufs = data
+    data1 = []
+    # for i in range(len(bufs)):
+    #     buf = bufs[i]
+    #     type = types[i]
+    if (not isinstance(bufs, tuple)) and (not isinstance(types, tuple)):
+        buf = bufs
+        type = types
+        if type == 'string':
+            tem = []
+            if isinstance(buf,list):
+                for i in buf:
+                    tem.append(bytes.decode(HexBytes(i)))
+                data1 = ''.join(tem)
+            elif isinstance(buf, str):
+                data1 = bytes.decode(HexBytes(buf))
+            elif isinstance(buf,tuple):
+                data1 = [0 for x in range(len(buf))]
+                for j in range(len(buf)):
+                    data1[j] = wasmevent_decode(types, buf[j])
+        elif type.startswith('uint') and not type.endswith(']'):
+            digit = 0
+            if len(buf) <= 1:
+               data1 = int(buf[0],16)
+            else:
+               for i in range(len(buf)):
+                  digit += int(buf[i],16)*(256**(len(buf)-1-i))
+               data1 = digit
+        elif type == 'bool':
+            if not buf:
+                data1 = False
+            elif int(buf[0],16):
+                data1 = True
+            else:
+                data1 = False
+        elif type == 'int8':
+            temp = np.uint8(decodeuint(buf))
+            data1 = np.int8(temp)
+        elif type == 'int16':
+            temp = np.uint16(decodeuint(buf))
+            data1 = np.int16(temp)
+        elif type == 'int32':
+            temp = np.uint32(decodeuint(buf))
+            data1 = np.int32(temp)
+        elif type == 'int64':
+            temp = np.uint64(decodeuint(buf))
+            data1 = np.int64(temp)
+        elif type == 'float':
+            data1 = struct.unpack('>f', HexBytes(buf))
+        elif type == 'double':
+            data1 = struct.unpack('>d', HexBytes(buf))
+        elif type.endswith(']'):
+            lasti=type.rindex('[')
+            vectype=type[0:lasti]
+            data1 = [0 for x in range(len(buf))]
+            if vectype == 'uint8':
+                for i in range(len(buf)):
+                    data1[i] = hex(int(buf[i],16))
+            else:
+                for i in range(len(buf)):
+                    data1[i] = wasmevent_decode(types, buf[i])
+        elif type.startswith('FixedHash'):
+            data1 = '0x'+tostring_hex(buf)
+            if type.endswith('<20>'):
+                temp=[]
+                try :
+                    temp=tobech32address('lax',data1)
+                except:
+                    try:
+                        temp=tobech32address('lat',data1)
+                    except:
+                        raise ('wasmdecode error ! can not match FixedHash<20> type !' )
+                finally:
+                    data1 = temp
+    else:
+        if len(bufs) != len(types):
+            if len(bufs[0]) == len(types):
+                data1 = [0 for x in range(len(types))]
+                for i in range(len(bufs[0])):
+                    buf = bufs[0][i]
+                    type = types[i]
+                    data1[i] = wasmevent_decode(type, buf)
+        else:
+            data1 = [0 for x in range(len(bufs))]
+            for i in range(len(bufs)):
+                buf = bufs[i]
+                type = types[i]
+                data1[i]=wasmevent_decode(type, buf)
+    return data1
 
 def prepare_transaction(
         address,
