@@ -58,18 +58,18 @@ def SendTxn(txn):
 # print(len([10, 14, 31, 23, 10, 20, 20, 9, 15, 9, 0, 15, 12, 20, 6, 15, 12, 8, 5, 6, 28, 22, 7, 25, 11, 30, 2, 27, 10, 23, 19, 11]))
 contract_instance = platon.contract(address=contractAddress, abi=abi)
 
-txn = contract_instance.functions.ifControl(20).buildTransaction(
-    {
-        'chainId':200,
-        'nonce':platon.getTransactionCount(from_address),
-        'gas':1000000,
-        'value':0,
-        'gasPrice':1000000000,
-    }
-)
-print("aaaa")
-print(SendTxn(txn))
-print("bbbb")
+# txn = contract_instance.functions.ifControl(20).buildTransaction(
+#     {
+#         'chainId':200,
+#         'nonce':platon.getTransactionCount(from_address),
+#         'gas':1000000,
+#         'value':0,
+#         'gasPrice':1000000000,
+#     }
+# )
+# print("aaaa")
+# print(SendTxn(txn))
+# print("bbbb")
 
 result = contract_instance.functions.getIfControlResult().call()
 print(result)
