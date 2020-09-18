@@ -10,11 +10,9 @@
 
 ## 说明
 
-client-sdk-python 是一个服务于Platon底层链的python sdk。通过 web3.js 提供的web3对象与底层链进行交互。底层实现上，它通过 RPC 调用与本地节点通信。web3.js可以与任何暴露了RPC接口的PlatON节点连接。
+client-sdk-python 是一个服务于Platon底层链的python sdk。通过web3对象与底层链进行交互。底层实现上，它通过 RPC 调用与本地节点通信。client-sdk-python可以与任何暴露了RPC接口的PlatON节点连接。
 
 主要功能用于 获取区块数据、发送交易、使用智能合约进行交互、以及其他的一些应用。
-
-可以看着是对[web3.js](https://github.com/ethereum/web3.js)的python实现。
 
 [client-sdk-python下载链接](https://github.com/PlatONnetwork/client-sdk-python) 
 
@@ -22,25 +20,25 @@ client-sdk-python 是一个服务于Platon底层链的python sdk。通过 web3.j
 
 ### 一、安装
 
-- #### **1** Python环境要求
+#### **1** Python环境要求
 
-  支持Python 3.6+版本
+​     支持Python 3.6+版本
 
-- #### **2** 可使用pip直接安装：
+#### **2** 可使用pip直接安装：
 
-  $ pip install client-sdk-python
+​    $ pip install client-sdk-python
 
-  或下载代码，在python编辑器中使用。git bash 拉取源代码，如下操作
+​    或下载代码，在python编辑器中使用。git bash 拉取源代码，如下操作
 
-  $ git clone https://github.com/PlatONnetwork/client-sdk-python.git
+​    $ git clone https://github.com/PlatONnetwork/client-sdk-python.git
 
-- #### **3** 安装python sdk 依赖项
+#### **3** 安装python sdk 依赖项
 
-  建议使用pycharm编辑器，按照编辑器提示，安装setup中的第三方依赖包。若因网络问题安装失败，可使用清华镜像安装   
+​    建议使用pycharm编辑器，按照编辑器提示，安装setup中的第三方依赖包。若因网络问题安装失败，可使用清华镜像安装   
 
-  ```python
-  pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 第三方包名称
-  ```
+```python
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 第三方包名称
+```
 
 ​       或者根据requirements.txt安装依赖项
 
@@ -88,11 +86,141 @@ client-sdk-python 是一个服务于Platon底层链的python sdk。通过 web3.j
   print(w3.isConnected())
   ```
 
-  
 
-#### **3** 链上查询取值
 
-与Platon 链上节点连接成功以后，可通过platon里的函数查询链上节点的相关信息
+
+#### 3 基本api
+
+- ##### 基础类型编和解码
+
+  - Web3.toBytes()
+
+    将输入的参数转换为Bytes
+
+    调用：
+
+    ```python
+    >>> Web3.toBytes(0)
+    b'\x00'
+    >>> Web3.toBytes(0x000F)
+    b'\x0f'
+    ```
+
+  - Web3.toHex()
+
+    将输入的参数转换为16进制
+
+    调用：
+
+    ```
+    >>> Web3.toHex(b'\x00\x0F')
+    '0x000f'
+    >>> Web3.toHex(False)
+    '0x0'
+    ```
+
+  - Web3.toInt()
+
+    将输入的参数转换为整型
+
+    调用：
+
+    ```python
+    >>> Web3.toInt(0x000F)
+    15
+    >>> Web3.toInt(b'\x00\x0F')
+    15
+    ```
+
+  - Web3.toJSON()
+
+    将输入的参数转换为json格式
+
+    调用
+
+    ```python
+    >>> Web3.toJSON(3)
+    '3'
+    >>> Web3.toJSON({'one': 1})
+    '{"one": 1}'
+    ```
+
+  - Web3.toText()
+
+    将输入的参数转换为字符串格式
+
+    调用
+
+    ```python
+    >>> Web3.toText(b'cowm\xc3\xb6')
+    'cowmö'
+    >>> Web3.toText(hexstr='0x636f776dc3b6')
+    'cowmö'
+    ```
+
+- ##### 地址检测
+
+  - Web3.isAddress()
+
+    检测输入的参数是否为被认可的地址形式
+
+    调用
+
+    ```python
+    >>> Web3.isAddress('0xd3CdA913deB6f67967B99D67aCDFa1712C293601')
+    True
+    ```
+
+  - Web3.isChecksumAddress()
+
+    检查指定地址的校验和，对于非检验和地址将返回false
+
+    ```python
+    >>> Web3.isChecksumAddress('0xd3CdA913deB6f67967B99D67aCDFa1712C293601')
+    True
+    >>> Web3.isChecksumAddress('0xd3cda913deb6f67967b99d67acdfa1712c293601')
+    False
+    ```
+
+- ##### 加密哈希
+
+  - Web3.sha3()
+
+    将输入参数编译为 Keccak-256 
+
+    调用：
+
+    ```python
+    >>> Web3.sha3(0x678901)
+    HexBytes('0x77cf3b4c68ccdb65991397e7b93111e0f7d863df3b26ebb053d0857e26486e6a')
+    >>> Web3.sha3(text='txt')
+    HexBytes('0xd7278090a36507640ea6b7a0034b69b0d240766fa3f98e3722be93c613b29d2e')
+    ```
+
+  - Web3.soliditySha3()
+
+    将输入的abi_type和value编译为 Keccak-256 
+
+    参数：
+
+    - value：真实值
+    - abi_type：和value相等的solidity 格式的字符串列表
+
+    调用
+
+    ```python
+    >>> Web3.solidityKeccak(['uint8[]'], [[97, 98, 99]])
+    HexBytes("0x233002c671295529bcc50b76a2ef2b0de2dac2d93945fca745255de1a9e4017e")
+    
+    >>> Web3.solidityKeccak(['address'], ["0x49EdDD3769c0712032808D86597B84ac5c2F5614"])
+    HexBytes("0x2ff37b5607484cd4eecf6d13292e22bd6e5401eaffcc07e279583bc742c68882")
+    ```
+
+    
+
+#### **4** 链上查询api
+
+与Platon 链上节点连接成功以后，可通过platon里的api查询链上节点的相关信息
 
 - ##### (1) platon.blockNumber 
 
@@ -157,7 +285,7 @@ client-sdk-python 是一个服务于Platon底层链的python sdk。通过 web3.j
 
 - ##### (6) platon.consensusStatus
 
-  方法返回当前节点所在区块树的共识状态信息。
+  返回当前节点所在区块树的共识状态信息。
 
   返回值
 
@@ -218,7 +346,7 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   调用：
 
   ```
-  platon.getStorageAt(address, position [, defaultBlock] [, callback])
+  platon.getStorageAt(address, position [, defaultBlock] )
   ```
 
   参数：
@@ -226,34 +354,32 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   - `address`：String - 要读取的地址
   - `position`：Number - 存储中的索引编号
   - `defaultBlock`：Number|String - 可选，使用该参数覆盖platon.defaultBlock属性值
-  - `callback`：Function - 可选的回调函数, 其第一个参数为错误对象，第二个参数为结果。
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为存储中指定位置的内容。
-
+  
+返回值：
+  
+一个AttributeDict对象，其解析值为存储中指定位置的内容。
+  
 - ##### (9) platon.getCode
 
-  返回指定以太坊地址处的代码。
+  返回指定地址处的代码。
 
   调用：
 
   ```
-  platon.getCode(address [, defaultBlock] [, callback])
+  platon.getCode(address [, defaultBlock] )
   ```
 
   参数：
 
   - `address`：String - 要读取代码的地址
   - `defaultBlock`：Number|String - 可选，使用该参数覆盖platon.defaultBlock属性值
-  - `callback`：Function - 可选的回调函数，其第一个参数为错误对象，第二个参数为结果
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为指定地址处的代码字符串。
-
+  
+返回值：
+  
+一个AttributeDict对象，其解析值为指定地址处的代码字符串。
   
 
+  
 - ##### (10) platon.getBlock()
 
   返回指定块编号或块哈希对应的块。
@@ -261,57 +387,56 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   调用：
 
   ```
-  platon.getBlock(blockHashOrBlockNumber [, returnTransactionObjects] [, callback])
+  platon.getBlock(blockHashOrBlockNumber [, returnTransactionObjects] )
   ```
 
   参数：
 
   - `blockHashOrBlockNumber`：String|Number - 块编号或块哈希值，或者使用以下字符串："genesis"、"latest" 或 "pending" 。
   - `returnTransactionObjects`：Boolean -  可选，默认值为false。当设置为true时,返回块中将包括所有交易详情，否则仅返回交易哈希。
-  - `callback`：Function - 可选的回调函数，其第一个参数为错误对象，第二个参数为结果。
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为满足搜索条件的块对象，具有以下字段：
-
-  - number - Number: 块编号，处于pending状态的块为null
-
-  - hash 32 Bytes - String: 块哈希，处于pending状态的块为null
-
-  - parentHash 32 Bytes - String: 父块哈希
-
-  - nonce 8 Bytes - String: 生成的proof-of-work的哈希，处于pending状态的块为null
-
-  - sha3Uncles 32 Bytes - String: 块中叔伯数据的SHA3值
-
-  - logsBloom 256 Bytes - String: 块中日志的bloom filter，处于pending状态的块为null
-
-  - transactionsRoot 32 Bytes - String: 块中的交易树根节点
-
-  - stateRoot 32 Bytes - String: 块中的最终状态树根节点
-
-  - miner - String: 接收奖励的矿工地址
-
-  - difficulty - String: 该块的难度值
-
-  - totalDifficulty - String: 截至该块的全链总难度值
-
-  - extraData - String: 块 “extra data” 字段
-
-  - size - Number: 字节为单位的块大小
-
-  - gasLimit - Number: 该块允许的最大gas值
-
-  - gasUsed - Number: 该块中所有交易使用的gas总量
-
-  - timestamp - Number: 出块的unix时间戳
-
-  - transactions - Array: 交易对象数组，或者32字节长的交易哈希值，取决于returnTransactionObjects的设置
-
-  - uncles - Array: 叔伯块哈希值数组
-
-    
-
+  
+返回值：
+  
+一个AttributeDict对象，其解析值为满足搜索条件的块对象，具有以下字段：
+  
+- number - Number: 块编号，处于pending状态的块为null
+  
+- hash 32 Bytes - String: 块哈希，处于pending状态的块为null
+  
+- parentHash 32 Bytes - String: 父块哈希
+  
+- nonce 8 Bytes - String: 生成的proof-of-work的哈希，处于pending状态的块为null
+  
+- sha3Uncles 32 Bytes - String: 块中叔伯数据的SHA3值
+  
+- logsBloom 256 Bytes - String: 块中日志的bloom filter，处于pending状态的块为null
+  
+- transactionsRoot 32 Bytes - String: 块中的交易树根节点
+  
+- stateRoot 32 Bytes - String: 块中的最终状态树根节点
+  
+- miner - String: 接收奖励的矿工地址
+  
+- difficulty - String: 该块的难度值
+  
+- totalDifficulty - String: 截至该块的全链总难度值
+  
+- extraData - String: 块 “extra data” 字段
+  
+- size - Number: 字节为单位的块大小
+  
+- gasLimit - Number: 该块允许的最大gas值
+  
+- gasUsed - Number: 该块中所有交易使用的gas总量
+  
+- timestamp - Number: 出块的unix时间戳
+  
+- transactions - Array: 交易对象数组，或者32字节长的交易哈希值，取决于returnTransactionObjects的设置
+  
+- uncles - Array: 叔伯块哈希值数组
+  
+  
+  
 - ##### (11) platon.getBlockTransactionCount()
 
   方法返回指定块中的交易数量。
@@ -319,25 +444,108 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   调用：
 
   ```
-  platon.getBlockTransactionCount(blockHashOrBlockNumber [, callback])
+  platon.getBlockTransactionCount(blockHashOrBlockNumber)
   ```
 
   参数：
 
   - `blockHashOrBlockNumber`：String|Number - 块编号或块的哈希值，或者使用以下字符串："genesis"、"latest" 或 "pending" 来指定块
-  - `callback`：Function - 可选的回调函数，其第一个参数为错误对象，第二个参数为执行结果。
+  
+返回值：
+  
+一个AttributeDict对象，其解析值为指定块中的交易数量，Number类型。
+  
+  
+  
+- ##### (12) platon.getTransaction()
+
+  返回具有指定哈希值的交易对象。
+
+  调用：
+
+  ```
+  platon.getTransaction(transactionHash)
+  ```
+
+  参数：
+
+  - `transactionHash`：String - 交易的哈希值
+
+    
 
   返回值：
 
-  一个AttributeDict对象，其解析值为指定块中的交易数量，Number类型。
+  一个AttributeDict对象，其解析值为具有给定哈希值的交易对象。该对象具体内容描述参见platon.waitForTransactionReceipt。
+
+  
+
+- ##### (13) platon.getRawTransaction()
+
+  返回具有指定哈希值的交易对象HexBytes 值。
+
+  调用：
+
+  ```
+  platon.getRawTransaction(transactionHash )
+  ```
+
+  参数：
+
+  - `transactionHash`：String - 交易的哈希值
+
+  返回值：
+
+  一个HexBytes 值的对象。
+
+  
+
+- ##### (14) platon.getTransactionFromBlock()
+
+  返回指定块中特定索引号的交易对象。
+
+  调用：
+
+  ```
+  getTransactionFromBlock(hashStringOrNumber, indexNumber )
+  ```
+
+  参数：
+
+  - `hashStringOrNumber`：String - 块编号或块的哈希值，或者使用以下字符串："genesis、"latest" 或 "pending" 来指定块
+  - `indexNumber`：Number - 交易索引位置
+
+  返回值：
+
+  一个AttributeDict对象，其解析值为交易对象，该对象具体内容描述参见platon.getTransaction()
+
+  
+
+- ##### (15) platon.getTransactionByBlock()
+
+  返回指定块中特定索引号的交易对象。
+
+  调用：
+
+  ```
+  platon.getTransactionByBlock(hashStringOrNumber, indexNumber )
+  ```
+
+  参数：
+
+  - `hashStringOrNumber`：Number |String - 块编号或块的哈希值，或者使用以下字符串："genesis、"latest" 或 "pending" 来指定块
+  - `indexNumber`：Number - 交易索引位置
+
+  返回值：
+
+  一个AttributeDict对象，其解析值为交易对象，该对象具体内容描述参见platon.getTransaction()
 
 
 
-#### **4** 链上发送交易：
+#### **5** 链上发送交易api：
 
 - ##### (1) sendTransaction(transactionObject)
 
-  向platon 链上提交一个交易
+  向platon 链上提交一个交易（已被节点签名，尚未提交的交易）
 
   参数：
 
@@ -405,91 +613,7 @@ AttributeDict({'blockHash': HexBytes('0x7bfe17689560c773b1cade579f1bd2cf85aeea9f
 
 
 
-- ##### (3) platon.getTransaction()
-
-  返回具有指定哈希值的交易对象。
-
-  调用：
-
-  ```
-  platon.getTransaction(transactionHash)
-  ```
-
-  参数：
-
-  - `transactionHash`：String - 交易的哈希值
-
-    
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为具有给定哈希值的交易对象。该对象具体内容描述参见platon.waitForTransactionReceipt。
-
-  
-
-- ##### (4) platon.getRawTransaction()
-
-  返回具有指定哈希值的交易对象HexBytes 值。
-
-  调用：
-
-  ```
-  platon.getRawTransaction(transactionHash )
-  ```
-
-  参数：
-
-  - `transactionHash`：String - 交易的哈希值
-
-  返回值：
-
-  一个HexBytes 值的对象。
-
-  
-
-- ##### (5) platon.getTransactionFromBlock()
-
-  返回指定块中特定索引号的交易对象。
-
-  调用：
-
-  ```
-  getTransactionFromBlock(hashStringOrNumber, indexNumber )
-  ```
-
-  参数：
-
-  - `hashStringOrNumber`：String - 块编号或块的哈希值，或者使用以下字符串："genesis、"latest" 或 "pending" 来指定块
-  - `indexNumber`：Number - 交易索引位置
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为交易对象，该对象具体内容描述参见platon.getTransaction()
-
-  
-
-- ##### (6) platon.getTransactionByBlock()
-
-  返回指定块中特定索引号的交易对象。
-
-  调用：
-
-  ```
-  platon.getTransactionByBlock(hashStringOrNumber, indexNumber )
-  ```
-
-  参数：
-
-  - `hashStringOrNumber`：Number |String - 块编号或块的哈希值，或者使用以下字符串："genesis、"latest" 或 "pending" 来指定块
-  - `indexNumber`：Number - 交易索引位置
-
-  返回值：
-
-  一个AttributeDict对象，其解析值为交易对象，该对象具体内容描述参见platon.getTransaction()
-
-  
-
-- ##### (7) platon.getTransactionReceipt()
+- ##### (3) platon.getTransactionReceipt()
 
   返回指定交易的收据对象。
   如果交易处于pending状态，则返回null。
@@ -510,7 +634,7 @@ AttributeDict({'blockHash': HexBytes('0x7bfe17689560c773b1cade579f1bd2cf85aeea9f
 
   
 
-- ##### (8) platon.getTransactionCount()
+- ##### (4) platon.getTransactionCount()
 
   返回指定地址发出的交易数量。
 
@@ -531,7 +655,251 @@ AttributeDict({'blockHash': HexBytes('0x7bfe17689560c773b1cade579f1bd2cf85aeea9f
 
   
 
-- ##### (9) platon.getLogs()
+- ##### （6）platon.sendRawTransaction()
+
+  向platon 链上提交一个签名的序列化的交易
+
+  ```
+platon.sendRawTransaction(signTransaction，private-key)
+  ```
+  
+  参数：
+  
+  - `signTransaction`：Object - 要发送的签名交易对象，包含以下字段：
+    - from - String|Number: 交易发送方账户地址，不设置该字段的话，则使用platon.defaultAccount属性值。可设置为一个地址或本地钱包platon.accounts.wallet中的索引序号
+    - to - String: 可选，消息的目标地址，对于合约创建交易该字段为null
+    - value - Number|String|BN|BigNumber: (optional) The value transferred for the transaction in VON, also the endowment if it’s a contract-creation transaction.
+  - gas - Number: 可选，默认值：待定，用于交易的gas总量，未用完的gas会退还
+    - gasPrice - Number|String|BN|BigNumber: 可选，该交易的gas价格，单位为VON，默认值为platon.gasPrice属性值
+  - data - String: 可选，可以是包含合约方法数据的ABI字符串，或者是合约创建交易中的初始化代码
+    - nonce - Number: 可选，使用该字段覆盖使用相同nonce值的挂起交易
+
+  - private-key : 用于签名的私钥
+  
+  返回值：
+  
+  返回值是包含32字节长的交易哈希值的HexBytes 。
+  
+  
+  
+- ##### (7) platon.replaceTransaction()
+
+  发送新的交易new_transaction，替代原来的交易transaction_hash（pending状态）
+
+  调用：
+
+  ```python
+  platon.replaceTransaction`(transaction_hash,new_transaction)
+  ```
+
+  参数：
+
+  - transaction_hash - string：处于pending状态的交易的hash值。
+  - new_transaction - dict：交易对象，包含字段与sendTransaction中的transactionObject一致。
+
+  返回值：
+
+  ​     new_transaction 的hash值
+
+  
+
+- ##### (8)  platon.generateGasPrice()
+
+  使用选中的gas price 策略去计算一个gas price
+
+  调用：
+
+  ```
+  platon.generateGasPrice(gas_price_strategy)
+  ```
+
+​         返回值： 
+
+​                 以wei为单位的gas price数值
+
+
+
+- ##### (9) platon.setGasPriceStrategy()
+
+  设定选定的gas price 策略
+
+  调用：
+
+  ```
+  platon.setGasPriceStrategy(gas_price_strategy)
+  ```
+
+  参数：
+
+  ​        gas_price_strategy ：(web3, transaction_params) ,必须是一种签名的方法。
+
+  返回：
+
+  ​        以wei为单位的gas price数值
+
+
+
+- ##### (10) platon.modifyTransaction()
+
+  发送新的参数，去修正处于pending状态的交易
+
+  调用：
+
+  ```python
+  platon.modifyTransaction(transaction_hash, **transaction_params)
+  ```
+
+  参数：
+
+  - transaction_hash -string : 处于pending状态的交易的hash值。
+  - transaction_params : 与transaction_hash的参数对应的关键词语句。如 value=1000,将原交易中的value值改为1000
+
+  返回：
+
+  ​     修正后的交易的hash值
+
+  
+
+- ##### (11)  platon.sign()
+
+  方法使用指定的账户对数据进行签名，该账户必须先解锁。
+
+  调用：
+
+  ```
+  platon.sign(dataToSign, address )
+  ```
+
+  参数：
+
+  - `dataToSign`：String - 待签名的数据。对于字符串将首先使用utils.utf8ToHex()方法将其转换为16进制
+  - `address`：String|Number - 用来签名的账户地址。或者本地钱包platon.accounts.wallet中的地址或其序号
+
+  返回值：
+
+  ​     签名结果字符串。
+
+  
+
+- ##### (12)  platon.estimateGas()
+
+  通过执行一个消息调用来估算交易的gas用量。
+
+  调用：
+
+  ```
+  platon.estimateGas(callObject)
+  ```
+
+  参数：
+
+  - `callObject`：Object - 交易对象，其from属性可选
+
+  返回值：
+
+  模拟调用的gas用量。
+
+
+
+#### 6 其他 api
+
+- ##### (1) platon.filter
+
+  生成一个新的过滤器，根据参数的不同，生成不同类型的过滤器
+
+  调用：
+
+  ```
+  platon.filter(params)
+  ```
+
+  参数：
+
+  - params
+
+    - 'latest'，在节点中创建一个过滤器，以便当新块生成时进行通知。要检查状态是否变化
+    - 'pending' ，在节点中创建一个过滤器，以便当产生挂起交易时进行通知。 要检查状态是否发生变化
+    - 字典类数据，创建一个过滤器，以便在客户端接收到匹配的whisper消息时进行通知
+
+    
+
+  ```python
+  >>> platon.filter('latest')
+  <client_sdk_python.utils.filters.BlockFilter object at 0x0000020640DA1048>
+  >>> platon.filter('pending')
+  <client_sdk_python.utils.filters.TransactionFilter object at 0x0000020640DA7C08>
+  >>> platon.filter({'fromBlock': 1000000, 'toBlock': 1000100, 'address': 'lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja'})
+  <client_sdk_python.utils.filters.LogFilter object at 0x0000020640B09D88>
+  ```
+
+
+
+- ##### (2) platon.getFilterChanges()
+
+  轮询指定的过滤器，并返回自上次轮询之后新生成的日志数组
+
+  调用：
+
+  ```
+  platon.getFilterChanges(filter_id)
+  ```
+
+  参数：
+
+  - filter_id : 指定的过滤器的filter_id 
+
+  
+
+  示例：
+
+  ```python
+  >>> filt=platon.filter('latest')
+  >>>platon.getFilterChanges(filt.filter_id)
+  [HexBytes('0x59c4cb22c15ed83279e288ccc94980162e7cc7c1ff9c6b4fb6d9584308727b46'), HexBytes('0xb205babee34ba218816d1a32e995a4c8f4ccf95d3315c6a259955f1598ed5e4d'), HexBytes('0xb491ef8c0cc55cc1b70e9af766ada828a5a96bbb41f6aa26b87c98dbf09ac762'), HexBytes('0x455ae7bee30a02210fc17ade1cec3d783ce9614f81149ea650efc27a39e495a5'), HexBytes('0xd8c8f327e6613dc9a638c4ad2e2e37ce511ea80d374fea91d961d3fb55ed0e3a'), HexBytes('0x92e85ab7340ae8f6c0da6d5fa5cab5a3ae61f7d69158b612b7caf470de4e0958'), HexBytes('0x612d8f92bdec45052576b62a03a5c6d5b219ad5eecf088163cc629efc506a4dc'), HexBytes('0xd433b552bf421ee416c31d7c9162d8f08a7580d906538a3e0156f504161c6889'), HexBytes('0x5f9d64faf699f6e688989bcb6133c001cd5d24315c22375c5f1935909ee5b31e'), HexBytes('0x70b10afd243a5f6c0992bdb80bf75974cf3b8b78c254c054e6824621d2a55a33'), HexBytes('0x5f631fc85544b8e04504a71e99a67f8020596221ecfbefefde98fb44f4c3cf65'), HexBytes('0x6012ab1a562e818e4ca3e6e1b719e21cd900ac1daaf26c87f983c75e2cddd9ab'), HexBytes('0x2cc3d3e257dd9af953968a75a653cd9cfb0f6157aca1ba3089ebfe65d32c3543'), HexBytes('0x3696eea818d042c0cae606093262268ec36aa0f23904101cdb25d7c1595bbeae'), HexBytes('0x4825078dc7cfb3f065acd1d300a3c111b51445488862bebd44801af6272d36cd'), HexBytes('0x3df27825fa9e89b91f83df4769ae6477bf060c5ff078e8f1b05edee136368f4f'), HexBytes('0x9e7bdf9ef1ce7e66b3615fa882fa420dfefe3c93efb433ff824d6c7fa73e08ca'), HexBytes('0x0d8f9a5a5cd4e95a57f6183c94826861a259e631d0127f4b0f268e104bc3c92e'), HexBytes('0xa310dbde88c8721fad793c7f2cb594b2bec108482990d2c56e3dc427f09d21af'), HexBytes('0x2e944efb7d3cf8bf9c354a02b34cbc262a044b5e2fd484daad8f7b81663e4cb0'), HexBytes('0x19c72519b3fcf6d74bcef061f0f6b12eabbf9cb13d482db38b94e1fb86dd4b25'), HexBytes('0x435956b99ce8d0777d5d7e19e87d3277eccd757a56da6d100fb7b536ff417ded'), HexBytes('0xe291f184a80c1c65a44198ed8c2d35d5ef98f65dada59a0e1fc28aa21bbe69ea'), HexBytes('0x21b088023a06a9c85b16fcdd6bab07697905241a139d8a3efc0e0e7a9d7a00a0'), HexBytes('0x6bf9d36ec461b66191ec8f026bec905a0f46a83707960987bb559d13a5186082'), HexBytes('0x85aaf311fe7c2c80340f334b7f52bb0c4282341559e056e852e92135bc04e917'), HexBytes('0x033e7b67bd5f509de11e38cc142a70def69048f5d214ac5d15e83102a93a011d'), HexBytes('0x02d55d41e12ea9edd986da149e42f302719ad769eb4496872271c063a6ab3bcd'), HexBytes('0x3914a9fcf5be7aca72a50d59a1b7cdb18f96540dafba0de84f8297228cb9159a'), HexBytes('0xc45b0552883b21012431f9e76ccd5ce9e3c8550ecbbb223a1d69ebc6a354b34d'), HexBytes('0xbfa4324da6aafa66907586c535a2207a082063670fff102f8df19ab1a4e665d0')]
+  
+  ```
+
+
+
+- ##### (3) platon.getFilterLogs()
+
+  轮询指定的过滤器，并返回对应的日志数组
+
+  调用：
+
+  ```
+  platon.getFilterLogs(filter_id)
+  ```
+
+  参数：
+
+  - filter_id : 指定的过滤器的filter_id 
+
+
+
+- ##### (4) platon.uninstallFilter()
+
+  卸载指定的过滤器，返回成功或失败的bool值
+
+  调用：
+
+  ```
+  platon.getFilterLogs(filter_id)
+  ```
+
+  - 参数：
+    - filter_id : 指定的过滤器的filter_id 
+
+  示例：
+
+  ```python
+  >>> platon.uninstallFilter(filt.filter_id)
+  True
+  ```
+
+  
+
+- ##### (5) platon.getLogs()
 
   根据指定的选项返回历史日志。
 
@@ -556,43 +924,138 @@ AttributeDict({'blockHash': HexBytes('0x7bfe17689560c773b1cade579f1bd2cf85aeea9f
   数组中的事件对象结构如下：
 
   - address - String: 事件发生源地址
-
   - data - String: 包含未索引的日志参数
-
   - topics - Array: 包含最多4个32字节主题的数组，主题1-3包含日志的索引参数
-
   - logIndex - Number: 事件在块中的索引位置
-
   - transactionIndex - Number: 包含事件的交易的索引位置
-
   - transactionHash 32 Bytes - String: 包含事件的交易的哈希值
-
   - blockHash 32 Bytes - String: 包含事件的块的哈希值，如果处于pending状态，则为null
-
   - blockNumber - Number: 包含事件的块编号，处于pending状态时该字段为null
 
-    
 
-- ##### （10）sendRawTransaction(signTransaction，private-key)
 
-  向platon 链上提交一个签名和序列化的交易
+- ##### (6) functions()
+
+  调用合约函数的入口
+
+  调用：
+
+  ```python
+  myContract.functions.myMethod([param1[, param2[, ...]]]).transact(options)
+  ```
 
   参数：
 
-  - `signTransaction`：Object - 要发送的签名交易对象，包含以下字段：
-    - from - String|Number: 交易发送方账户地址，不设置该字段的话，则使用platon.defaultAccount属性值。可设置为一个地址或本地钱包platon.accounts.wallet中的索引序号
-    - to - String: 可选，消息的目标地址，对于合约创建交易该字段为null
-    - value - Number|String|BN|BigNumber: (optional) The value transferred for the transaction in VON, also the endowment if it’s a contract-creation transaction.
-    - gas - Number: 可选，默认值：待定，用于交易的gas总量，未用完的gas会退还
-    - gasPrice - Number|String|BN|BigNumber: 可选，该交易的gas价格，单位为VON，默认值为platon.gasPrice属性值
-    - data - String: 可选，可以是包含合约方法数据的ABI字符串，或者是合约创建交易中的初始化代码
-    - nonce - Number: 可选，使用该字段覆盖使用相同nonce值的挂起交易
+  - `options` - Object : 选项，包含如下字段：
 
-  - private-key : 用于签名的私钥
+    - `from` - String (optional): The address the call “transaction” should be made from.
+
+    - gasPrice - String (optional): The gas price in VON to use for this call “transaction”.
+
+    - gas - Number (optional): The maximum gas provided for this call “transaction” (gas limit).
+
+      
+
+- ##### (7)  call()
+
+  调用合约的方法，并在合约中直接执行方法，不需要发送任何交易。因此不会改变合约的状态。
+
+  调用：
+
+  ```
+  myContract.functions.myMethod([param1[, param2[, ...]]]).call()
+  ```
+
+  参数：
+
+  - [param1[, param2[, ...]]] : 根据myMethod中定义的数据类型输入的参数
 
   返回值：
 
-  返回值是包含32字节长的交易哈希值的HexBytes 。
+  ​      解析值为合约方法的返回值，Mixed类型。如果合约方法返回多个值，则解析值为一个对象。
+
+  ```python
+  tx_hash1 = payable.functions.setInt64(-9223372036854775808).transact(
+      {
+          'from':from_address,
+          'gas':1500000,
+      }
+  )
+  print(platon.waitForTransactionReceipt(tx_hash1))
+  print('get : {}'.format(
+      payable.functions.getInt64().call()
+  ))
+  
+  #输出
+  get : -9223372036854775808
+  ```
+
+  
+
+- ##### (8) events
+
+  订阅指定的合约事件。
+
+  调用：
+
+  ```
+  myContract.events.MyEvent([options])
+  ```
+
+  参数：
+
+  - options - Object: 可选，用于部署的选项，包含以下字段：
+    - filter - Object : 可选，按索引参数过滤事件。例如 {filter: {myNumber: [12,13]}} 表示 “myNumber” 为12或13的所有事件
+    - fromBlock - Number: 可选，仅监听该选项指定编号的块中发生的事件
+    - topics - Array : 可选，用来手动为事件过滤器设定主题。如果设置过filter属性和事件签名，那么(topic[0])将不会自动设置
+
+  返回值：
+
+  EventEmitter: 事件发生器，声明有以下事件:
+
+  - "data" 返回 Object: 接收到新的事件时触发，参数为事件对象
+  - "changed" 返回 Object: 当事件从区块链上移除时触发，该事件对象将被添加额外的属性"removed: true"
+  - "error" 返回 Object: 当发生错误时触发
+
+  返回的事件对象结构如下：
+
+  - event - String: 事件名称
+  - signature - String|Null: 事件签名，如果是匿名事件，则为null
+  - address - String: 事件源地址
+  - returnValues - Object: 事件返回值，例如 {myVar: 1, myVar2: '0x234...'}.
+  - logIndex - Number: 事件在块中的索引位置
+  - transactionIndex - Number: 事件在交易中的索引位置
+  - transactionHash 32 Bytes - String: 事件所在交易的哈希值
+  - blockHash 32 Bytes - String: 事件所在块的哈希值，pending的块该值为 null
+  - blockNumber - Number: 事件所在块的编号，pending的块该值为null
+  - raw.data - String: 该字段包含未索引的日志参数
+  - raw.topics - Array: 最多可保存4个32字节长的主题字符串数组。主题1-3 包含事件的索引参数
+
+  示例代码：
+
+  ```python
+  greeter = platon.contract(address=tx_receipt.contractAddress, abi=abi)
+  
+  tx_hash = greeter.functions.setVar(100).transact(
+      {
+          'from':from_address,
+          'gas':1500000,
+      }
+  )
+  
+  tx_receipt = platon.waitForTransactionReceipt(tx_hash)
+  print(tx_receipt)
+  
+  topic_param = greeter.events.MyEvent().processReceipt(tx_receipt)
+  print(topic_param)
+  
+  #输出：
+  AttributeDict({'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'blockNumber': 2014683, 'contractAddress': None, 'cumulativeGasUsed': 43148, 'from': 'lax1uqug0zq7rcxddndleq4ux2ft3tv6dqljphydrl', 'gasUsed': 43148, 'logs': [AttributeDict({'address': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'topics': [HexBytes('0x6c2b4666ba8da5a95717621d879a77de725f3d816709b9cbe9f059b8f875e284'), HexBytes('0x0000000000000000000000000000000000000000000000000000000000000064')], 'data': '0x', 'blockNumber': 2014683, 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'transactionIndex': 0, 'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'logIndex': 0, 'removed': False})], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000020080000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000004000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000008000000000000000'), 'status': 1, 'to': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'transactionIndex': 0})
+  (AttributeDict({'args': AttributeDict({'_var': 100}), 'event': 'MyEvent', 'logIndex': 0, 'transactionIndex': 0, 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'address': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'blockNumber': 2014683}),)
+  
+  ```
+
+  
 
  
 
@@ -650,11 +1113,15 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
   bytecode = '608060405234801561001057600080fd5b50610c28806100206000396000f3fe608060405234801561001057600080fd5b50600436106101375760003560e01c806357609889116100b85780638e418fdb1161007c5780638e418fdb146104b2578063a64be0d5146104d0578063b4feac7c146104ee578063b87df0141461050c578063c0e641fc1461052a578063da193c1f1461054857610137565b80635760988914610352578063687615d71461037057806371ee52021461038e57806378aa6155146104115780637e6b0f571461042f57610137565b806344e24ce0116100ff57806344e24ce01461029c57806347808fc3146102ca5780634b8016b9146102f8578063508242dc1461031657806356230cca1461033457610137565b80631f9c9f3c1461013c578063275ec9761461015a57806335432d3114610178578063383d49e5146101fb5780633f9dbcf914610219575b600080fd5b610144610566565b6040518082815260200191505060405180910390f35b61016261056c565b6040518082815260200191505060405180910390f35b6101806105ca565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101c05780820151818401526020810190506101a5565b50505050905090810190601f1680156101ed5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b610203610668565b6040518082815260200191505060405180910390f35b61022161066e565b6040518080602001828103825283818151815260200191508051906020019080838360005b83811015610261578082015181840152602081019050610246565b50505050905090810190601f16801561028e5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6102c8600480360360208110156102b257600080fd5b810190808035906020019092919050505061070c565b005b6102f6600480360360208110156102e057600080fd5b8101908080359060200190929190505050610811565b005b6103006108a4565b6040518082815260200191505060405180910390f35b61031e6108aa565b6040518082815260200191505060405180910390f35b61033c6108b0565b6040518082815260200191505060405180910390f35b61035a610907565b6040518082815260200191505060405180910390f35b610378610911565b6040518082815260200191505060405180910390f35b610396610917565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156103d65780820151818401526020810190506103bb565b50505050905090810190601f1680156104035780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6104196109b9565b6040518082815260200191505060405180910390f35b6104376109c3565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561047757808201518184015260208101905061045c565b50505050905090810190601f1680156104a45780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6104ba610a65565b6040518082815260200191505060405180910390f35b6104d8610a9b565b6040518082815260200191505060405180910390f35b6104f6610af2565b6040518082815260200191505060405180910390f35b610514610b30565b6040518082815260200191505060405180910390f35b610532610b3a565b6040518082815260200191505060405180910390f35b610550610b44565b6040518082815260200191505060405180910390f35b60025481565b6000806005819055506000600190505b600a8110156105c05760006005828161059157fe5b0614156105a3576005549150506105c7565b80600560008282540192505081905550808060010191505061057c565b5060055490505b90565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156106605780601f1061063557610100808354040283529160200191610660565b820191906000526020600020905b81548152906001019060200180831161064357829003601f168201915b505050505081565b60035481565b60068054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156107045780601f106106d957610100808354040283529160200191610704565b820191906000526020600020905b8154815290600101906020018083116106e757829003601f168201915b505050505081565b6014811015610766576040518060400160405280601381526020017f796f7520617265206120796f756e67206d616e0000000000000000000000000081525060009080519060200190610760929190610b4e565b5061080e565b603c8110156107c0576040518060400160405280601481526020017f796f75206172652061206d6964646c65206d616e000000000000000000000000815250600090805190602001906107ba929190610b4e565b5061080d565b6040518060400160405280601181526020017f796f75206172652061206f6c64206d616e0000000000000000000000000000008152506000908051906020019061080b929190610b4e565b505b5b50565b60148113610854576040518060400160405280600c81526020017f6d6f7265207468616e203230000000000000000000000000000000000000000081525061088b565b6040518060400160405280600c81526020017f6c657373207468616e20323000000000000000000000000000000000000000008152505b600690805190602001906108a0929190610b4e565b5050565b60045481565b60015481565b60008060048190555060008090505b600a8110156108fe576000600282816108d457fe5b0614156108e0576108f1565b806004600082825401925050819055505b80806001019150506108bf565b50600454905090565b6000600454905090565b60055481565b606060068054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156109af5780601f10610984576101008083540402835291602001916109af565b820191906000526020600020905b81548152906001019060200180831161099257829003601f168201915b5050505050905090565b6000600554905090565b606060008054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610a5b5780601f10610a3057610100808354040283529160200191610a5b565b820191906000526020600020905b815481529060010190602001808311610a3e57829003601f168201915b5050505050905090565b60008060018190555060008090505b80600160008282540192505081905550806001019050600a8110610a745760015491505090565b6000806003819055506000600190505b600a811015610ae957600060028281610ac057fe5b061415610acc57610ae9565b806003600082825401925050819055508080600101915050610aab565b50600354905090565b60008060028190555060008090505b600a811015610b2757806002600082825401925050819055508080600101915050610b01565b50600254905090565b6000600254905090565b6000600354905090565b6000600154905090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10610b8f57805160ff1916838001178555610bbd565b82800160010185558215610bbd579182015b82811115610bbc578251825591602001919060010190610ba1565b5b509050610bca9190610bce565b5090565b610bf091905b80821115610bec576000816000905550600101610bd4565b5090565b9056fea265627a7a7231582003a28b4281af2c524edc05a0c071a68e9f08b99e0a7e70b37dcc181d06a48e6c64736f6c634300050d0032'
   
   abi = [{"constant":false,"inputs":[],"name":"doWhileControl","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"doWhileControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"forBreakControl","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"forBreakControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"forContinueControl","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"forContinueControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"forControl","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"forControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"forReturnControl","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"forReturnControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"int256","name":"age","type":"int256"}],"name":"forThreeControlControl","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"forThreeControlControlResult","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getForBreakControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getForContinueControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getForControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getForReturnControlResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getForThreeControlControlResult","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getIfControlResult","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getdoWhileResult","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"age","type":"uint256"}],"name":"ifControl","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ifControlResult","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}]
+  
+  #输出
+  True
+  lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja
   ```
 
-  ​     然后通过函数contract_deploy(bytecode, fromAddress)，以发送交易的方式在PlatON区块链的节点上部署evm合约。
+  ​     然后通过函数contract_deploy(bytecode, fromAddress)，以发送交易的方式在PlatON区块链的节点上部署evm合约,返回交易哈希transactionHash 。
 
-  ​     tx_receipt为部署的回执（部署也是一种交易，交易通过platon.waitForTransactionReceipt获得交易回执）。
+  ​     tx_receipt为platon.waitForTransactionReceipt解析transactionHash 后获得的部署回执（部署也是一种交易，交易通过platon.waitForTransactionReceipt获得交易回执）。
 
   ```python
   def contract_deploy(bytecode, fromAddress):
@@ -677,12 +1144,6 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
   contractAddress = tx_receipt.contractAddress
   print(contractAddress)
   
-  #输出
-  True
-  lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja
-  0x143efc88f581c4356156519cde51064222ec5a42fcb4d83400a8b11893a95074
-  AttributeDict({'blockHash': HexBytes('0xf73097d8e7b2cc385910a4af3a4dbc7588774bad3f2b6589052503b649af1525'), 'blockNumber': 305798, 'contractAddress': 'lax1ws7m2tqr55h8xs7e3jg5svlyu0lk9ktpx03cke', 'cumulativeGasUsed': 319449, 'from': 'lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja', 'gasUsed': 319449, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': None, 'transactionHash': HexBytes('0x143efc88f581c4356156519cde51064222ec5a42fcb4d83400a8b11893a95074'), 'transactionIndex': 0})
-  lax1ws7m2tqr55h8xs7e3jg5svlyu0lk9ktpx03cke
   ```
 
    platon.sendTransaction（参数）
@@ -698,6 +1159,28 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
   ​         "gasPrice" 燃料价格
 
   需写入合理的数值
+
+  
+
+  若部署成功，输出结果如下
+
+  ```python
+  
+  #输出
+  0x143efc88f581c4356156519cde51064222ec5a42fcb4d83400a8b11893a95074
+  AttributeDict({'blockHash': HexBytes('0xf73097d8e7b2cc385910a4af3a4dbc7588774bad3f2b6589052503b649af1525'), 'blockNumber': 305798, 'contractAddress': 'lax1ws7m2tqr55h8xs7e3jg5svlyu0lk9ktpx03cke', 'cumulativeGasUsed': 319449, 'from': 'lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja', 'gasUsed': 319449, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': None, 'transactionHash': HexBytes('0x143efc88f581c4356156519cde51064222ec5a42fcb4d83400a8b11893a95074'), 'transactionIndex': 0})
+  lax1ws7m2tqr55h8xs7e3jg5svlyu0lk9ktpx03cke
+  ```
+
+  - 其中 
+
+    第一行数据为函数contract_deploy中的platon.sendTransaction的交易结果
+
+  ​        第二行数据为platon.waitForTransactionReceipt获得的交易回执
+
+  ​        第三行为合约部署成功的合约地址
+
+  
 
 - ##### (3) 对Helloworld合约进行调用(交易发送)
 
@@ -770,7 +1253,7 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
 you are a middle man
   ```
   
-   其中 第一行数据为函数SendTxn中的laton.sendRawTransaction的交易结果
+   其中 第一行数据为函数SendTxn中的platon.sendRawTransaction的交易结果
 
 ​        第二行数据为方法ifControl向链上发送信息，交易的结果
 
@@ -788,8 +1271,10 @@ you are a middle man
 
   先通过functions调用setVar,将参数传到链上
 
-  然后通过greeter.events.MyEvent()，调用事件输出交易的详细日志
+  然后通过greeter.events.MyEvent()，调用事件输出交易的详细日志。
 
+  其中.events方法为合约专用的事件api。
+  
   ```python
   greeter = platon.contract(address=tx_receipt.contractAddress, abi=abi)
   
@@ -804,21 +1289,21 @@ you are a middle man
   print(tx_receipt)
   
   topic_param = greeter.events.MyEvent().processReceipt(tx_receipt)
-  print(topic_param)
+print(topic_param)
   ```
 
   成功运行后输出：
-
+  
   ```python
   AttributeDict({'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'blockNumber': 2014683, 'contractAddress': None, 'cumulativeGasUsed': 43148, 'from': 'lax1uqug0zq7rcxddndleq4ux2ft3tv6dqljphydrl', 'gasUsed': 43148, 'logs': [AttributeDict({'address': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'topics': [HexBytes('0x6c2b4666ba8da5a95717621d879a77de725f3d816709b9cbe9f059b8f875e284'), HexBytes('0x0000000000000000000000000000000000000000000000000000000000000064')], 'data': '0x', 'blockNumber': 2014683, 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'transactionIndex': 0, 'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'logIndex': 0, 'removed': False})], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000020080000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000004000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000008000000000000000'), 'status': 1, 'to': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'transactionIndex': 0})
   (AttributeDict({'args': AttributeDict({'_var': 100}), 'event': 'MyEvent', 'logIndex': 0, 'transactionIndex': 0, 'transactionHash': HexBytes('0xe36b5d2b679d5635ab6dd2b620caa50a476fa84bd93bf7b6c8de807f3a9da483'), 'address': 'lax1vc6phdxhdkmztpznv5ueduw6cae3swe40whlsn', 'blockHash': HexBytes('0x78fb61da83dae555c8a8a87fc3296f466afeb7f90e9a3b0ac5689e8b34435174'), 'blockNumber': 2014683}),)
-  
+
   ```
 
   第一行为调用函数setVar，交易成功后的交易回执
 
   第二行为调用事件MyEvent()，获取的交易日志信息
-
+  
   其中'args'对应的值中：
   
   '_var'为唯一的参数值
@@ -892,18 +1377,18 @@ tx_hash = Payable.constructor().transact(
   # Wait for the transaction to be mined, and get the transaction receipt
   tx_receipt = platon.waitForTransactionReceipt(tx_hash)
   print(tx_receipt)
-  ```
-  
+```
+
   其中tx_receipt为此次部署合约的交易回执
-  
+
   部署成功后输出如下
-  
+
 ```
   #输出
 AttributeDict({'blockHash': HexBytes('0x7a193be2cf86aedcf844c0478c6f64d226affb55779bad1b2056c7e70e8158d6'), 'blockNumber': 2012981, 'contractAddress': 'lax15sh4rpuqr4fvzs4cyj9uea54r5tax7kljqqszk', 'cumulativeGasUsed': 1233168, 'from': 'lax1uqug0zq7rcxddndleq4ux2ft3tv6dqljphydrl', 'gasUsed': 1233168, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 1, 'to': None, 'transactionHash': HexBytes('0x717a82ea0ef116e271fb02dbb7d456fe9dd41a2dbd07cac81d079e375b5dade1'), 'transactionIndex': 0})
   
 ```
-  
+
 - ##### (3) 对Helloworld合约进行交易发送(wasm合约)
 
   ​    在之前合约部署成功的基础上，对合约中的方法进行调用。
