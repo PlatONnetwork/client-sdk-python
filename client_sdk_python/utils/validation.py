@@ -1,6 +1,6 @@
 import itertools
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     function_abi_to_4byte_selector,
     is_0x_prefixed,
     is_binary_address,
@@ -13,7 +13,7 @@ from eth_utils import (
     is_list_like,
     is_string,
 )
-from eth_utils.hexadecimal import (
+from client_sdk_python.packages.eth_utils.hexadecimal import (
     encode_hex,
 )
 

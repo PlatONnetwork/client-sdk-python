@@ -6,7 +6,7 @@ from collections import (
     Sequence,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_integer,
 )
 

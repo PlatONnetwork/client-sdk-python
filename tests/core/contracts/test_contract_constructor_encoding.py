@@ -1,9 +1,9 @@
 import pytest
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     encode_abi,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     encode_hex,
     remove_0x_prefix,
 )

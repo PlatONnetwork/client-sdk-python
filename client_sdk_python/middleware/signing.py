@@ -12,7 +12,7 @@ from platon_account.local import (
 from platon_keys.datatypes import (
     PrivateKey,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_dict,
 )
 

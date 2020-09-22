@@ -4,14 +4,14 @@ from collections import (
 import itertools
 import re
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     is_encodable as eth_abi_is_encodable,
 )
-from eth_abi.abi import (
+from client_sdk_python.packages.eth_abi.abi import (
     collapse_type,
     process_type,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_hex,
     is_list_like,
     to_bytes,
@@ -58,11 +58,17 @@ def get_abi_input_types(abi):
         return [arg['type'] for arg in abi['inputs']]
 
 
-def get_abi_output_types(abi):
+def get_abi_output_types(abi,vmtype):
     if abi['type'] == 'fallback':
         return []
     else:
-        return [arg['type'] for arg in abi['outputs']]
+        if isinstance(abi['outputs'],dict):
+            if vmtype==1:
+               return abi['outputs']
+            else :
+                return abi['outputs']['type']
+        else :
+            return [arg['type'] for arg in abi['outputs']]
 
 
 def get_abi_input_names(abi):

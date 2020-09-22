@@ -5,7 +5,7 @@ import pytest
 from eth_account.messages import (
     defunct_hash_message,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_checksum_address,
 )
 from hexbytes import (
