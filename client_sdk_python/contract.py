@@ -5,13 +5,13 @@ import copy
 import functools
 import itertools
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     decode_abi,
 )
-from eth_abi.exceptions import (
+from client_sdk_python.packages.eth_abi.exceptions import (
     DecodingError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     add_0x_prefix,
     encode_hex,
     function_abi_to_4byte_selector,
@@ -45,7 +45,9 @@ from client_sdk_python.utils.blocks import (
 )
 from client_sdk_python.utils.contracts import (
     encode_abi,
+    wasmdecode_abi,
     find_matching_event_abi,
+    find_wasm_abi,
     find_matching_fn_abi,
     get_function_info,
     prepare_transaction,
@@ -63,6 +65,7 @@ from client_sdk_python.utils.empty import (
 from client_sdk_python.utils.encoding import (
     to_4byte_hex,
     to_hex,
+    tobech32address,
 )
 from client_sdk_python.utils.events import (
     get_event_data,
@@ -78,6 +81,7 @@ from client_sdk_python.utils.normalizers import (
     normalize_abi,
     normalize_address,
     normalize_bytecode,
+    normalize_vmtype,
 )
 from client_sdk_python.utils.toolz import (
     compose,
@@ -86,6 +90,9 @@ from client_sdk_python.utils.toolz import (
 from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
+
+from platon_keys.utils import bech32
+
 
 DEPRECATED_SIGNATURE_MESSAGE = (
     "The constructor signature for the `Contract` object has changed. "
@@ -101,9 +108,10 @@ class ContractFunctions:
     """Class containing contract function objects
     """
 
-    def __init__(self, abi, web3, address=None):
+    def __init__(self, abi, web3, vmtype=None, address=None):
         if abi:
             self.abi = abi
+            self.vmtype = vmtype
             self._functions = filter_by_type('function', self.abi)
             for func in self._functions:
                 setattr(
@@ -114,6 +122,7 @@ class ContractFunctions:
                         web3=web3,
                         contract_abi=self.abi,
                         address=address,
+                        vmtype=vmtype,
                         function_identifier=func['name']))
 
     def __iter__(self):
@@ -145,9 +154,10 @@ class ContractEvents:
     """Class containing contract event objects
     """
 
-    def __init__(self, abi, web3, address=None):
+    def __init__(self, abi, web3,vmtype=None, address=None):
         if abi:
             self.abi = abi
+            self.vmtype = vmtype
             self._events = filter_by_type('event', self.abi)
             for event in self._events:
                 setattr(
@@ -158,6 +168,7 @@ class ContractEvents:
                         web3=web3,
                         contract_abi=self.abi,
                         address=address,
+                        vmtype=vmtype,
                         event_name=event['name']))
 
     def __getattr__(self, event_name):
@@ -221,6 +232,7 @@ class Contract:
     src_map = None
     src_map_runtime = None
     user_doc = None
+    vmtype= None
 
     def __init__(self, address=None):
         """Create a new smart contract proxy object.
@@ -234,34 +246,43 @@ class Contract:
             )
 
         if address:
-            self.address = normalize_address(self.web3.ens, address)
+            self.address = normalize_address(address)
 
         if not self.address:
             raise TypeError("The address argument is required to instantiate a contract.")
 
-        self.functions = ContractFunctions(self.abi, self.web3, self.address)
-        self.events = ContractEvents(self.abi, self.web3, self.address)
+        self.functions = ContractFunctions(self.abi, self.web3, self.vmtype, self.address)
+        self.events = ContractEvents(self.abi, self.web3, self.vmtype, self.address)
         self.fallback = Contract.get_fallback_function(self.abi, self.web3, self.address)
 
     @classmethod
     def factory(cls, web3, class_name=None, **kwargs):
 
         kwargs['web3'] = web3
-
-        normalizers = {
-            'abi': normalize_abi,
-            'address': partial(normalize_address, kwargs['web3'].ens),
-            'bytecode': normalize_bytecode,
-            'bytecode_runtime': normalize_bytecode,
-        }
+        if 'vmtype' in kwargs:
+            if kwargs['vmtype'] == 1:
+                normalizers = {
+                    'abi': normalize_abi,
+                    'address': normalize_address,
+                    'vmtype': normalize_vmtype,
+                    'bytecode': normalize_bytecode,
+                    'bytecode_runtime': normalize_bytecode,
+                }
+        else:
+            normalizers = {
+                'abi': normalize_abi,
+                'address': normalize_address,
+                'bytecode': normalize_bytecode,
+                'bytecode_runtime': normalize_bytecode,
+            }
 
         contract = PropertyCheckingFactory(
             class_name or cls.__name__,
             (cls,),
             kwargs,
             normalizers=normalizers)
-        setattr(contract, 'functions', ContractFunctions(contract.abi, contract.web3))
-        setattr(contract, 'events', ContractEvents(contract.abi, contract.web3))
+        setattr(contract, 'functions', ContractFunctions(contract.abi, contract.web3,contract.vmtype))
+        setattr(contract, 'events', ContractEvents(contract.abi, contract.web3,contract.vmtype))
         setattr(contract, 'fallback', Contract.get_fallback_function(contract.abi, contract.web3))
 
         return contract
@@ -334,10 +355,10 @@ class Contract:
                 "Cannot call constructor on a contract that does not have 'bytecode' associated "
                 "with it"
             )
-
         return ContractConstructor(cls.web3,
                                    cls.abi,
                                    cls.bytecode,
+                                   cls.vmtype,
                                    *args,
                                    **kwargs)
 
@@ -358,7 +379,7 @@ class Contract:
         if data is None:
             data = fn_selector
 
-        return encode_abi(cls.web3, fn_abi, fn_arguments, data)
+        return encode_abi(cls.web3, fn_abi, fn_arguments, cls.vmtype, data, cls.abi)
 
     @combomethod
     @deprecated_for("contract.events.<event name>.createFilter")
@@ -771,7 +792,7 @@ class Contract:
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
 
             deploy_data = add_0x_prefix(
-                encode_abi(cls.web3, constructor_abi, arguments, data=cls.bytecode)
+                encode_abi(cls.web3, constructor_abi, arguments, cls.bytecode, cls.abi)
             )
         else:
             deploy_data = to_hex(cls.bytecode)
@@ -791,10 +812,11 @@ class ContractConstructor:
     """
     Class for contract constructor API.
     """
-    def __init__(self, web3, abi, bytecode, *args, **kwargs):
+    def __init__(self, web3, abi, bytecode,vmtype, *args, **kwargs):
         self.web3 = web3
         self.abi = abi
         self.bytecode = bytecode
+        self.vmtype = vmtype
         self.data_in_transaction = self._encode_data_in_transaction(*args, **kwargs)
 
     @combomethod
@@ -809,7 +831,7 @@ class ContractConstructor:
 
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
             data = add_0x_prefix(
-                encode_abi(self.web3, constructor_abi, arguments, data=self.bytecode)
+                encode_abi(self.web3, constructor_abi, arguments, self.vmtype, self.bytecode, self.abi)
             )
         else:
             data = to_hex(self.bytecode)
@@ -1014,6 +1036,7 @@ class ContractFunction:
     abi = None
     transaction = None
     arguments = None
+    vmtype=None
 
     def __init__(self, abi=None):
         self.abi = abi
@@ -1035,12 +1058,17 @@ class ContractFunction:
 
     def _set_function_info(self):
         if not self.abi:
-            self.abi = find_matching_fn_abi(
-                self.contract_abi,
-                self.function_identifier,
-                self.args,
-                self.kwargs
-            )
+            if self.vmtype:
+                self.abi = find_wasm_abi(
+                    self.contract_abi,
+                    self.function_identifier)
+            else:
+                self.abi = find_matching_fn_abi(
+                    self.contract_abi,
+                    self.function_identifier,
+                    self.args,
+                    self.kwargs
+                )
         if self.function_identifier is FallbackFn:
             self.selector = encode_hex(b'')
         elif is_text(self.function_identifier):
@@ -1108,6 +1136,7 @@ class ContractFunction:
             self._return_data_normalizers,
             self.function_identifier,
             call_transaction,
+            self.vmtype,
             block_id,
             self.contract_abi,
             self.abi,
@@ -1147,6 +1176,7 @@ class ContractFunction:
             transact_transaction,
             self.contract_abi,
             self.abi,
+            self.vmtype,
             *self.args,
             **self.kwargs
         )
@@ -1230,7 +1260,7 @@ class ContractFunction:
 
     @combomethod
     def _encode_transaction_data(cls):
-        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.selector))
+        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.selector, cls.abi))
 
     _return_data_normalizers = tuple()
 
@@ -1258,6 +1288,7 @@ class ContractEvent:
     web3 = None
     contract_abi = None
     abi = None
+    vmtype = None
 
     def __init__(self, *argument_names):
 
@@ -1282,7 +1313,7 @@ class ContractEvent:
     def _parse_logs(self, txn_receipt):
         for log in txn_receipt['logs']:
             try:
-                decoded_log = get_event_data(self.abi, log)
+                decoded_log = get_event_data(self.abi, log, self.vmtype)
             except MismatchedABI:
                 continue
             yield decoded_log
@@ -1338,6 +1369,7 @@ def call_contract_function(
         normalizers,
         function_identifier,
         transaction,
+        vmtype=None,
         block_id=None,
         contract_abi=None,
         fn_abi=None,
@@ -1353,6 +1385,7 @@ def call_contract_function(
         fn_identifier=function_identifier,
         contract_abi=contract_abi,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         transaction=transaction,
         fn_args=args,
         fn_kwargs=kwargs,
@@ -1366,43 +1399,81 @@ def call_contract_function(
     if fn_abi is None:
         fn_abi = find_matching_fn_abi(contract_abi, function_identifier, args, kwargs)
 
-    output_types = get_abi_output_types(fn_abi)
+    output_types = get_abi_output_types(fn_abi,vmtype)
 
-    try:
-        output_data = decode_abi(output_types, return_data)
-    except DecodingError as e:
-        # Provide a more helpful error message than the one provided by
-        # eth-abi-utils
-        is_missing_code_error = (
-            return_data in ACCEPTABLE_EMPTY_STRINGS and
-            web3.eth.getCode(address) in ACCEPTABLE_EMPTY_STRINGS
-        )
-        if is_missing_code_error:
-            msg = (
-                "Could not transact with/call contract function, is contract "
-                "deployed correctly and chain synced?"
+    if vmtype==1:
+        # if not isinstance(output_types, list):
+        #     output_types = [output_types]
+        try:
+            output_data = wasmdecode_abi(output_types, return_data, contract_abi)
+        except DecodingError as e:
+            # Provide a more helpful error message than the one provided by
+            # eth-abi-utils
+            is_missing_code_error = (
+                return_data in ACCEPTABLE_EMPTY_STRINGS and
+                web3.eth.getCode(address) in ACCEPTABLE_EMPTY_STRINGS
             )
-        else:
-            msg = (
-                "Could not decode contract function call {} return data {} for "
-                "output_types {}".format(
-                    function_identifier,
-                    return_data,
-                    output_types
+            if is_missing_code_error:
+                msg = (
+                    "Could not transact with/call contract function, is contract "
+                    "deployed correctly and chain synced?"
                 )
-            )
-        raise BadFunctionCallOutput(msg) from e
-
-    _normalizers = itertools.chain(
-        BASE_RETURN_NORMALIZERS,
-        normalizers,
-    )
-    normalized_data = map_abi_data(_normalizers, output_types, output_data)
-
-    if len(normalized_data) == 1:
-        return normalized_data[0]
+            else:
+                msg = (
+                    "Could not decode contract function call {} return data {} for "
+                    "output_types {}".format(
+                        function_identifier,
+                        return_data,
+                        output_types
+                    )
+                )
+            raise BadFunctionCallOutput(msg) from e
+        return output_data
     else:
-        return normalized_data
+        try:
+            output_data = decode_abi(output_types, return_data)
+
+        except DecodingError as e:
+            # Provide a more helpful error message than the one provided by
+            # eth-abi-utils
+            is_missing_code_error = (
+                return_data in ACCEPTABLE_EMPTY_STRINGS and
+                web3.eth.getCode(address) in ACCEPTABLE_EMPTY_STRINGS
+            )
+            if is_missing_code_error:
+                msg = (
+                    "Could not transact with/call contract function, is contract "
+                    "deployed correctly and chain synced?"
+                )
+            else:
+                msg = (
+                    "Could not decode contract function call {} return data {} for "
+                    "output_types {}".format(
+                        function_identifier,
+                        return_data,
+                        output_types
+                    )
+                )
+            raise BadFunctionCallOutput(msg) from e
+
+        _normalizers = itertools.chain(
+            BASE_RETURN_NORMALIZERS,
+            normalizers,
+        )
+        normalized_data = map_abi_data(_normalizers, output_types, output_data)
+        laxdata = []
+        if output_types == ['address']:
+            laxdata = tobech32address(address[:3], normalized_data[0])
+            return laxdata[0]
+        elif output_types == ['address[]']:
+            for i in range(len(normalized_data[0])):
+                laxdata.append(tobech32address(address[:3], normalized_data[0][i]))
+            return laxdata
+        else:
+            if len(normalized_data) == 1:
+                return normalized_data[0]
+            else:
+                return normalized_data
 
 
 def parse_block_identifier(web3, block_identifier):
@@ -1434,6 +1505,7 @@ def transact_with_contract_function(
         transaction=None,
         contract_abi=None,
         fn_abi=None,
+        vmtype=None,
         *args,
         **kwargs):
     """
@@ -1447,6 +1519,7 @@ def transact_with_contract_function(
         contract_abi=contract_abi,
         transaction=transaction,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         fn_args=args,
         fn_kwargs=kwargs,
     )

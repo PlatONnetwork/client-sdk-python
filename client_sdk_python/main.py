@@ -1,4 +1,4 @@
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     apply_to_return_value,
     add_0x_prefix,
     from_wei,

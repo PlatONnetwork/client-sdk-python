@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 eth_utils==1.6.0
 platon_account==0.1.2
 hexbytes==0.1.0
@@ -19,3 +20,18 @@ flaky==3.7.0
 lru==0.1
 sha3==0.2.1
 tqdm==4.49.0
+=======
+toolz>=0.9.0,<1.0.0;implementation_name=='pypy'
+cytoolz>=0.9.0,<1.0.0;implementation_name=='cpython'
+numpy>=1.19.0
+platon-account>=0.1.2
+eth-utils>=1.2.0,<2.0.0
+hexbytes>=0.1.0,<1.0.0
+lru-dict>=1.1.6,<2.0.0
+eth-hash[pycryptodome]>=0.2.0,<1.0.0
+requests>=2.16.0,<3.0.0
+websockets>=6.0.0,<7.0.0
+pypiwin32>=223;platform_system=='Windows'"
+rlp
+pysha3
+>>>>>>> 56b72ab9d1d387b1e7f2c46def42202bf30a5947

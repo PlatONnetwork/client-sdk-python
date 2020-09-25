@@ -2,7 +2,7 @@ from wsgiref.simple_server import (
     make_server,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     decode_hex,
     is_integer,
     is_string,

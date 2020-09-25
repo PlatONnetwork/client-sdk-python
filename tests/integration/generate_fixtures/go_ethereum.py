@@ -5,7 +5,7 @@ import pprint
 import shutil
 import sys
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_dict,
     is_same_address,
 )

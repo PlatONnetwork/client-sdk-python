@@ -4,7 +4,7 @@ from unittest.mock import (
     patch,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_same_address,
     to_bytes,
 )

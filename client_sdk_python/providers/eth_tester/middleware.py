@@ -1,6 +1,6 @@
 import operator
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_dict,
     is_hex,
     is_string,

@@ -5,7 +5,7 @@ import eth_keys
 from eth_tester.exceptions import (
     ValidationError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_bytes,
     to_hex,
 )

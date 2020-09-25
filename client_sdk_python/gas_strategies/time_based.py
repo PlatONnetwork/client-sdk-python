@@ -2,7 +2,7 @@ import collections
 import math
 import operator
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_tuple,
 )
 

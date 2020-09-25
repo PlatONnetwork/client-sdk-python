@@ -2,7 +2,7 @@
 import json
 import re
 import rlp
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     add_0x_prefix,
     big_endian_to_int,
     decode_hex,
@@ -15,6 +15,7 @@ from eth_utils import (
     is_list_like,
     remove_0x_prefix,
     to_hex,
+    is_address,
 )
 
 from client_sdk_python.utils.abi import (
@@ -36,7 +37,7 @@ from client_sdk_python.utils.validation import (
     validate_abi_type,
     validate_abi_value,
 )
-
+from platon_keys.utils import bech32
 
 def parse_str(raw_data):
     data = str(raw_data, encoding="utf-8").replace('\\', '').replace('"[', '[').replace(']"', ']')
@@ -293,3 +294,85 @@ def to_4byte_hex(hex_or_str_or_bytes):
         )
     hex_str = encode_hex(byte_str)
     return pad_hex(hex_str, size_of_4bytes)
+
+def hexstr2bytes(address: str):
+    pos = 0
+    len_str = len(address)
+    if len_str % 2 != 0:
+       return None
+    len_str = round(len_str/2)
+    hexa = []
+    for i in range(len_str):
+       s1 = address[pos:pos+2]
+       if s1 == '0x' or s1 == '0X':
+          pos +=2
+          continue
+       sv = s1
+       hexa.append(sv)
+       pos += 2
+    return hexa
+
+def str2bytes(address: str):
+    pos = 0
+    len_str = len(address)
+    if len_str % 2 != 0:
+       return None
+    len_str = round(len_str/2)
+    hexa = []
+    for i in range(len_str):
+       s1 = address[pos:pos+2]
+       if s1 == '0x' or s1 == '0X':
+          pos +=2
+          continue
+       sv = int(s1, 16)
+       hexa.append(sv)
+       pos += 2
+    return hexa
+
+def encodeaddress(hrp, address):
+    program = str2bytes(address)
+    ret = bech32.encode(hrp,program)
+    return ret
+
+
+def tobech32address(hrp, address):
+     if is_address(address):
+        return encodeaddress(hrp,address)
+     else:
+        return None
+
+def hexstr2bytes(address: str):
+    pos = 0
+    len_str = len(address)
+    if len_str % 2 != 0:
+       return None
+    len_str = round(len_str/2)
+    hexa = []
+    for i in range(len_str):
+       s1 = address[pos:pos+2]
+       if s1 == '0x' or s1 == '0X':
+          pos +=2
+          continue
+       sv = s1
+       hexa.append(sv)
+       pos += 2
+    return hexa
+def tostring_hex(arr:list):
+    arrhex=''
+    if arr:
+        for i in arr:
+            arrhex= arrhex+i
+        return arrhex
+    else :
+        return ''
+def stringtohex(str1:bytes):
+    strhex=[]
+    if str1:
+        for i in str1:
+            temp = hex(i).replace('0x','')
+            if len(temp) == 1:
+                temp = '0'+temp
+            strhex = strhex+[temp]
+            del temp
+        return strhex
+    else: return []
