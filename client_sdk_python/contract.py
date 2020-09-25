@@ -1215,6 +1215,7 @@ class ContractFunction:
             estimate_gas_transaction,
             self.contract_abi,
             self.abi,
+            self.vmtype,
             *self.args,
             **self.kwargs
         )
@@ -1254,13 +1255,14 @@ class ContractFunction:
             built_transaction,
             self.contract_abi,
             self.abi,
+            self.vmtype,
             *self.args,
             **self.kwargs
         )
 
     @combomethod
     def _encode_transaction_data(cls):
-        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.selector, cls.abi))
+        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.vmtype, cls.selector, cls.abi))
 
     _return_data_normalizers = tuple()
 
@@ -1535,6 +1537,7 @@ def estimate_gas_for_function(
         transaction=None,
         contract_abi=None,
         fn_abi=None,
+        vmtype=None,
         *args,
         **kwargs):
     """Estimates gas cost a function call would take.
@@ -1548,6 +1551,7 @@ def estimate_gas_for_function(
         fn_identifier=fn_identifier,
         contract_abi=contract_abi,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         transaction=transaction,
         fn_args=args,
         fn_kwargs=kwargs,
@@ -1564,6 +1568,7 @@ def build_transaction_for_function(
         transaction=None,
         contract_abi=None,
         fn_abi=None,
+        vmtype=None,
         *args,
         **kwargs):
     """Builds a dictionary with the fields required to make the given transaction
@@ -1577,6 +1582,7 @@ def build_transaction_for_function(
         fn_identifier=function_name,
         contract_abi=contract_abi,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         transaction=transaction,
         fn_args=args,
         fn_kwargs=kwargs,
