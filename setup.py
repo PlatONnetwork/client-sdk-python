@@ -71,7 +71,7 @@ setup(
         "toolz>=0.9.0,<1.0.0;implementation_name=='pypy'",
         "cytoolz>=0.9.0,<1.0.0;implementation_name=='cpython'",
         # "eth-abi>=1.2.0,<2.0.0",
-        "numpy>=1.19.0",
+        "numpy>=1.18.0",
         "platon-account>=0.1.2",
         "eth-utils>=1.2.0,<2.0.0",
         "hexbytes>=0.1.0,<1.0.0",
