@@ -92,18 +92,22 @@ def default_address(mainnet, testnet):
     return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
 
 
-restricting = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
+restricting = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep",
+                              "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
 staking = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
 penalty = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
 pipAddr = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
-delegateReward = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
+delegateReward = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy",
+                                 "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
 
 
 def to_checksum_address(val):
     return val
 
+
 def is_checksum_address(val):
     return True
+
 
 class Web3:
     # Providers

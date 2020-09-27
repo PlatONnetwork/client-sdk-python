@@ -1,4 +1,4 @@
-from alaya.packages.eth_utils.curried import (
+from alaya.packages.eth_utils import (
     apply_formatter_at_index,
     apply_formatter_if,
     apply_formatters_to_dict,

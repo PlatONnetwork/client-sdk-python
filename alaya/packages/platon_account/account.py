@@ -19,7 +19,7 @@ from alaya.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
 from alaya.packages.platon_keys.exceptions import (
     ValidationError,
 )
-from eth_utils.curried import (
+from eth_utils import (
     combomethod,
     hexstr_if_str,
     is_dict,
