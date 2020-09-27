@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Install Linux dependencies
 RUN apt-get update && apt-get install -y libssl-dev
 
-COPY alaya ./client_sdk_python/
+COPY alaya ./alaya/
 COPY tests ./tests/
 COPY ens ./ens/
 

@@ -11,7 +11,7 @@ from cytoolz import (
 from eth_rlp import (
     HashableRLP,
 )
-from alaya.packages.eth_utils import (
+from alaya.packages.eth_utils.curried import (
     apply_formatters_to_dict,
     apply_one_of_formatters,
     hexstr_if_str,

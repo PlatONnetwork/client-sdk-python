@@ -23,7 +23,7 @@ from alaya.providers.websocket import (  # noqa: E402
 )
 
 try:
-    __version__ = pkg_resources.get_distribution("client_sdk_python").version
+    __version__ = pkg_resources.get_distribution("alaya").version
 except:
     __version__ = '0.13.2'
 

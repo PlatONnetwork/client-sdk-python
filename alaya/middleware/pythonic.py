@@ -1,7 +1,7 @@
 import codecs
 import operator
 
-from alaya.packages.eth_utils import (
+from alaya.packages.eth_utils.curried import (
     combine_argument_formatters,
     is_address,
     is_bytes,

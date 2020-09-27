@@ -5,7 +5,7 @@ from hexbytes import (
 )
 
 
-# from client_sdk_python.utils.encoding import (
+# from alaya.utils.encoding import (
 #     str2bytes,encodeaddress,tobech32address,)
 
 def hexstr2bytes(address: str):

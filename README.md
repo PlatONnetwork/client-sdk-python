@@ -825,11 +825,11 @@ platon.sendRawTransaction(signTransaction，private-key)
 
   ```python
   >>> platon.filter('latest')
-  <client_sdk_python.utils.filters.BlockFilter object at 0x0000020640DA1048>
+  <alaya.utils.filters.BlockFilter object at 0x0000020640DA1048>
   >>> platon.filter('pending')
-  <client_sdk_python.utils.filters.TransactionFilter object at 0x0000020640DA7C08>
+  <alaya.utils.filters.TransactionFilter object at 0x0000020640DA7C08>
   >>> platon.filter({'fromBlock': 1000000, 'toBlock': 1000100, 'address': 'lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja'})
-  <client_sdk_python.utils.filters.LogFilter object at 0x0000020640B09D88>
+  <alaya.utils.filters.LogFilter object at 0x0000020640B09D88>
   ```
 
 
