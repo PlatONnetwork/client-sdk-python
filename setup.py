@@ -63,8 +63,8 @@ setup(
     version='0.13.2',
     description="""PlatON alaya network SDK""",
     # long_description_markdown_filename='README.md',
-    author='Piper awake',
-    author_email='hietel366435@gmail.com',
+    author='Piper shinnng',
+    author_email='shinnng@outlook.com',
     url='https://github.com/PlatONnetwork/client-sdk-python',
     include_package_data=True,
     install_requires=[
