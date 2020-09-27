@@ -92,13 +92,11 @@ def default_address(mainnet, testnet):
     return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
 
 
-restricting = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep",
-                              "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
-staking = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
-penalty = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
-pipAddr = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
-delegateReward = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy",
-                                 "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
+restricting = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp8h9fxw", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpd3er4y")
+staking = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzfyslg3", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzrzv4mm")
+penalty = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqy4tn65x", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyld0s8v")
+pipAddr = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9ga80f5", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq9zmm967")
+delegateReward = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxxwje8t", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxvgwn5p")
 
 
 def to_checksum_address(val):
