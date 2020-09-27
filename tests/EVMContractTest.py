@@ -1,7 +1,7 @@
 from hexbytes import HexBytes
 from client_sdk_python import Web3, HTTPProvider
 from client_sdk_python.eth import PlatON
-from platon_keys.utils import bech32,address
+from client_sdk_python.packages.platon_keys.utils import bech32,address
 from client_sdk_python.packages.eth_utils import to_checksum_address
 
 true = True
@@ -13,6 +13,8 @@ print(w3.isConnected())
 
 from_address = "lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja"
 print(from_address)
+if to_checksum_address(from_address):
+    print(from_address)
 
 send_privatekey = "16e80ad4079462cc7f9748af2f9cf03e8f7384bed597c086db4f11a98c3b08f0"
 
@@ -55,7 +57,7 @@ def SendTxn(txn):
 
 
 
-# print(len([10, 14, 31, 23, 10, 20, 20, 9, 15, 9, 0, 15, 12, 20, 6, 15, 12, 8, 5, 6, 28, 22, 7, 25, 11, 30, 2, 27, 10, 23, 19, 11]))
+
 contract_instance = platon.contract(address=contractAddress, abi=abi)
 
 # txn = contract_instance.functions.ifControl(20).buildTransaction(

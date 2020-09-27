@@ -11,7 +11,7 @@ from client_sdk_python.utils.toolz import (
 
 from hexbytes import HexBytes
 
-from platon_keys.datatypes import PrivateKey
+from client_sdk_python.packages.platon_keys.datatypes import PrivateKey
 
 VALID_TRANSACTION_PARAMS = [
     'from',

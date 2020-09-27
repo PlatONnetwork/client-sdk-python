@@ -61,7 +61,7 @@ from client_sdk_python.utils.toolz import (
     valmap,
 )
 
-from platon_keys.utils import bech32,address
+from client_sdk_python.packages.platon_keys.utils import bech32,address
 
 from client_sdk_python.packages.eth_utils import to_checksum_address
 
@@ -360,7 +360,7 @@ def encodeparameters(types,params,setabi=None):
             elif isinstance(param,tuple):
                 p1 = param[0][0:3]
                 p2 = param[0]
-            if p1 == 'lax' or p1 == 'lat':
+            if p1 == 'atx' or p1 == 'atp':
                 hrpgot, data1 = bech32.decode(p1, p2)
                 for i in data1:
                     temp1=hex(i).replace('0x', '')
@@ -541,10 +541,10 @@ def wasmdecode_abi(types, data, setabi=None):
         if type.endswith('<20>'):
             temp=[]
             try :
-                temp=tobech32address('lax',data1)
+                temp=tobech32address('atx',data1)
             except:
                 try:
-                    temp=tobech32address('lat',data1)
+                    temp=tobech32address('atp',data1)
                 except:
                     raise ('wasmdecode error ! can not match FixedHash<20> type !' )
             finally:
@@ -594,24 +594,24 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         argument_types = get_abi_input_types(abi)
         if argument_types:
             if argument_types[0] == 'address':
-                if arguments[0][:3] == 'lax':
-                    hrpgot, data1 = bech32.decode("lax", arguments[0])
+                if arguments[0][:3] == 'atx':
+                    hrpgot, data1 = bech32.decode("atx", arguments[0])
                     addr = to_checksum_address(bytes(data1))
                     arguments = tuple(addr.split(","))
-                elif arguments[0][:3] == 'lat':
-                    hrpgot, data1 = bech32.decode("lat", arguments[0])
+                elif arguments[0][:3] == 'atp':
+                    hrpgot, data1 = bech32.decode("atp", arguments[0])
                     addr = to_checksum_address(bytes(data1))
                     arguments = tuple(addr.split(","))
                 else:
                     raise Exception("wrong address")
             elif argument_types[0] == 'address[]':
                 for i in range(len(arguments[0])):
-                    if arguments[0][i][:3] == 'lax':
-                        hrpgot, data1 = bech32.decode("lax", arguments[0][i])
+                    if arguments[0][i][:3] == 'atx':
+                        hrpgot, data1 = bech32.decode("atx", arguments[0][i])
                         addr = to_checksum_address(bytes(data1))
                         arguments[0][i] = addr
-                    elif arguments[0][i][:3] == 'lat':
-                        hrpgot, data1 = bech32.decode("lat", arguments[0][i])
+                    elif arguments[0][i][:3] == 'atp':
+                        hrpgot, data1 = bech32.decode("atp", arguments[0][i])
                         addr = to_checksum_address(bytes(data1))
                         arguments[0][i] = addr
                     else:
@@ -722,10 +722,10 @@ def wasmevent_decode(types, data,):
             if type.endswith('<20>'):
                 temp=[]
                 try :
-                    temp=tobech32address('lax',data1)
+                    temp=tobech32address('atx',data1)
                 except:
                     try:
-                        temp=tobech32address('lat',data1)
+                        temp=tobech32address('atp',data1)
                     except:
                         raise ('wasmdecode error ! can not match FixedHash<20> type !' )
                 finally:
