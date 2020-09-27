@@ -469,5 +469,5 @@ class Account(object):
 
 
 if __name__ == '__main__':
-    account = Account().create(net_type=TESTNETHRP)
+    account = Account().create(net_type=MIANNETHRP)
     print(account.address)
