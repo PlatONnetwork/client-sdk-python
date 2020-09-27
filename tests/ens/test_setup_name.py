@@ -6,7 +6,7 @@ from ens.main import (
     UnauthorizedError,
     UnownedName,
 )
-from client_sdk_python import Web3
+from alaya import Web3
 
 
 '''

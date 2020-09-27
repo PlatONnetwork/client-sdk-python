@@ -11,12 +11,12 @@ from requests.exceptions import (
     TooManyRedirects,
 )
 
-import client_sdk_python
-from client_sdk_python.middleware.exception_retry_request import (
+import alaya
+from alaya.middleware.exception_retry_request import (
     check_if_retry_on_failure,
     exception_retry_middleware,
 )
-from client_sdk_python.providers import (
+from alaya.providers import (
     HTTPProvider,
     IPCProvider,
 )
@@ -78,7 +78,7 @@ def test_is_strictly_default_http_middleware():
 @patch('web3.providers.rpc.make_post_request', side_effect=ConnectionError)
 def test_check_with_all_middlewares(make_post_request_mock):
     provider = HTTPProvider()
-    w3 = client_sdk_python.Web3(provider)
+    w3 = alaya.Web3(provider)
     with pytest.raises(ConnectionError):
         w3.eth.blockNumber()
     assert make_post_request_mock.call_count == 5

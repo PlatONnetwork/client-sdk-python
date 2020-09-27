@@ -3,7 +3,7 @@ import json
 import allure
 import pytest
 from hexbytes import HexBytes
-from client_sdk_python import Web3
+from alaya import Web3
 
 from common import log
 from common.abspath import abspath

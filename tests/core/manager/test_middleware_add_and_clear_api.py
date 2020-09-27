@@ -1,9 +1,9 @@
 import pytest
 
-from client_sdk_python.manager import (
+from alaya.manager import (
     RequestManager,
 )
-from client_sdk_python.providers import (
+from alaya.providers import (
     BaseProvider,
 )
 

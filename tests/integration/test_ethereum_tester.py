@@ -4,23 +4,23 @@ import pytest
 from eth_tester import (
     EthereumTester,
 )
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_checksum_address,
     is_dict,
 )
 
-from client_sdk_python import Web3
-from client_sdk_python.providers.eth_tester import (
+from alaya import Web3
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
-from client_sdk_python.utils.module_testing import (
+from alaya.utils.module_testing import (
     EthModuleTest,
     NetModuleTest,
     PersonalModuleTest,
     VersionModuleTest,
     Web3ModuleTest,
 )
-from client_sdk_python.utils.module_testing.emitter_contract import (
+from alaya.utils.module_testing.emitter_contract import (
     EMITTER_ENUM,
 )
 

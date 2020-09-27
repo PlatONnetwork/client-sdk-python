@@ -1,7 +1,7 @@
 import pytest
 import time
 
-from client_sdk_python.utils.threads import (
+from alaya.utils.threads import (
     ThreadWithReturn,
     Timeout,
     spawn,

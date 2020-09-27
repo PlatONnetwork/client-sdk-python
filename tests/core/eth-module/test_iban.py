@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     InvalidAddress,
 )
 

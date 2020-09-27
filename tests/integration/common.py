@@ -4,7 +4,7 @@ from websockets.exceptions import (
     ConnectionClosed,
 )
 
-from client_sdk_python import Web3
+from alaya import Web3
 
 
 class MiscWebsocketTest:

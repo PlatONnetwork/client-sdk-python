@@ -21,11 +21,11 @@ from ens.contract_data import (
     reverse_resolver_bytecode,
     reverse_resolver_bytecode_runtime,
 )
-from client_sdk_python import Web3
-from client_sdk_python.contract import (
+from alaya import Web3
+from alaya.contract import (
     Contract,
 )
-from client_sdk_python.providers.eth_tester import (
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
 

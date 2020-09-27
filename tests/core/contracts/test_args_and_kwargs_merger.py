@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.abi import (
+from alaya.utils.abi import (
     merge_args_and_kwargs,
 )
 

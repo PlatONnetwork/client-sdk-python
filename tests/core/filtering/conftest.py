@@ -2,14 +2,14 @@ import functools
 import json
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     apply_key_map,
     encode_hex,
     event_signature_to_log_topic,
 )
 
-from client_sdk_python import Web3
-from client_sdk_python.providers.eth_tester import (
+from alaya import Web3
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
 

@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.datatypes import (
+from alaya.utils.datatypes import (
     PropertyCheckingFactory,
 )
 

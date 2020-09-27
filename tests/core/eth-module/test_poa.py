@@ -1,9 +1,9 @@
 import pytest
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     construct_fixture_middleware,
     geth_poa_middleware,
 )

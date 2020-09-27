@@ -4,7 +4,7 @@ from hexbytes import (
     HexBytes,
 )
 
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     compose,
     curry,
 )

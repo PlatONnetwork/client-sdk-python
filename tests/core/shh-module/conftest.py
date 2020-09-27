@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.shh import (
+from alaya.shh import (
     Shh,
 )
 

@@ -1,5 +1,5 @@
-from client_sdk_python import Web3
-from client_sdk_python.providers import (
+from alaya import Web3
+from alaya.providers import (
     AutoProvider,
     BaseProvider,
 )

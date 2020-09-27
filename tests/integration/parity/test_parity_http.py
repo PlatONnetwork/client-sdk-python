@@ -7,8 +7,8 @@ from tests.integration.parity.utils import (
 from tests.utils import (
     get_open_port,
 )
-from client_sdk_python import Web3
-from client_sdk_python.utils.module_testing import (
+from alaya import Web3
+from alaya.utils.module_testing import (
     NetModuleTest,
     VersionModuleTest,
 )

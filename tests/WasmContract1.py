@@ -1,5 +1,5 @@
-from client_sdk_python import Web3, HTTPProvider
-from client_sdk_python.eth import PlatON
+from alaya import Web3, HTTPProvider
+from alaya.eth import PlatON
 # import binascii
 # f = open('D:/juzhen/JS_wasmtest1.wasm','rb')
 # contents=f.read()

@@ -5,8 +5,8 @@ import tempfile
 from tests.integration.parity.utils import (
     wait_for_socket,
 )
-from client_sdk_python import Web3
-from client_sdk_python.utils.module_testing import (
+from alaya import Web3
+from alaya.utils.module_testing import (
     NetModuleTest,
     VersionModuleTest,
 )

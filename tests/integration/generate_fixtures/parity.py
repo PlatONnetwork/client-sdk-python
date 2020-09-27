@@ -6,7 +6,7 @@ import shutil
 import sys
 import time
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_text,
 )
 
@@ -15,8 +15,8 @@ import go_ethereum
 from tests.utils import (
     get_open_port,
 )
-from client_sdk_python import Web3
-from client_sdk_python.utils.toolz import (
+from alaya import Web3
+from alaya.utils.toolz import (
     merge,
 )
 

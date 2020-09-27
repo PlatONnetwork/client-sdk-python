@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.abi import (
+from alaya.utils.abi import (
     filter_by_argument_name,
 )
 

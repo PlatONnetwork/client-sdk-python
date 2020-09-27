@@ -1,14 +1,14 @@
 import json
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     decode_hex,
 )
 
-from client_sdk_python.contract import (
+from alaya.contract import (
     Contract,
 )
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     FallbackNotFound,
 )
 

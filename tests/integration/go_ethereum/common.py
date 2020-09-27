@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.module_testing import (
+from alaya.utils.module_testing import (
     EthModuleTest,
     NetModuleTest,
     PersonalModuleTest,

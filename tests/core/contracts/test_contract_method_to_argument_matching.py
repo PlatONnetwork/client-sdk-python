@@ -1,13 +1,13 @@
 import json
 import pytest
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.utils.abi import (
+from alaya.utils.abi import (
     get_abi_input_types,
 )
-from client_sdk_python.utils.function_identifiers import (
+from alaya.utils.function_identifiers import (
     FallbackFn,
 )
 

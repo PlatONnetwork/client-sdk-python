@@ -1,7 +1,7 @@
 
 import pytest
 
-from client_sdk_python.utils.formatters import (
+from alaya.utils.formatters import (
     apply_formatters_to_dict,
     map_collection,
     recursive_map,

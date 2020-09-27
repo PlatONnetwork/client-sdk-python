@@ -1,4 +1,4 @@
-from client_sdk_python.contract import (
+from alaya.contract import (
     parse_block_identifier_int,
 )
 

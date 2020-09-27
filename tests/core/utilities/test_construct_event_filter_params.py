@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.filters import (
+from alaya.utils.filters import (
     construct_event_filter_params,
 )
 

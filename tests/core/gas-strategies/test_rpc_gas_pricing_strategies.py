@@ -1,4 +1,4 @@
-from client_sdk_python.gas_strategies.rpc import (
+from alaya.gas_strategies.rpc import (
     rpc_gas_price_strategy,
 )
 

@@ -6,7 +6,7 @@ import os
 import stat
 import sys
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_tuple,
 )
 import requests

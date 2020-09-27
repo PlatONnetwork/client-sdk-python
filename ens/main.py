@@ -1,5 +1,5 @@
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_binary_address,
     is_checksum_address,
     to_checksum_address,

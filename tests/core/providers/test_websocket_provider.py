@@ -12,11 +12,11 @@ import websockets
 from tests.utils import (
     wait_for_ws,
 )
-from client_sdk_python import Web3
-from client_sdk_python.exceptions import (
+from alaya import Web3
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.providers.websocket import (
+from alaya.providers.websocket import (
     WebsocketProvider,
 )
 

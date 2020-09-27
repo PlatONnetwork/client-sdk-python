@@ -2,14 +2,14 @@
 
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_bytes,
 )
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.utils.empty import (
+from alaya.utils.empty import (
     empty,
 )
 

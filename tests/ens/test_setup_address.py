@@ -4,7 +4,7 @@ from unittest.mock import (
     patch,
 )
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_same_address,
     to_bytes,
 )
@@ -15,7 +15,7 @@ from ens.constants import (
 from ens.main import (
     UnauthorizedError,
 )
-from client_sdk_python import Web3
+from alaya import Web3
 
 
 '''

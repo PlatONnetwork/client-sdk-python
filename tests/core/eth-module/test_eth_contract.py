@@ -3,7 +3,7 @@ from unittest.mock import (
     Mock,
 )
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_bytes,
 )
 

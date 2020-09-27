@@ -5,7 +5,7 @@ from flaky import (
     flaky,
 )
 
-from client_sdk_python.utils.threads import (
+from alaya.utils.threads import (
     Timeout,
 )
 

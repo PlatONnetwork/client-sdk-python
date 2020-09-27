@@ -3,7 +3,7 @@ import pytest
 from tests.utils import (
     get_open_port,
 )
-from client_sdk_python import Web3
+from alaya import Web3
 
 from .common import (
     GoEthereumEthModuleTest,

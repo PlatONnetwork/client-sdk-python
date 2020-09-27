@@ -5,6 +5,9 @@ from setuptools import (
     setup,
 )
 
+
+
+
 extras_require = {
     'tester': [
         "eth-tester[py-evm]==0.1.0-beta.39",
@@ -60,7 +63,7 @@ extras_require['dev'] = (
 setup(
     name='alaya.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.13.2',
+    version='0.13.2.3',
     description="""PlatON alaya network SDK""",
     # long_description_markdown_filename='README.md',
     author='Piper shinnng',

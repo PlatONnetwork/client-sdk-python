@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.datastructures import (
+from alaya.datastructures import (
     AttributeDict,
 )
 

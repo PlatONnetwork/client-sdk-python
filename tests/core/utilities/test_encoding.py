@@ -7,7 +7,7 @@ from unittest.mock import (
     Mock,
 )
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_hex,
 )
 from hypothesis import (
@@ -16,10 +16,10 @@ from hypothesis import (
     strategies as st,
 )
 
-from client_sdk_python.providers import (
+from alaya.providers import (
     JSONBaseProvider,
 )
-from client_sdk_python.utils.encoding import (
+from alaya.utils.encoding import (
     FriendlyJsonSerde as FriendlyJson,
     hex_encode_abi_type,
     hexstr_if_str,
@@ -27,7 +27,7 @@ from client_sdk_python.utils.encoding import (
     to_hex,
     to_int,
 )
-from client_sdk_python.utils.hypothesis import (
+from alaya.utils.hypothesis import (
     hexstr_strategy,
 )
 

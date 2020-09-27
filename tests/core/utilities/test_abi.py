@@ -1,11 +1,11 @@
 
 import pytest
 
-from client_sdk_python.utils.abi import (
+from alaya.utils.abi import (
     abi_data_tree,
     map_abi_data,
 )
-from client_sdk_python.utils.normalizers import (
+from alaya.utils.normalizers import (
     BASE_RETURN_NORMALIZERS,
 )
 

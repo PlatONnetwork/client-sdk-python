@@ -5,7 +5,7 @@ import eth_keys
 from eth_tester.exceptions import (
     ValidationError,
 )
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_bytes,
     to_hex,
 )
@@ -13,24 +13,24 @@ from hexbytes import (
     HexBytes,
 )
 
-from client_sdk_python import Web3
-from client_sdk_python.exceptions import (
+from alaya import Web3
+from alaya.exceptions import (
     InvalidAddress,
 )
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     construct_result_generator_middleware,
     construct_sign_and_send_raw_middleware,
 )
-from client_sdk_python.middleware.signing import (
+from alaya.middleware.signing import (
     gen_normalized_accounts,
 )
-from client_sdk_python.providers import (
+from alaya.providers import (
     BaseProvider,
 )
-from client_sdk_python.providers.eth_tester import (
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     identity,
     merge,
     valfilter,

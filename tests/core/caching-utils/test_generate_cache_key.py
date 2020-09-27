@@ -1,6 +1,6 @@
 import random
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_dict,
 )
 from hypothesis import (
@@ -8,7 +8,7 @@ from hypothesis import (
     strategies as st,
 )
 
-from client_sdk_python.utils.caching import (
+from alaya.utils.caching import (
     generate_cache_key,
 )
 

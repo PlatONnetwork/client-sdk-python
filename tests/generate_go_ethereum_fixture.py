@@ -10,7 +10,7 @@ import sys
 import tempfile
 import time
 
-from client_sdk_python.packages.eth_utils.curried import (
+from alaya.packages.eth_utils.curried import (
     apply_formatter_if,
     is_bytes,
     is_checksum_address,
@@ -25,17 +25,17 @@ from client_sdk_python.packages.eth_utils.curried import (
 from tests.utils import (
     get_open_port,
 )
-from client_sdk_python import Web3
-from client_sdk_python.utils.module_testing.emitter_contract import (
+from alaya import Web3
+from alaya.utils.module_testing.emitter_contract import (
     EMITTER_ABI,
     EMITTER_BYTECODE,
     EMITTER_ENUM,
 )
-from client_sdk_python.utils.module_testing.math_contract import (
+from alaya.utils.module_testing.math_contract import (
     MATH_ABI,
     MATH_BYTECODE,
 )
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     merge,
     valmap,
 )

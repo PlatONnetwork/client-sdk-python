@@ -1,12 +1,12 @@
 import pytest
 
-from client_sdk_python import Web3
-from client_sdk_python.middleware import (
+from alaya import Web3
+from alaya.middleware import (
     construct_error_generator_middleware,
     construct_fixture_middleware,
     construct_result_generator_middleware,
 )
-from client_sdk_python.providers.base import (
+from alaya.providers.base import (
     BaseProvider,
 )
 

@@ -1,8 +1,8 @@
-from client_sdk_python import Web3
-from client_sdk_python.providers.auto import (
+from alaya import Web3
+from alaya.providers.auto import (
     AutoProvider,
 )
-from client_sdk_python.providers.eth_tester import (
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
 

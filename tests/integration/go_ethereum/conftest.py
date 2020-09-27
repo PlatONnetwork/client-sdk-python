@@ -4,13 +4,13 @@ import pytest
 import shutil
 import subprocess
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_checksum_address,
     is_dict,
     to_text,
 )
 
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     assoc,
 )
 

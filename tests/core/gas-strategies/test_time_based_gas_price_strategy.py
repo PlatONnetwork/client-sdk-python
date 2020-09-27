@@ -1,16 +1,16 @@
 import pytest
 
-from client_sdk_python import Web3
-from client_sdk_python.exceptions import (
+from alaya import Web3
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.gas_strategies.time_based import (
+from alaya.gas_strategies.time_based import (
     construct_time_based_gas_price_strategy,
 )
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     construct_result_generator_middleware,
 )
-from client_sdk_python.providers.base import (
+from alaya.providers.base import (
     BaseProvider,
 )
 

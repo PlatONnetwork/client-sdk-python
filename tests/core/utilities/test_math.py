@@ -5,10 +5,10 @@ from hypothesis import (
     strategies as st,
 )
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     InsufficientData,
 )
-from client_sdk_python.utils.math import (
+from alaya.utils.math import (
     percentile,
 )
 

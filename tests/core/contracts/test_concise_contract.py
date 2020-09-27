@@ -3,11 +3,11 @@ from unittest.mock import (
     Mock,
 )
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     decode_hex,
 )
 
-from client_sdk_python.contract import (
+from alaya.contract import (
     CONCISE_NORMALIZERS,
     ConciseContract,
     ConciseMethod,

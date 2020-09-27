@@ -1,11 +1,11 @@
 import asyncio
 import pytest
 
-from client_sdk_python.utils.module_testing.emitter_contract import (
+from alaya.utils.module_testing.emitter_contract import (
     EMITTER_ABI,
     EMITTER_BYTECODE,
 )
-from client_sdk_python.utils.module_testing.math_contract import (
+from alaya.utils.module_testing.math_contract import (
     MATH_ABI,
     MATH_BYTECODE,
 )

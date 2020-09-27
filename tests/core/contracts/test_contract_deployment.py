@@ -1,7 +1,7 @@
 
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     decode_hex,
 )
 

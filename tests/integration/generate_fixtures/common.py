@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import time
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_checksum_address,
     to_text,
 )

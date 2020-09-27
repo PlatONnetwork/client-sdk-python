@@ -13,7 +13,7 @@ from hexbytes import (
     HexBytes,
 )
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     BadFunctionCallOutput,
     BlockNumberOutofRange,
     InvalidAddress,
@@ -21,10 +21,10 @@ from client_sdk_python.exceptions import (
     NoABIFunctionsFound,
     ValidationError,
 )
-from client_sdk_python.utils.ens import (
+from alaya.utils.ens import (
     contract_ens_addresses,
 )
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     identity,
 )
 

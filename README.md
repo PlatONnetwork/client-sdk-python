@@ -309,7 +309,7 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 第三方包名称
 
 ```python
 from client_sdk_p，ython import Web3, HTTPProvider
-from client_sdk_python.eth import PlatON
+from alaya.eth import PlatON
 from hexbytes import HexBytes
 
 # get blockNumber syncing gasPrice accounts evidences consensusStatus
@@ -1096,10 +1096,10 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
 
   ```python
   from hexbytes import HexBytes
-  from client_sdk_python import Web3, HTTPProvider
-  from client_sdk_python.eth import PlatON
+  from alaya import Web3, HTTPProvider
+  from alaya.eth import PlatON
   from platon_keys.utils import bech32,address
-  from client_sdk_python.packages.eth_utils import to_checksum_address
+  from alaya.packages.eth_utils import to_checksum_address
   
   true = True
   false = False
@@ -1344,8 +1344,8 @@ print(topic_param)
   下面代码中bytecode即为合约的bin数据，cabi即为合约的abi数据
 
   ```python
-  from client_sdk_python import Web3, HTTPProvider
-  from client_sdk_python.eth import PlatON
+  from alaya import Web3, HTTPProvider
+  from alaya.eth import PlatON
   true = True
   false = False
   

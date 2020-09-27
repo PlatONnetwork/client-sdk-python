@@ -5,25 +5,25 @@ import pytest
 from eth_account.messages import (
     defunct_hash_message,
 )
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_checksum_address,
 )
 from hexbytes import (
     HexBytes,
 )
 
-from client_sdk_python import (
+from alaya import (
     Account,
     Web3,
 )
-from client_sdk_python.providers.eth_tester import (
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
-from client_sdk_python.utils.encoding import (
+from alaya.utils.encoding import (
     to_bytes,
     to_hex,
 )
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     dissoc,
 )
 

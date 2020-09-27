@@ -3,7 +3,7 @@ from unittest.mock import (
     Mock,
 )
 
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     gas_price_strategy_middleware,
 )
 

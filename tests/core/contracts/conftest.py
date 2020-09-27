@@ -2,7 +2,7 @@ import functools
 import json
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     event_signature_to_log_topic,
 )
 

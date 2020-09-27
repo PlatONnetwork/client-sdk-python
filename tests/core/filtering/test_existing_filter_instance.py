@@ -1,9 +1,9 @@
 import pytest
 
-from client_sdk_python.providers.eth_tester import (
+from alaya.providers.eth_tester import (
     EthereumTesterProvider,
 )
-from client_sdk_python.utils.threads import (
+from alaya.utils.threads import (
     Timeout,
 )
 

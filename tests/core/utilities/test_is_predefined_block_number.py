@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.blocks import (
+from alaya.utils.blocks import (
     is_predefined_block_number,
 )
 

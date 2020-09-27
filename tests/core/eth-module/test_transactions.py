@@ -1,9 +1,9 @@
 import pytest
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     ValidationError,
 )
-from client_sdk_python.middleware.simulate_unmined_transaction import (
+from alaya.middleware.simulate_unmined_transaction import (
     unmined_receipt_simulator_middleware,
 )
 

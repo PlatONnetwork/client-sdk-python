@@ -3,7 +3,7 @@ import socket
 import subprocess
 import time
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_text,
 )
 import requests

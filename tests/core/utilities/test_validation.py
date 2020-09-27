@@ -1,13 +1,13 @@
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     to_bytes,
 )
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     InvalidAddress,
 )
-from client_sdk_python.utils.validation import (
+from alaya.utils.validation import (
     validate_abi,
     validate_abi_type,
     validate_abi_value,

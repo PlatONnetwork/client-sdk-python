@@ -1,14 +1,14 @@
 import pytest
 
-from client_sdk_python import Web3
-from client_sdk_python.exceptions import (
+from alaya import Web3
+from alaya.exceptions import (
     InvalidAddress,
 )
-from client_sdk_python.middleware import (  # noqa: F401
+from alaya.middleware import (  # noqa: F401
     construct_fixture_middleware,
     name_to_address_middleware,
 )
-from client_sdk_python.providers.base import (
+from alaya.providers.base import (
     BaseProvider,
 )
 

@@ -10,13 +10,13 @@ from threading import (
 import time
 import uuid
 
-from client_sdk_python.auto.gethdev import (
+from alaya.auto.gethdev import (
     w3,
 )
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     construct_fixture_middleware,
 )
-from client_sdk_python.providers.ipc import (
+from alaya.providers.ipc import (
     IPCProvider,
 )
 

@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.transactions import (
+from alaya.utils.transactions import (
     prepare_replacement_transaction,
 )
 

@@ -1,6 +1,6 @@
 from hexbytes import HexBytes
-from client_sdk_python import Web3, HTTPProvider
-from client_sdk_python.eth import PlatON
+from alaya import Web3, HTTPProvider
+from alaya.eth import PlatON
 
 true = True
 false = False

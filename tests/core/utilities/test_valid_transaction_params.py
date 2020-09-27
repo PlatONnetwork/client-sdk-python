@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.transactions import (
+from alaya.utils.transactions import (
     assert_valid_transaction_params,
     extract_valid_transaction_params,
 )

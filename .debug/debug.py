@@ -1,4 +1,4 @@
-from client_sdk_python import Web3, eth, ppos, HTTPProvider
+from alaya import Web3, eth, ppos, HTTPProvider
 
 url = "http://192.168.16.11:6789"
 w3 = Web3(HTTPProvider(url), chain_id=298)

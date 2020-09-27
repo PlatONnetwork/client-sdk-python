@@ -1,10 +1,10 @@
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_same_address,
 )
 
-from client_sdk_python.utils.events import (
+from alaya.utils.events import (
     get_event_data,
 )
 

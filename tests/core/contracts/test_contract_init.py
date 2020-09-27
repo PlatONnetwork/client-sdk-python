@@ -1,10 +1,10 @@
 import pytest
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     BadFunctionCallOutput,
     NameNotFound,
 )
-from client_sdk_python.utils.ens import (
+from alaya.utils.ens import (
     contract_ens_addresses,
     ens_addresses,
 )

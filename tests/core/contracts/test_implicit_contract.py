@@ -1,10 +1,10 @@
 import pytest
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     is_integer,
 )
 
-from client_sdk_python.contract import (
+from alaya.contract import (
     ImplicitContract,
 )
 

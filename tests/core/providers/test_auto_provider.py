@@ -6,19 +6,19 @@ from tempfile import (
     gettempdir,
 )
 
-from client_sdk_python.packages.eth_utils import (
+from alaya.packages.eth_utils import (
     ValidationError,
 )
 
-from client_sdk_python.exceptions import (
+from alaya.exceptions import (
     InfuraKeyNotFound,
 )
-from client_sdk_python.providers import (
+from alaya.providers import (
     HTTPProvider,
     IPCProvider,
     WebsocketProvider,
 )
-from client_sdk_python.providers.auto import (
+from alaya.providers.auto import (
     load_provider_from_environment,
 )
 
@@ -27,7 +27,7 @@ TEMP_DIR = gettempdir()
 
 # Ugly hack to import Infura now that API KEY is required
 os.environ['WEB3_INFURA_API_KEY'] = 'test'
-from client_sdk_python.auto import (  # noqa E402 isort:skip
+from alaya.auto import (  # noqa E402 isort:skip
     infura,
 )
 

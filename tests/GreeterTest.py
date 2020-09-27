@@ -1,6 +1,6 @@
-from client_sdk_python import Web3,HTTPProvider
-from client_sdk_python.eth import PlatON
-from client_sdk_python.contract import ConciseContract
+from alaya import Web3,HTTPProvider
+from alaya.eth import PlatON
+from alaya.contract import ConciseContract
 
 # Solidity source code
 # contract_source_code = '''

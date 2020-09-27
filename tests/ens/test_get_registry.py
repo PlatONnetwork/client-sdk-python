@@ -5,7 +5,7 @@ from unittest.mock import (
 )
 
 from ens import ENS
-from client_sdk_python import Web3
+from alaya import Web3
 
 
 def test_resolver_empty(ens):

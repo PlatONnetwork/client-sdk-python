@@ -5,13 +5,13 @@ from unittest.mock import (
     patch,
 )
 
-from client_sdk_python.datastructures import (
+from alaya.datastructures import (
     AttributeDict,
 )
-from client_sdk_python.middleware import (
+from alaya.middleware import (
     make_stalecheck_middleware,
 )
-from client_sdk_python.middleware.stalecheck import (
+from alaya.middleware.stalecheck import (
     StaleBlockchain,
     _isfresh,
 )

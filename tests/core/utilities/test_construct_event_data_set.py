@@ -1,6 +1,6 @@
 import pytest
 
-from client_sdk_python.utils.events import (
+from alaya.utils.events import (
     construct_event_data_set,
 )
 

@@ -3,16 +3,16 @@ import pytest
 import time
 import uuid
 
-from client_sdk_python import Web3
-from client_sdk_python.middleware import (  # noqa: F401
+from alaya import Web3
+from alaya.middleware import (  # noqa: F401
     construct_error_generator_middleware,
     construct_result_generator_middleware,
     construct_time_based_cache_middleware,
 )
-from client_sdk_python.providers.base import (
+from alaya.providers.base import (
     BaseProvider,
 )
-from client_sdk_python.utils.caching import (
+from alaya.utils.caching import (
     generate_cache_key,
 )
 

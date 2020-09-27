@@ -1,11 +1,11 @@
 import pytest
 
-from client_sdk_python import Web3
-from client_sdk_python.middleware import (  # noqa: F401
+from alaya import Web3
+from alaya.middleware import (  # noqa: F401
     construct_result_generator_middleware,
     request_parameter_normalizer,
 )
-from client_sdk_python.providers.base import (
+from alaya.providers.base import (
     BaseProvider,
 )
 

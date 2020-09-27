@@ -6,7 +6,7 @@ from hexbytes import (
     HexBytes,
 )
 
-from client_sdk_python import Web3
+from alaya import Web3
 
 
 @pytest.mark.parametrize(

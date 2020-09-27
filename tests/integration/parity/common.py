@@ -4,7 +4,7 @@ from flaky import (
     flaky,
 )
 
-from client_sdk_python.utils.module_testing import (
+from alaya.utils.module_testing import (
     EthModuleTest,
     ParityModuleTest as TraceModuleTest,
     PersonalModuleTest,

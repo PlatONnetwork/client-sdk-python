@@ -1,9 +1,9 @@
 import pytest
 
-from client_sdk_python.utils.blocks import (
+from alaya.utils.blocks import (
     select_method_for_block_identifier,
 )
-from client_sdk_python.utils.toolz import (
+from alaya.utils.toolz import (
     partial,
 )
 
