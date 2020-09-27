@@ -15,7 +15,7 @@ from typing import (
     Tuple,
 )
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     apply_to_return_value,
     big_endian_to_int,
     int_to_big_endian,

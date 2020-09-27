@@ -19,23 +19,23 @@ print(f"result == {result}")
 
 
 # # privatekey to bech32
-# from platon_keys.datatypes import PrivateKey
+# from alaya.packages.platon_keys.datatypes import PrivateKey
 # pk = bytes.fromhex('91751513fa39f02ada9a7110bef0a20e03375e9b05d78036e84e91366276e5d8')
 # prikey = PrivateKey(pk)
 # print(prikey.public_key.to_bech32_test_address())
 
 # 0x_address to bech32
-# from platon_keys.utils import address
+# from alaya.packages.platon_keys.utils import address
 # add = bytes.fromhex('BE0af016941Acaf08Bf5f4ad185155Df6B7388ce')
 # print(address.address_bytes_to_test_address(add))
 #
 # 0x_address to bech32
-from platon_keys.utils import address
+from alaya.packages.platon_keys.utils import address
 add = bytes.fromhex('0000000000000000000000000000000000000000')
 print(address.address_bytes_to_test_address(add))
 
 
-from platon_keys.utils import address
+from alaya.packages.platon_keys.utils import address
 lax = 'lax1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmscn5j'
 addr = address.test_address_to_address_bytes(lax)
 print(addr)

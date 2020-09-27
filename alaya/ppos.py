@@ -5,7 +5,7 @@ from hexbytes import HexBytes
 from alaya.module import (
     Module,
 )
-from eth_utils.hexadecimal import remove_0x_prefix
+from alaya.packages.eth_utils.hexadecimal import remove_0x_prefix
 from alaya.utils.encoding import parse_str
 from alaya.utils.transactions import send_obj_transaction, call_obj
 from alaya.packages.platon_account.internal.transactions import bech32_address_bytes

@@ -1,11 +1,11 @@
 from typing import Any
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     encode_hex,
     is_bytes,
     is_integer,
 )
-from eth_utils.toolz import curry
+from alaya.packages.eth_utils.toolz import curry
 
 from alaya.packages.platon_keys.constants import (
     SECPK1_N,

@@ -7,7 +7,7 @@ import os
 from cytoolz import (
     dissoc,
 )
-from platon_keyfile import (
+from alaya.packages.platon_keyfile import (
     create_keyfile_json,
     decode_keyfile_json,
 )
@@ -19,7 +19,7 @@ from alaya.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
 from alaya.packages.platon_keys.exceptions import (
     ValidationError,
 )
-from eth_utils import (
+from alaya.packages.eth_utils import (
     combomethod,
     hexstr_if_str,
     is_dict,
@@ -32,10 +32,10 @@ from hexbytes import (
     HexBytes,
 )
 
-from platon_account.datastructures import (
+from alaya.packages.platon_account.datastructures import (
     AttributeDict,
 )
-from platon_account.internal.signing import (
+from alaya.packages.platon_account.internal.signing import (
     hash_of_signed_transaction,
     sign_message_hash,
     sign_transaction_dict,
@@ -46,7 +46,7 @@ from alaya.packages.platon_account.internal.transactions import (
     Transaction,
     vrs_from,
 )
-from platon_account.signers.local import (
+from alaya.packages.platon_account.signers.local import (
     LocalAccount,
 )
 
@@ -70,7 +70,7 @@ class Account(object):
 
         .. code-block:: python
 
-            >>> from platon_account import Account
+            >>> from alaya.packages.platon_account import Account
             >>> acct = Account.create('KEYSMASH FJAFJKLDSKF7JKFDJ 1530')
             >>> acct.address
             '0x5ce9454909639D2D17A3F753ce7d93fa0b9aB12E'
@@ -335,7 +335,7 @@ class Account(object):
         .. code-block:: python
 
             >>> msg = "I♥SF"
-            >>> from platon_account.messages import defunct_hash_message
+            >>> from alaya.packages.platon_account.messages import defunct_hash_message
             >>> msghash = defunct_hash_message(text=msg)
             HexBytes('0x1476abb745d423bf09273f1afd887d951181d25adc66c4834a70491911b7f750')
             >>> key = "0xb25c7db31feed9122727bf0939dc769a96564b2de4c4726d035b36ecf1e5b364"

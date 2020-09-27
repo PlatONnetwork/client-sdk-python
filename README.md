@@ -1098,7 +1098,7 @@ python sdk目前支持evm、wasm合约编译后形成的bin和abi作为合约数
   from hexbytes import HexBytes
   from alaya import Web3, HTTPProvider
   from alaya.eth import PlatON
-  from platon_keys.utils import bech32,address
+  from alaya.packages.platon_keys.utils import bech32,address
   from alaya.packages.eth_utils import to_checksum_address
   
   true = True

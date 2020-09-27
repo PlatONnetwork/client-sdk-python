@@ -1,4 +1,4 @@
-from platon_account.signers.base import (
+from alaya.packages.platon_account.signers.base import (
     BaseAccount,
 )
 from alaya.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP

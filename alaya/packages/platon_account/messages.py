@@ -1,7 +1,7 @@
 from cytoolz import (
     compose,
 )
-from eth_utils import (
+from alaya.packages.eth_utils import (
     keccak,
     to_bytes,
 )
@@ -9,7 +9,7 @@ from hexbytes import (
     HexBytes,
 )
 
-from platon_account.internal.signing import (
+from alaya.packages.platon_account.internal.signing import (
     signature_wrapper,
 )
 
@@ -42,7 +42,7 @@ def defunct_hash_message(primitive=None, hexstr=None, text=None):
 
     .. code-block:: python
 
-        >>> from platon_account.messages import defunct_hash_message
+        >>> from alaya.packages.platon_account.messages import defunct_hash_message
 
         >>> msg = "I♥SF"
         >>> defunct_hash_message(text=msg)

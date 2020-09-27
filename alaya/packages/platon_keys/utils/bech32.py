@@ -1,5 +1,5 @@
 from typing import Iterable, List, Optional, Tuple, Union
-from eth_utils import (
+from alaya.packages.eth_utils import (
     is_address,
 )
 

@@ -5,7 +5,7 @@ import hashlib
 import hmac
 from typing import (Any, Callable, Optional, Tuple)  # noqa: F401
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     int_to_big_endian,
     big_endian_to_int,
 )

@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from typing import Optional  # noqa: F401
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     big_endian_to_int,
 )
 

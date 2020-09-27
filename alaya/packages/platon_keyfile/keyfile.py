@@ -8,9 +8,9 @@ from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Util import Counter
 
-from platon_keys import keys
+from alaya.packages.platon_keys import keys
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     big_endian_to_int,
     decode_hex,
     encode_hex,

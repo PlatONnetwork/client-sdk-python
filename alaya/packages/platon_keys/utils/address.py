@@ -1,4 +1,4 @@
-from eth_utils import (
+from alaya.packages.eth_utils import (
     keccak,
 )
 from alaya.packages.platon_keys.utils.bech32 import encode

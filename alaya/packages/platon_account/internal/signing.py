@@ -1,7 +1,7 @@
 from cytoolz import (
     pipe,
 )
-from eth_utils import (
+from alaya.packages.eth_utils import (
     to_bytes,
     to_int,
 )

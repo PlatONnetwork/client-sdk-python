@@ -3,7 +3,7 @@ import sha3
 import rlp
 import copy
 from alaya.packages.eth_utils.hexadecimal import remove_0x_prefix
-from platon_account import (
+from alaya.packages.platon_account import (
     Account,
 )
 from alaya.packages.platon_account.internal.transactions import bech32_address_bytes
@@ -57,7 +57,7 @@ from alaya.utils.transactions import (
     wait_for_transaction_receipt,
 )
 
-from platon_account.internal.signing import (
+from alaya.packages.platon_account.internal.signing import (
     to_standard_signature_bytes,
 )
 true = True

@@ -15,7 +15,7 @@ from typing import (    # noqa: F401
     TYPE_CHECKING,
 )
 
-from eth_utils import (
+from alaya.packages.eth_utils import (
     big_endian_to_int,
     encode_hex,
     int_to_big_endian,
@@ -25,7 +25,7 @@ from eth_utils import (
     to_checksum_address,
     to_normalized_address,
 )
-from eth_utils.typing import (
+from alaya.packages.eth_utils.typing import (
     ChecksumAddress,
 )
 
