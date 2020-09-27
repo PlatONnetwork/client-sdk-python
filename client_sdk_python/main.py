@@ -1,4 +1,4 @@
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     apply_to_return_value,
     add_0x_prefix,
     from_wei,
@@ -9,7 +9,7 @@ from eth_utils import (
     # to_checksum_address,
     to_wei,
 )
-from platon_keys.utils.address import MIANNETHRP, TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from ens import ENS
 
@@ -92,11 +92,11 @@ def default_address(mainnet, testnet):
     return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
 
 
-restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
-staking = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
-penalty = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
-pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
-delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
+restricting = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
+staking = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
+penalty = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
+pipAddr = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
+delegateReward = default_address("atp1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "atx1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
 
 
 def to_checksum_address(val):

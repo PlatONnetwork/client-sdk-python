@@ -8,7 +8,7 @@ from client_sdk_python.module import (
 from eth_utils.hexadecimal import remove_0x_prefix
 from client_sdk_python.utils.encoding import parse_str
 from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
-from platon_account.internal.transactions import bech32_address_bytes
+from client_sdk_python.packages.platon_account.internal.transactions import bech32_address_bytes
 
 
 class Ppos(Module):

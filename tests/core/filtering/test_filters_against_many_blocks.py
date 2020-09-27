@@ -1,7 +1,7 @@
 import pytest
 import random
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_tuple,
 )
 

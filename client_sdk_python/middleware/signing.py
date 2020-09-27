@@ -9,10 +9,10 @@ from platon_account import (
 from platon_account.local import (
     LocalAccount,
 )
-from platon_keys.datatypes import (
+from client_sdk_python.packages.platon_keys.datatypes import (
     PrivateKey,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_dict,
 )
 

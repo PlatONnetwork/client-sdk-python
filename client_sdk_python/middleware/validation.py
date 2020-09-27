@@ -1,4 +1,4 @@
-from eth_utils.curried import (
+from client_sdk_python.packages.eth_utils.curried import (
     apply_formatter_at_index,
     apply_formatter_if,
     apply_formatters_to_dict,

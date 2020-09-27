@@ -22,7 +22,10 @@ from client_sdk_python.providers.websocket import (  # noqa: E402
     WebsocketProvider,
 )
 
-__version__ = pkg_resources.get_distribution("client_sdk_python").version
+try:
+    __version__ = pkg_resources.get_distribution("client_sdk_python").version
+except:
+    __version__ = '0.13.2'
 
 __all__ = [
     "__version__",

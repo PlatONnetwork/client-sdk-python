@@ -2,7 +2,7 @@
 
 import pytest
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_bytes,
 )
 

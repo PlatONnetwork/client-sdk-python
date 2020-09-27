@@ -1,7 +1,7 @@
 import codecs
 import operator
 
-from eth_utils.curried import (
+from client_sdk_python.packages.eth_utils.curried import (
     combine_argument_formatters,
     is_address,
     is_bytes,
