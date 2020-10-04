@@ -138,7 +138,7 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=201018):
         self.manager = RequestManager(self, providers, middlewares)
 
         if modules is None:
@@ -147,7 +147,7 @@ class Web3:
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
 
-        if chain_id == 100:
+        if chain_id == 201018:
             self.net_type = MIANNETHRP
         else:
             self.net_type = TESTNETHRP
