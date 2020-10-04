@@ -63,7 +63,7 @@ extras_require['dev'] = (
 setup(
     name='alaya.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.13.2.7',
+    version='0.13.2.9',
     description="""PlatON alaya network SDK""",
     # long_description_markdown_filename='README.md',
     author='Piper shinnng',

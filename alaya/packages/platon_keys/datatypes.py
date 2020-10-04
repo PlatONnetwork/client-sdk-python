@@ -30,7 +30,7 @@ from alaya.packages.eth_utils.typing import (
 )
 
 from alaya.packages.platon_keys.utils.address import (
-    public_key_bytes_to_address, address_bytes_to_address, address_bytes_to_test_address
+    public_key_bytes_to_address, address_bytes_to_address, address_bytes_to_bech32_address
 )
 from alaya.packages.platon_keys.utils.numeric import (
     int_to_byte,
@@ -246,7 +246,7 @@ class PublicKey(BaseKey, LazyBackend):
         return address_bytes_to_address(public_key_bytes_to_address(self.to_bytes()))
 
     def to_bech32_test_address(self):
-        return address_bytes_to_test_address(public_key_bytes_to_address(self.to_bytes()))
+        return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()))
 
 
 class PrivateKey(BaseKey, LazyBackend):
