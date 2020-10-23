@@ -592,30 +592,31 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
 
     else:
         argument_types = get_abi_input_types(abi)
-        if argument_types:
-            if argument_types[0] == 'address':
-                if arguments[0][:3] == 'atx':
-                    hrpgot, data1 = bech32.decode("atx", arguments[0])
-                    addr = to_checksum_address(bytes(data1))
-                    arguments = tuple(addr.split(","))
-                elif arguments[0][:3] == 'atp':
-                    hrpgot, data1 = bech32.decode("atp", arguments[0])
-                    addr = to_checksum_address(bytes(data1))
-                    arguments = tuple(addr.split(","))
-                else:
-                    raise Exception("wrong address")
-            elif argument_types[0] == 'address[]':
-                for i in range(len(arguments[0])):
-                    if arguments[0][i][:3] == 'atx':
-                        hrpgot, data1 = bech32.decode("atx", arguments[0][i])
+        for j in range(len(argument_types)):
+            if argument_types[j]:
+                if argument_types[j] == 'address':
+                    if arguments[j][:3] == 'atx':
+                        hrpgot, data1 = bech32.decode("atx", arguments[j])
                         addr = to_checksum_address(bytes(data1))
-                        arguments[0][i] = addr
-                    elif arguments[0][i][:3] == 'atp':
-                        hrpgot, data1 = bech32.decode("atp", arguments[0][i])
+                        arguments[j] = addr  #.split(",")
+                    elif arguments[j][:3] == 'atp':
+                        hrpgot, data1 = bech32.decode("atp", arguments[j])
                         addr = to_checksum_address(bytes(data1))
-                        arguments[0][i] = addr
+                        arguments[j] = addr  #.split(",")
                     else:
-                        raise Exception("wrong address[]")
+                        raise Exception("wrong address")
+                elif argument_types[j] == 'address[]':
+                    for i in range(len(arguments[j])):
+                        if arguments[j][i][:3] == 'atx':
+                            hrpgot, data1 = bech32.decode("atx", arguments[j][i])
+                            addr = to_checksum_address(bytes(data1))
+                            arguments[j][i] = addr
+                        elif arguments[j][i][:3] == 'atp':
+                            hrpgot, data1 = bech32.decode("atp", arguments[j][i])
+                            addr = to_checksum_address(bytes(data1))
+                            arguments[j][i] = addr
+                        else:
+                            raise Exception("wrong address[]")
 
         if not check_if_arguments_can_be_encoded(abi, arguments, {}):
             raise TypeError(
