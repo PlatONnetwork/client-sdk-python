@@ -792,7 +792,7 @@ class Contract:
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
 
             deploy_data = add_0x_prefix(
-                encode_abi(cls.web3, constructor_abi, arguments, cls.bytecode, cls.abi)
+                encode_abi(cls.web3, constructor_abi, arguments, cls.vmtype, cls.bytecode, cls.abi)
             )
         else:
             deploy_data = to_hex(cls.bytecode)
@@ -1463,19 +1463,17 @@ def call_contract_function(
             normalizers,
         )
         normalized_data = map_abi_data(_normalizers, output_types, output_data)
-        laxdata = []
-        if output_types == ['address']:
-            laxdata = tobech32address(address[:3], normalized_data[0])
-            return laxdata[0]
-        elif output_types == ['address[]']:
-            for i in range(len(normalized_data[0])):
-                laxdata.append(tobech32address(address[:3], normalized_data[0][i]))
-            return laxdata
+        # laxdata = []
+        for i in range(len(normalized_data)):
+            if output_types[i] == ['address']:
+                normalized_data[i] = tobech32address(address[:3], normalized_data[i])
+            elif output_types[i] == ['address[]']:
+                for j in range(len(normalized_data[i])):
+                    normalized_data[i][j]=tobech32address(address[:3], normalized_data[i][j])
+        if len(normalized_data) == 1:
+            return normalized_data[0]
         else:
-            if len(normalized_data) == 1:
-                return normalized_data[0]
-            else:
-                return normalized_data
+            return normalized_data
 
 
 def parse_block_identifier(web3, block_identifier):
