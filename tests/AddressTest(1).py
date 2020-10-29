@@ -21,9 +21,13 @@ from client_sdk_python.eth import PlatON
 true = True
 false = False
 
-w3 = Web3(HTTPProvider("http://10.1.1.5:6789"))
+
+w3 = Web3(HTTPProvider("http://10.10.8.209:6789"))
 platon = PlatON(w3)
 print(w3.isConnected())
+# w3 = Web3(HTTPProvider("http://10.1.1.5:6789"))
+# platon = PlatON(w3)
+# print(w3.isConnected())
 # from_address = "lax1uqug0zq7rcxddndleq4ux2ft3tv6dqljphydrl"
 from_address = "lax1du4w3q0h5gpxh2vpdvtl7m8h2p9qj40a2krhx7"
 print(from_address)
