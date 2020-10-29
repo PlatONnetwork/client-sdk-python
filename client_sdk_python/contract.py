@@ -1215,6 +1215,7 @@ class ContractFunction:
             estimate_gas_transaction,
             self.contract_abi,
             self.abi,
+            self.vmtype,
             *self.args,
             **self.kwargs
         )
@@ -1254,13 +1255,14 @@ class ContractFunction:
             built_transaction,
             self.contract_abi,
             self.abi,
+            self.vmtype,
             *self.args,
             **self.kwargs
         )
 
     @combomethod
     def _encode_transaction_data(cls):
-        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.selector, cls.abi))
+        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.vmtype, cls.selector, cls.abi))
 
     _return_data_normalizers = tuple()
 
@@ -1461,19 +1463,17 @@ def call_contract_function(
             normalizers,
         )
         normalized_data = map_abi_data(_normalizers, output_types, output_data)
-        laxdata = []
-        if output_types == ['address']:
-            laxdata = tobech32address(address[:3], normalized_data[0])
-            return laxdata[0]
-        elif output_types == ['address[]']:
-            for i in range(len(normalized_data[0])):
-                laxdata.append(tobech32address(address[:3], normalized_data[0][i]))
-            return laxdata
+        # laxdata = []
+        for i in range(len(normalized_data)):
+            if output_types[i] == ['address']:
+                normalized_data[i] = tobech32address(address[:3], normalized_data[i])
+            elif output_types[i] == ['address[]']:
+                for j in range(len(normalized_data[i])):
+                    normalized_data[i][j]=tobech32address(address[:3], normalized_data[i][j])
+        if len(normalized_data) == 1:
+            return normalized_data[0]
         else:
-            if len(normalized_data) == 1:
-                return normalized_data[0]
-            else:
-                return normalized_data
+            return normalized_data
 
 
 def parse_block_identifier(web3, block_identifier):
@@ -1535,6 +1535,7 @@ def estimate_gas_for_function(
         transaction=None,
         contract_abi=None,
         fn_abi=None,
+        vmtype=None,
         *args,
         **kwargs):
     """Estimates gas cost a function call would take.
@@ -1548,6 +1549,7 @@ def estimate_gas_for_function(
         fn_identifier=fn_identifier,
         contract_abi=contract_abi,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         transaction=transaction,
         fn_args=args,
         fn_kwargs=kwargs,
@@ -1564,6 +1566,7 @@ def build_transaction_for_function(
         transaction=None,
         contract_abi=None,
         fn_abi=None,
+        vmtype=None,
         *args,
         **kwargs):
     """Builds a dictionary with the fields required to make the given transaction
@@ -1577,6 +1580,7 @@ def build_transaction_for_function(
         fn_identifier=function_name,
         contract_abi=contract_abi,
         fn_abi=fn_abi,
+        vmtype=vmtype,
         transaction=transaction,
         fn_args=args,
         fn_kwargs=kwargs,
