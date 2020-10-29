@@ -11,7 +11,7 @@ from alaya.packages.eth_utils import (
 )
 from alaya.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
-from ens import ENS
+from alaya.packages.ens import ENS
 
 from alaya.admin import Admin
 from alaya.eth import Eth, PlatON

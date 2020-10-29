@@ -8,7 +8,7 @@ from alaya.packages.eth_utils import (
     is_hex_address,
 )
 
-from ens import ENS
+from alaya.packages.ens import ENS
 from alaya.exceptions import (
     NameNotFound,
 )

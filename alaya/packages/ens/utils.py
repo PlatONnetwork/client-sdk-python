@@ -10,7 +10,7 @@ from alaya.packages.eth_utils import (
 )
 import idna
 
-from ens.constants import (
+from alaya.packages.ens.constants import (
     ACCEPTABLE_STALE_HOURS,
     AUCTION_START_GAS_CONSTANT,
     AUCTION_START_GAS_MARGINAL,
@@ -19,7 +19,7 @@ from ens.constants import (
     RECOGNIZED_TLDS,
     REVERSE_REGISTRAR_DOMAIN,
 )
-from ens.exceptions import (
+from alaya.packages.ens.exceptions import (
     InvalidLabel,
     InvalidName,
 )
