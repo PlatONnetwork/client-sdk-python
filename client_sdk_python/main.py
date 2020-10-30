@@ -9,7 +9,7 @@ from client_sdk_python.packages.eth_utils import (
     # to_checksum_address,
     to_wei,
 )
-from platon_keys.utils.address import MIANNETHRP, TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from ens import ENS
 

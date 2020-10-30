@@ -61,7 +61,7 @@ from client_sdk_python.utils.toolz import (
     valmap,
 )
 
-from platon_keys.utils import bech32,address
+from client_sdk_python.packages.platon_keys.utils import bech32,address
 
 from client_sdk_python.packages.eth_utils import to_checksum_address
 

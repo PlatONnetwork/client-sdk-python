@@ -3,10 +3,10 @@ import sha3
 import rlp
 import copy
 from client_sdk_python.packages.eth_utils.hexadecimal import remove_0x_prefix
-from platon_account import (
+from client_sdk_python.packages.platon_account import (
     Account,
 )
-from platon_account.internal.transactions import bech32_address_bytes
+from client_sdk_python.packages.platon_account.internal.transactions import bech32_address_bytes
 from client_sdk_python.packages.eth_utils import (
     apply_to_return_value,
     is_checksum_address,
@@ -59,7 +59,7 @@ from client_sdk_python.utils.transactions import (
     wait_for_transaction_receipt,
 )
 
-from platon_account.internal.signing import (
+from client_sdk_python.packages.platon_account.internal.signing import (
     to_standard_signature_bytes,
 )
 true = True

@@ -3,13 +3,13 @@ from functools import (
 )
 import operator
 
-from platon_account import (
+from client_sdk_python.packages.platon_account import (
     Account,
 )
-from platon_account.local import (
+from client_sdk_python.packages.platon_account.local import (
     LocalAccount,
 )
-from platon_keys.datatypes import (
+from client_sdk_python.packages.platon_keys.datatypes import (
     PrivateKey,
 )
 from client_sdk_python.packages.eth_utils import (
