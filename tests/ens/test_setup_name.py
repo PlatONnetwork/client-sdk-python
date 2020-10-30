@@ -1,7 +1,7 @@
 
 import pytest
 
-from ens.main import (
+from client_sdk_python.packages.ens .main import (
     AddressMismatch,
     UnauthorizedError,
     UnownedName,
