@@ -1,7 +1,7 @@
 
 import pytest
 
-from ens import (
+from client_sdk_python.packages.ens  import (
     InvalidName,
 )
 

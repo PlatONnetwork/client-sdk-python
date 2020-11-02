@@ -91,7 +91,7 @@ from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
 
-from platon_keys.utils import bech32
+from client_sdk_python.packages.platon_keys.utils import bech32
 
 
 DEPRECATED_SIGNATURE_MESSAGE = (

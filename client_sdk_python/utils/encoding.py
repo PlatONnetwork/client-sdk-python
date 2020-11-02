@@ -37,7 +37,7 @@ from client_sdk_python.utils.validation import (
     validate_abi_type,
     validate_abi_value,
 )
-from platon_keys.utils import bech32
+from client_sdk_python.packages.platon_keys.utils import bech32
 
 def parse_str(raw_data):
     data = str(raw_data, encoding="utf-8").replace('\\', '').replace('"[', '[').replace(']"', ']')
