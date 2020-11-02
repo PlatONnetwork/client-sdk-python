@@ -109,5 +109,7 @@ if sys.version_info.major < 3:
     )
     warnings.resetwarnings()
 
-
-__version__ = pkg_resources.get_distribution("eth-utils").version
+try:
+    __version__ = pkg_resources.get_distribution("eth-utils").version
+except:
+    __version__ = '1.7.0'
