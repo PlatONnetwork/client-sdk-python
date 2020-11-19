@@ -65,6 +65,8 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
                 transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
             except Exception as e:
                 res = str(e).replace('\'', '\"')
+                if '-32000' in res:
+                    raise e
                 res_json = json.loads(res)
                 return res_json.get('data').get('code')
     else:
