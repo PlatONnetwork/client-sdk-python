@@ -57,7 +57,11 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
     if transaction_cfg.get("gas", None) is None:
         from_address = obj.web3.pubkey_to_address(PrivateKey(bytes.fromhex(pri_key)).public_key)
         transaction_data = {"to": to_address, "data": data, "from": from_address}
-        transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
+        try:
+            transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
+        except Exception as rep:
+            print(rep)
+            return rep
     else:
         transaction_dict["gas"] = transaction_cfg["gas"]
     transaction_dict["chainId"] = obj.web3.chainId
