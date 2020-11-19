@@ -18,6 +18,7 @@ class Pip(Module):
     # If you want to get the result of the transaction, please set it to True,
     # if you only want to get the transaction hash, please set it to False
     need_analyze = True
+    need_quota_gas = True
 
     def submitText(self, verifier, pip_id, pri_key, transaction_cfg=None):
         """

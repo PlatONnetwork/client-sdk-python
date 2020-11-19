@@ -1,3 +1,4 @@
+import json
 import math
 
 from alaya.utils.threads import (
@@ -55,13 +56,17 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
     else:
         transaction_dict["nonce"] = transaction_cfg["nonce"]
     if transaction_cfg.get("gas", None) is None:
-        from_address = obj.web3.pubkey_to_address(PrivateKey(bytes.fromhex(pri_key)).public_key)
-        transaction_data = {"to": to_address, "data": data, "from": from_address}
-        try:
-            transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
-        except Exception as rep:
-            print(rep)
-            return rep
+        if obj.need_quota_gas:
+            transaction_dict["gas"] = 9424776
+        else:
+            from_address = obj.web3.pubkey_to_address(PrivateKey(bytes.fromhex(pri_key)).public_key)
+            transaction_data = {"to": to_address, "data": data, "from": from_address}
+            try:
+                transaction_dict["gas"] = obj.web3.platon.estimateGas(transaction_data)
+            except Exception as e:
+                res = str(e).replace('\'', '\"')
+                res_json = json.loads(res)
+                return res_json.get('data').get('code')
     else:
         transaction_dict["gas"] = transaction_cfg["gas"]
     transaction_dict["chainId"] = obj.web3.chainId
