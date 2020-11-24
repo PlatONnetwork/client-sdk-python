@@ -2,6 +2,7 @@ from client_sdk_python.packages.platon_account.signers.base import (
     BaseAccount,
 )
 from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
+from client_sdk_python.packages.platon_keys.datatypes import sm3_tobech32_address,sm3_tobech32_testaddress
 
 
 class LocalAccount(BaseAccount):
@@ -25,15 +26,19 @@ class LocalAccount(BaseAccount):
         b"\\x01\\x23..."
     '''
 
-    def __init__(self, key, account, net_type=MIANNETHRP):
+    def __init__(self, key, account, net_type=MIANNETHRP, mode='ECDSA'):
         '''
         :param platon_keys.PrivateKey key: to prefill in private key execution
         :param web3.account.Account account: the key-unaware management API
         '''
         self._publicapi = account
 
-        addr_dict = {MIANNETHRP: key.public_key.to_bech32_address(),
-                     TESTNETHRP: key.public_key.to_bech32_test_address()}
+        if mode == 'SM':
+            addr_dict = {MIANNETHRP: sm3_tobech32_address(key.public_key),
+                         TESTNETHRP: sm3_tobech32_testaddress(key.public_key)}
+        else:
+            addr_dict = {MIANNETHRP: key.public_key.to_bech32_address(),
+                         TESTNETHRP: key.public_key.to_bech32_test_address()}
 
         self._address = addr_dict[net_type]
 
@@ -71,3 +76,4 @@ class LocalAccount(BaseAccount):
 
     def __bytes__(self):
         return self.privateKey
+
