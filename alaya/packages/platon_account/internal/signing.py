@@ -13,16 +13,22 @@ from alaya.packages.platon_account.internal.transactions import (
     serializable_unsigned_transaction_from_dict,
     strip_signature,
 )
-
+from hexbytes import (
+    HexBytes,
+)
+import rlp
+from alaya.packages.gmssl import sm2, func ,sm3
 CHAIN_ID_OFFSET = 35
 V_OFFSET = 27
 
 
-def sign_transaction_dict(eth_key, transaction_dict):
+def sign_transaction_dict(eth_key, transaction_dict, mode='ECDSA'):
     # generate RLP-serializable transaction, with defaults filled
     unsigned_transaction = serializable_unsigned_transaction_from_dict(transaction_dict)
-
-    transaction_hash = unsigned_transaction.hash()
+    if mode=='ECDSA':
+        transaction_hash = unsigned_transaction.hash()
+    elif mode=='SM':
+        transaction_hash=HexBytes(sm3.sm3_hash(func.bytes_to_list(rlp.encode(unsigned_transaction))))
 
     # detect chain
     if isinstance(unsigned_transaction, UnsignedTransaction):
@@ -31,7 +37,13 @@ def sign_transaction_dict(eth_key, transaction_dict):
         chain_id = unsigned_transaction.v
 
     # sign with private key
-    (v, r, s) = sign_transaction_hash(eth_key, transaction_hash, chain_id)
+    if mode=='SM':
+        SMC=sm2.CryptSM2(hex(eth_key),1)
+        rand=func.random_hex(SMC.para_len)
+        (r, s, v1) = SMC.sign(transaction_hash, rand)
+        v = to_eth_v(v1, chain_id)
+    else:
+        (v, r, s) = sign_transaction_hash(eth_key, transaction_hash, chain_id)
 
     # serialize transaction with rlp
     encoded_transaction = encode_transaction(unsigned_transaction, vrs=(v, r, s))
@@ -74,37 +86,47 @@ def hash_of_signed_transaction(txn_obj):
     return signable_transaction.hash()
 
 
-def extract_chain_id(raw_v):
+def extract_chain_id(raw_v,mode='ECDSA'):
     '''
     Extracts chain ID, according to EIP-155
     @return (chain_id, v)
     '''
     above_id_offset = raw_v - CHAIN_ID_OFFSET
     if above_id_offset < 0:
-        if raw_v in {0, 1}:
-            return (None, raw_v + V_OFFSET)
-        elif raw_v in {27, 28}:
-            return (None, raw_v)
-        else:
-            raise ValueError("v %r is invalid, must be one of: 0, 1, 27, 28, 35+")
+        if mode == 'ECDSA':
+            if raw_v in {0, 1}:
+                return (None, raw_v + V_OFFSET)
+            elif raw_v in {27, 28}:
+                return (None, raw_v)
+            else:
+                raise ValueError("v %r is invalid, must be one of: 0, 1, 27, 28, 35+")
+        elif mode == 'SM':
+            if raw_v in {0, 1, 2, 3}:
+                return (None, raw_v + V_OFFSET)
+            elif raw_v in {27, 28, 29, 30}:
+                return (None, raw_v)
+            else:
+                raise ValueError("v %r is invalid, must be one of: 0, 1, 27, 28, 35+")
     else:
         (chain_id, v_bit) = divmod(above_id_offset, 2)
         return (chain_id, v_bit + V_OFFSET)
 
 
-def to_standard_signature_bytes(awake006_signature_bytes):
+def to_standard_signature_bytes(awake006_signature_bytes,mode='ECDSA'):
     rs = awake006_signature_bytes[:-1]
     v = to_int(awake006_signature_bytes[-1])
-    standard_v = to_standard_v(v)
+    standard_v = to_standard_v(v,mode)
     return rs + to_bytes(standard_v)
 
 
-def to_standard_v(enhanced_v):
-    (_chain, chain_naive_v) = extract_chain_id(enhanced_v)
+def to_standard_v(enhanced_v,mode='ECDSA'):
+    (_chain, chain_naive_v) = extract_chain_id(enhanced_v,mode)
     v_standard = chain_naive_v - V_OFFSET
-    assert v_standard in {0, 1}
+    if mode=='ECDSA':
+        assert v_standard in {0, 1}
+    elif mode=='SM':
+        assert v_standard in {0, 1, 2, 3}
     return v_standard
-
 
 def to_eth_v(v_raw, chain_id=None):
     if chain_id is None:
@@ -133,9 +155,16 @@ def to_bytes32(val):
     )
 
 
-def sign_message_hash(key, msg_hash):
-    signature = key.sign_msg_hash(msg_hash)
-    (v_raw, r, s) = signature.vrs
+def sign_message_hash(key, msg_hash, mode='ECDSA'):
+    if mode == 'ECDSA':
+        signature = key.sign_msg_hash(msg_hash)
+        (v_raw, r, s) = signature.vrs
+    elif mode == 'SM':
+        privatekey = key.to_bytes()
+        SMC = sm2.CryptSM2(privatekey.hex(), 1)
+        rand = func.random_hex(SMC.para_len)
+        (r, s, v_raw) = SMC.sign(msg_hash, rand)
+
     v = to_eth_v(v_raw)
     eth_signature_bytes = to_bytes32(r) + to_bytes32(s) + to_bytes(v)
     return (v, r, s, eth_signature_bytes)

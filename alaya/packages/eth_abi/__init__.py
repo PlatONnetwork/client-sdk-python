@@ -10,4 +10,4 @@ from alaya.packages.eth_abi.abi import (
 try:
    __version__ = pkg_resources.get_distribution('eth-abi').version
 except:
-    __version__='0.13.1.5'
+    __version__='1.3.0'

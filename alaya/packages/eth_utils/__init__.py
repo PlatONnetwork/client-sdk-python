@@ -112,4 +112,4 @@ if sys.version_info.major < 3:
 try:
     __version__ = pkg_resources.get_distribution("eth-utils").version
 except:
-    __version__ = '0.13.1.5'
+    __version__ = '1.7.0'
