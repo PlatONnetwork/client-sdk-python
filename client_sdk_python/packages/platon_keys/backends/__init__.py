@@ -17,9 +17,9 @@ from .native import NativeECCBackend  # noqa: F401
 
 def get_default_backend_class() -> str:
     if is_coincurve_available():
-        return 'client_sdk_python.packages.platon_keys.backends.CoinCurveECCBackend'
+        return 'alaya.packages.platon_keys.backends.CoinCurveECCBackend'
     else:
-        return 'client_sdk_python.packages.platon_keys.backends.NativeECCBackend'
+        return 'alaya.packages.platon_keys.backends.NativeECCBackend'
 
 
 def get_backend_class(import_path: str = None) -> Type[BaseECCBackend]:

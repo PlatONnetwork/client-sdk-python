@@ -162,29 +162,3 @@ def ecdsa_raw_recover(msg_hash: bytes,
     raw_public_key = from_jacobian(Q)
 
     return encode_raw_public_key(raw_public_key)
-
-def sm2_raw_recover(msg_hash: bytes,
-                      vrs: Tuple[int, int, int]) -> bytes:
-    v, r, s = vrs
-    v += 27
-
-    if not (27 <= v <= 34):
-        raise BadSignature("%d must in range 27-31" % v)
-
-    x = r
-
-    xcubedaxb = (x * x * x + A * x + B) % P
-    beta = pow(xcubedaxb, (P + 1) // 4, P)
-    y = beta if v % 2 ^ beta % 2 else (P - beta)
-    # If xcubedaxb is not a quadratic residue, then r cannot be the x coord
-    # for a point on the curve, and so the sig is invalid
-    if (xcubedaxb - y * y) % P != 0 or not (r % N) or not (s % N):
-        raise BadSignature("Invalid signature")
-    z = big_endian_to_int(msg_hash)
-    Gz = jacobian_multiply((Gx, Gy, 1), (N - z) % N)
-    XY = jacobian_multiply((x, y, 1), s)
-    Qr = jacobian_add(Gz, XY)
-    Q = jacobian_multiply(Qr, inv(r, N))
-    raw_public_key = from_jacobian(Q)
-
-    return encode_raw_public_key(raw_public_key)

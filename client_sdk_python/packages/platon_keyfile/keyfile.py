@@ -2,17 +2,14 @@ import hashlib
 import hmac
 import json
 import uuid
-from hexbytes import (
-    HexBytes,
-)
+
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Util import Counter
 
 from client_sdk_python.packages.platon_keys import keys
-from client_sdk_python.packages.platon_keys.datatypes import (
-    PublicKey,sm3_tobech32_address,sm3_tobech32_testaddress)
+
 from client_sdk_python.packages.eth_utils import (
     big_endian_to_int,
     decode_hex,
@@ -24,7 +21,7 @@ from client_sdk_python.packages.eth_utils import (
     remove_0x_prefix,
     to_dict,
 )
-from client_sdk_python.packages.gmssl import sm2,sm3, func
+
 
 def encode_hex_no_prefix(value):
     return remove_0x_prefix(encode_hex(value))
@@ -38,13 +35,12 @@ def load_keyfile(path_or_file_obj):
         return json.load(path_or_file_obj)
 
 
-def create_keyfile_json(private_key, password, mode='ECDSA', version=3, kdf="scrypt",
+def create_keyfile_json(private_key, password, version=3, kdf="scrypt",
                         iterations=None, salt_size=16):
     if version == 3:
         return _create_v3_keyfile_json(
             private_key,
             password,
-            mode,
             kdf,
             iterations,
             salt_size)
@@ -52,12 +48,12 @@ def create_keyfile_json(private_key, password, mode='ECDSA', version=3, kdf="scr
         raise NotImplementedError("Not yet implemented")
 
 
-def decode_keyfile_json(raw_keyfile_json, password,mode='ECDSA'):
+def decode_keyfile_json(raw_keyfile_json, password):
     keyfile_json = normalize_keys(raw_keyfile_json)
     version = keyfile_json['version']
 
     if version == 3:
-        return _decode_keyfile_json_v3(keyfile_json, password, mode)
+        return _decode_keyfile_json_v3(keyfile_json, password)
     else:
         raise NotImplementedError("Not yet implemented")
 
@@ -92,7 +88,7 @@ SCRYPT_R = 1
 SCRYPT_P = 8
 
 
-def _create_v3_keyfile_json(private_key, password, mode='ECDSA', kdf="scrypt",
+def _create_v3_keyfile_json(private_key, password, kdf,
                             work_factor=None, salt_size=16):
     salt = Random.get_random_bytes(salt_size)
 
@@ -135,20 +131,11 @@ def _create_v3_keyfile_json(private_key, password, mode='ECDSA', kdf="scrypt",
     iv = big_endian_to_int(Random.get_random_bytes(16))
     encrypt_key = derived_key[:16]
     ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
-    if mode == 'SM':
-        mac = HexBytes(sm3.sm3_hash(func.bytes_to_list(derived_key[16:32] + ciphertext)))
-        keypairs = sm2.CryptSM2(1, 1)
-        prikey = private_key.hex()
-        publickey = keypairs.privatekey_to_publickey(prikey.replace('0x', ''))
-        pub = PublicKey(publickey, 'SM')
-        address = sm3_tobech32_address(pub)
-        test_address = sm3_tobech32_testaddress(pub)
-    else:
-        mac = keccak(derived_key[16:32] + ciphertext)
-        pub = keys.PrivateKey(private_key).public_key
+    mac = keccak(derived_key[16:32] + ciphertext)
+    pub = keys.PrivateKey(private_key).public_key
 
-        address = pub.to_bech32_address()
-        test_address = pub.to_bech32_test_address()
+    address = pub.to_bech32_address()
+    test_address = pub.to_bech32_test_address()
     return {
         'address': {
             "mainnet": remove_0x_prefix(address),
@@ -172,7 +159,7 @@ def _create_v3_keyfile_json(private_key, password, mode='ECDSA', kdf="scrypt",
 #
 # Verson 3 decoder
 #
-def _decode_keyfile_json_v3(keyfile_json, password, mode='ECDSA'):
+def _decode_keyfile_json_v3(keyfile_json, password):
     crypto = keyfile_json['crypto']
     kdf = crypto['kdf']
 
@@ -187,10 +174,7 @@ def _decode_keyfile_json_v3(keyfile_json, password, mode='ECDSA'):
 
     # Validate that the derived key matchs the provided MAC
     ciphertext = decode_hex(crypto['ciphertext'])
-    if mode=='SM':
-        mac=HexBytes(sm3.sm3_hash(func.bytes_to_list(derived_key[16:32] + ciphertext)))
-    elif mode == 'ECDSA':
-        mac = keccak(derived_key[16:32] + ciphertext)
+    mac = keccak(derived_key[16:32] + ciphertext)
 
     expected_mac = decode_hex(crypto['mac'])
 
