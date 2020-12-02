@@ -10,6 +10,7 @@ from alaya.utils.transactions import send_obj_transaction
 class Debug(Module):
 
     need_analyze = True
+    need_quota_gas = True
 
     def economicConfig(self):
         return json.loads(self.web3.manager.request_blocking("debug_economicConfig", []))

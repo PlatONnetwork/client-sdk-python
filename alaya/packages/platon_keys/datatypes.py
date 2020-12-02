@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from alaya.utils.encoding import to_bytes
+
 from abc import (
     ABC,
     abstractmethod,
@@ -52,7 +52,6 @@ from alaya.packages.platon_keys.validation import (
     validate_signature_v,
     validate_signature_r_or_s,
 )
-from alaya.packages.gmssl import sm2, func ,sm3
 
 if TYPE_CHECKING:
     from alaya.packages.platon_keys.backends.base import BaseECCBackend  # noqa: F401
@@ -68,15 +67,6 @@ if sys.version_info[0] == 2:
 else:
     ByteString = collections.abc.ByteString
 
-def sm3_tobech32_address(publickey):
-    publickeyhash=sm3.sm3_hash(func.bytes_to_list(to_bytes(hexstr=publickey.to_bytes())))
-    publickey_bytes=to_bytes(hexstr=publickeyhash)[-20:]
-    return address_bytes_to_address(publickey_bytes)
-
-def sm3_tobech32_testaddress(publickey):
-    publickeyhash=sm3.sm3_hash(func.bytes_to_list(to_bytes(hexstr=publickey.to_bytes())))
-    publickey_bytes=to_bytes(hexstr=publickeyhash)[-20:]
-    return address_bytes_to_bech32_address(publickey_bytes)
 
 class LazyBackend:
     def __init__(self,
@@ -174,11 +164,10 @@ class BaseKey(ByteString, collections.abc.Hashable):
 
 class PublicKey(BaseKey, LazyBackend):
     def __init__(self,
-                 public_key_bytes: bytes, mode='ECDSA',
+                 public_key_bytes: bytes,
                  backend: 'Union[BaseECCBackend, Type[BaseECCBackend], str, None]' = None,
                  ) -> None:
-        if mode=='ECDSA':
-           validate_uncompressed_public_key_bytes(public_key_bytes)
+        validate_uncompressed_public_key_bytes(public_key_bytes)
 
         self._raw_key = public_key_bytes
         super().__init__(backend=backend)
@@ -260,25 +249,18 @@ class PublicKey(BaseKey, LazyBackend):
         return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()))
 
 
-
-
-class PrivateKey(BaseKey, LazyBackend ):
+class PrivateKey(BaseKey, LazyBackend):
     public_key = None  # type: PublicKey
 
     def __init__(self,
-                 private_key_bytes: bytes, mode='ECDSA',
+                 private_key_bytes: bytes,
                  backend: 'Union[BaseECCBackend, Type[BaseECCBackend], str, None]' = None,
                  ) -> None:
         validate_private_key_bytes(private_key_bytes)
 
         self._raw_key = private_key_bytes
-        if mode=='ECDSA':
-            self.public_key = self.backend.private_key_to_public_key(self)
-        elif mode=='SM':
-            keys = sm2.CryptSM2(1, 1)
-            prikey=private_key_bytes.hex()
-            publickey=keys.privatekey_to_publickey(prikey.replace('0x',''))
-            self.public_key = PublicKey(publickey,'SM')
+
+        self.public_key = self.backend.private_key_to_public_key(self)
         super().__init__(backend=backend)
 
     def sign_msg(self, message: bytes) -> 'Signature':

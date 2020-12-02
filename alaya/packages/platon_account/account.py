@@ -49,7 +49,7 @@ from alaya.packages.platon_account.internal.transactions import (
 from alaya.packages.platon_account.signers.local import (
     LocalAccount,
 )
-from alaya.packages.gmssl import sm2,sm3, func
+
 
 class Account(object):
     '''
@@ -60,7 +60,7 @@ class Account(object):
     _keys = keys
 
     @combomethod
-    def create(self, extra_entropy='', net_type=MIANNETHRP, mode='ECDSA'):
+    def create(self, extra_entropy='', net_type=MIANNETHRP):
         '''
         Creates a new private key, and returns it as a :class:`~platon_account.local.LocalAccount`.
 
@@ -81,17 +81,12 @@ class Account(object):
             # They correspond to the same-named methods in Account.*
             # but without the private key argument
         '''
-        if mode=='ECDSA':
-            extra_key_bytes = text_if_str(to_bytes, extra_entropy)
-            key_bytes = keccak(os.urandom(32) + extra_key_bytes)
-            return self.privateKeyToAccount(key_bytes, net_type)
-        elif mode=='SM':
-            key_bytes= func.random_hex(64) #key_bytes= sm3.sm3_hash(func.bytes_to_list(os.urandom(32)))
-            return self.privateKeyToAccount(key_bytes, net_type, 'SM')
-
+        extra_key_bytes = text_if_str(to_bytes, extra_entropy)
+        key_bytes = keccak(os.urandom(32) + extra_key_bytes)
+        return self.privateKeyToAccount(key_bytes, net_type)
 
     @staticmethod
-    def decrypt(keyfile_json, password, mode='ECDSA'):
+    def decrypt(keyfile_json, password):
         '''
         Decrypts a private key that was encrypted using an awake006 client or
         :meth:`~Account.encrypt`.
@@ -124,24 +119,16 @@ class Account(object):
 
         '''
         if isinstance(keyfile_json, str):
-            pass
-            if keyfile_json[1:3] in [MIANNETHRP, TESTNETHRP]:
-                try:
-                    keyfile = json.load(keyfile_json + '.json')
-                except Exception as rep:
-                    print(rep)
-                    keyfile = json.load(keyfile_json)
-            else:
-                keyfile = json.loads(keyfile_json)
+            keyfile = json.loads(keyfile_json)
         elif is_dict(keyfile_json):
             keyfile = keyfile_json
         else:
             raise TypeError("The keyfile should be supplied as a JSON string, or a dictionary.")
         password_bytes = text_if_str(to_bytes, password)
-        return HexBytes(decode_keyfile_json(keyfile, password_bytes, mode))
+        return HexBytes(decode_keyfile_json(keyfile, password_bytes))
 
     @staticmethod
-    def encrypt(private_key, password, mode='ECDSA'):
+    def encrypt(private_key, password):
         '''
         Creates a dictionary with an encrypted version of your private key.
         To import this keyfile into awake006 clients like geth and parity:
@@ -185,14 +172,10 @@ class Account(object):
 
         password_bytes = text_if_str(to_bytes, password)
         assert len(key_bytes) == 32
-        keystore = create_keyfile_json(key_bytes, password_bytes, mode)
-        filename1 = keystore['address']['mainnet'] + '.json'
-        with open(filename1, 'w') as file_obj:
-            json.dump(keystore, file_obj)
-        return keystore
+        return create_keyfile_json(key_bytes, password_bytes)
 
     @combomethod
-    def privateKeyToAccount(self, private_key, net_type=MIANNETHRP, mode='ECDSA'):
+    def privateKeyToAccount(self, private_key, net_type=MIANNETHRP):
         '''
         Returns a convenient object for working with the given private key.
 
@@ -214,11 +197,11 @@ class Account(object):
             # They correspond to the same-named methods in Account.*
             # but without the private key argument
         '''
-        key = self._parsePrivateKey(private_key, mode)
-        return LocalAccount(key, self, net_type, mode)
+        key = self._parsePrivateKey(private_key)
+        return LocalAccount(key, self, net_type)
 
     @combomethod
-    def recoverHash(self, message_hash, vrs=None, signature=None, mode='ECDSA'):
+    def recoverHash(self, message_hash, vrs=None, signature=None):
         '''
         Get the address of the account that signed the message with the given hash.
         You must specify exactly one of: vrs or signature
@@ -280,16 +263,12 @@ class Account(object):
         if len(hash_bytes) != 32:
             raise ValueError("The message hash must be exactly 32-bytes")
         if vrs is not None:
-            try:
-                v, r, s = map(hexstr_if_str(to_int), vrs)
-            except:
-                v, r, s = [hexstr_if_str(to_int, ip) for ip in vrs]
-
-            v_standard = to_standard_v(v, mode)
+            v, r, s = map(hexstr_if_str(to_int), vrs)
+            v_standard = to_standard_v(v)
             signature_obj = self._keys.Signature(vrs=(v_standard, r, s))
         elif signature is not None:
             signature_bytes = HexBytes(signature)
-            signature_bytes_standard = to_standard_signature_bytes(signature_bytes, mode)
+            signature_bytes_standard = to_standard_signature_bytes(signature_bytes)
             signature_obj = self._keys.Signature(signature_bytes=signature_bytes_standard)
         else:
             raise TypeError("You must supply the vrs tuple or the signature bytes")
@@ -330,7 +309,7 @@ class Account(object):
         self._keys = KeyAPI(backend)
 
     @combomethod
-    def signHash(self, message_hash, private_key, mode='ECDSA'):
+    def signHash(self, message_hash, private_key):
         '''
         Sign the hash provided.
 
@@ -381,9 +360,9 @@ class Account(object):
         if len(msg_hash_bytes) != 32:
             raise ValueError("The message hash must be exactly 32-bytes")
 
-        key = self._parsePrivateKey(private_key, mode)
-        ## 加入'SM'模式
-        (v, r, s, eth_signature_bytes) = sign_message_hash(key, msg_hash_bytes, mode)
+        key = self._parsePrivateKey(private_key)
+
+        (v, r, s, eth_signature_bytes) = sign_message_hash(key, msg_hash_bytes)
         return AttributeDict({
             'messageHash': msg_hash_bytes,
             'r': r,
@@ -393,7 +372,7 @@ class Account(object):
         })
 
     @combomethod
-    def signTransaction(self, transaction_dict, private_key, net_type=MIANNETHRP, mode='ECDSA'):
+    def signTransaction(self, transaction_dict, private_key, net_type=MIANNETHRP):
         '''
         Sign a transaction using a local private key. Produces signature details
         and the hex-encoded transaction suitable for broadcast using
@@ -434,7 +413,7 @@ class Account(object):
         if not isinstance(transaction_dict, Mapping):
             raise TypeError("transaction_dict must be dict-like, got %r" % transaction_dict)
 
-        account = self.privateKeyToAccount(private_key, net_type, mode)
+        account = self.privateKeyToAccount(private_key, net_type)
 
         # allow from field, *only* if it matches the private key
         if 'from' in transaction_dict:
@@ -454,12 +433,9 @@ class Account(object):
             r,
             s,
             rlp_encoded,
-        ) = sign_transaction_dict(account._key_obj, sanitized_transaction, mode)
+        ) = sign_transaction_dict(account._key_obj, sanitized_transaction)
 
-        if mode == 'SM':
-            transaction_hash = HexBytes(sm3.sm3_hash(func.bytes_to_list(rlp_encoded)))
-        else:
-            transaction_hash = keccak(rlp_encoded)
+        transaction_hash = keccak(rlp_encoded)
 
         return AttributeDict({
             'rawTransaction': HexBytes(rlp_encoded),
@@ -470,7 +446,7 @@ class Account(object):
         })
 
     @combomethod
-    def _parsePrivateKey(self, key, mode='ECDSA'):
+    def _parsePrivateKey(self, key):
         '''
         Generate a :class:`platon_keys.datatypes.PrivateKey` from the provided key. If the
         key is already of type :class:`platon_keys.datatypes.PrivateKey`, return the key.
@@ -484,42 +460,12 @@ class Account(object):
             return key
 
         try:
-            return self._keys.PrivateKey(HexBytes(key), mode)
+            return self._keys.PrivateKey(HexBytes(key))
         except ValidationError as original_exception:
             raise ValueError(
                 "The private key must be exactly 32 bytes long, instead of "
                 "%d bytes." % len(key)
             ) from original_exception
-
-    @combomethod
-    def sm_verify(self, signature, data: bytes, publickey: str):
-        '''
-        to verify the sign in 'SM' mode,if the signature is the right sign return True,
-        else return False.
-        '''
-        if 'r' in signature and 's' in signature:
-            r = signature['r']
-            s = signature['s']
-        elif len(signature) == 32:
-            signature = HexBytes(signature)
-            r = signature[0:32]
-            s = signature[33:64]
-        else:
-            raise ValueError("cann't find (r,s) in signature")
-        data = HexBytes(data)
-        SMC = sm2.CryptSM2(1, publickey)
-        sign = (r, s)
-        flag = SMC.verify(sign, data)
-        if flag == 0:
-            return False
-        else:
-            return True
-
-    @combomethod
-    def sm_private_to_publickey(self, privatekey: str):
-        keys = sm2.CryptSM2(1, 1)
-        publickey = keys.privatekey_to_publickey(privatekey)
-        return publickey
 
 
 if __name__ == '__main__':
