@@ -1470,8 +1470,10 @@ def call_contract_function(
             elif output_types[i] == ['address[]']:
                 for j in range(len(normalized_data[i])):
                     normalized_data[i][j]=tobech32address(address[:3], normalized_data[i][j])
-
-        return normalized_data
+        if len(normalized_data) == 1:
+            return normalized_data[0]
+        else:
+            return normalized_data
 
 
 def parse_block_identifier(web3, block_identifier):

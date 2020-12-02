@@ -3,7 +3,7 @@ import sha3
 import rlp
 import copy
 from alaya.packages.eth_utils.hexadecimal import remove_0x_prefix
-from alaya.packages.platon_account.account import (
+from alaya.packages.platon_account import (
     Account,
 )
 from alaya.packages.platon_account.internal.transactions import bech32_address_bytes

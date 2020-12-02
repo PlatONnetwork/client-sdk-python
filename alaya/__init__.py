@@ -4,7 +4,7 @@ import sys
 if sys.version_info < (3, 5):
     raise EnvironmentError("Python 3.5 or above is required")
 
-from alaya.packages.platon_account.account import Account  # noqa: E402
+from alaya.packages.platon_account import Account  # noqa: E402
 from alaya.main import Web3  # noqa: E402
 from alaya.providers.rpc import (  # noqa: E402
     HTTPProvider,
