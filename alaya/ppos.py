@@ -1,6 +1,6 @@
 import json
 import rlp
-
+from alaya.eth import PlatON
 from hexbytes import HexBytes
 from alaya.module import (
     Module,
@@ -8,6 +8,7 @@ from alaya.module import (
 from alaya.packages.eth_utils.hexadecimal import remove_0x_prefix
 from alaya.utils.encoding import parse_str
 from alaya.utils.transactions import send_obj_transaction, call_obj
+from alaya.debug import Debug
 from alaya.packages.platon_account.internal.transactions import bech32_address_bytes
 
 
@@ -17,11 +18,12 @@ class Ppos(Module):
     need_analyze = True
     need_quota_gas = True
 
-    def createStaking(self, typ, benifit_address, node_id, external_id, node_name, website, details, amount,
-                      program_version, program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, transaction_cfg=None):
+    def createStaking(self, benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
+                       program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None):
         """
         Initiate Staking
-        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount
+        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;
+                    2: Give priority to lock amount , use free amount provided that staking amount over lock amount
         :param benifit_address: Income account for accepting block rewards and staking rewards
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param external_id: External Id (with length limit, Id for the third party to pull the node description)
@@ -85,10 +87,11 @@ class Ppos(Module):
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
-    def increaseStaking(self, typ, node_id, amount, pri_key, transaction_cfg=None):
+    def increaseStaking(self, node_id, amount, pri_key, typ=2, transaction_cfg=None):
         """
         Increase staking
         :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount
+                    2: Give priority to lock amount , use free amount provided that staking amount over lock amount
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param amount: staking von (unit:von, 1LAT = 10**18 von)
         :param pri_key: Private key for transaction
@@ -140,15 +143,62 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                   if is not need analyze return transaction hash
         """
+
         data = rlp.encode([rlp.encode(int(1004)), rlp.encode(typ), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
-    def withdrewDelegate(self, staking_blocknum, node_id, amount, pri_key, transaction_cfg=None):
+    def getEpochnumber(self):
+        """
+        Get the number of blocks in a epoch
+        一个结算周期的共识轮数=(向下取整)(MaxEpochMinutes*60)/(NodeBlockTimeWindow*MaxConsensusVals)
+        一个结算周期的区块数=一个结算周期的共识轮数*(MaxConsensusVals*PerRoundBlocks)
+        """
+        debug = Debug(self.web3)
+        economiccommon = debug.economicConfig()['common']
+        Epochnumber = int((economiccommon['maxEpochMinutes']*60)/(economiccommon['nodeBlockTimeWindow']*economiccommon['maxConsensusVals']))*\
+                         (economiccommon['maxConsensusVals'])*economiccommon['perRoundBlocks']
+        return Epochnumber
+
+
+    def withdrewDelegate(self, staking_blocknum, node_id, amount, pri_key, del_address, transaction_cfg=None):
         """
         Reduction/revocation of entrustment (all reductions are revoked)
         :param staking_blocknum: A unique indication of a pledge of a node
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param amount: The amount of the entrusted reduction (unit:von, 1LAT = 10**18 von)
+        :param pri_key: Private key for transaction
+        :param del_address: Client's account address
+        :param transaction_cfg: Transaction basic configuration
+              type: dict
+              example:cfg = {
+                  "gas":100000000,
+                  "gasPrice":2000000000000,
+                  "nonce":1,
+              }
+        :return: if is need analyze return transaction result dict
+                  if is not need analyze return transaction hash
+        """
+        delegateinfo = self.getDelegateInfo(staking_blocknum, del_address, node_id, None)
+        if (delegateinfo["ret"]['ReleasedHes'] or delegateinfo["ret"]['RestrictingPlanHes']) and not delegateinfo["ret"]['WithdrewEpoch']:
+            amount1 = int(delegateinfo["ret"]['ReleasedHes'])+int(delegateinfo["ret"]['RestrictingPlanHes'])
+            if amount1 < amount:
+                Amount = amount1
+                if delegateinfo["ret"]['WithdrewEpoch'] > 0:
+                    print("In this case,you need to redeem the rest of delegation")
+            else:
+                Amount = amount
+            data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)),
+                               rlp.encode(Amount)])
+            return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        elif delegateinfo["ret"]['WithdrewEpoch'] > 0:
+            print("you need to redeem the whole delegation")
+            return None
+
+    def redeemDelegation(self,staking_blocknum, node_id, pri_key, del_address, transaction_cfg=None):
+        """
+        redeem the delegation which during the effective period
+        :param staking_blocknum: A unique indication of a pledge of a node
+        :param node_id: The idled node Id (also called the candidate's node Id)
         :param pri_key: Private key for transaction
         :param transaction_cfg: Transaction basic configuration
               type: dict
@@ -160,8 +210,14 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                   if is not need analyze return transaction hash
         """
-        data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        delegateinfo = self.getDelegateInfo(staking_blocknum, del_address, node_id, None)
+        if delegateinfo["ret"]['WithdrewEpoch'] > 0:
+            if delegateinfo["ret"]['Released'] or delegateinfo["ret"]['RestrictingPlan']:
+                Epochnumber = self.getEpochnumber()
+                blocknumber = PlatON(self.web3).blockNumber
+                if (blocknumber/Epochnumber) > delegateinfo["ret"]['UnLockEpoch']:
+                    data = rlp.encode([rlp.encode(int(1006)),rlp.encode(staking_blocknum),rlp.encode(bytes.fromhex(node_id))])
+                    return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
     def getVerifierList(self, from_address=None):
         """
@@ -252,7 +308,9 @@ class Ppos(Module):
             raw_data_dict["RestrictingPlan"] = int(raw_data_dict["RestrictingPlan"], 16)
             raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
             raw_data_dict["CumulativeIncome"] = int(raw_data_dict["CumulativeIncome"], 16)
-            # raw_data_dict["Reduction"] = int(raw_data_dict["Reduction"], 16)
+            raw_data_dict["WithdrewEpoch"] = raw_data_dict["WithdrewEpoch"]
+            raw_data_dict["WithdrewAmount"] = raw_data_dict["WithdrewAmount"]
+            raw_data_dict["UnLockEpoch"] = raw_data_dict["UnLockEpoch"]
             receive["Ret"] = raw_data_dict
         except:...
         return receive
