@@ -2,7 +2,7 @@ from client_sdk_python import Web3, HTTPProvider
 from client_sdk_python.eth import PlatON
 from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
 from client_sdk_python.packages.platon_account import Account
-from client_sdk_python.packages.gmssl import  sm2,sm3,func
+# from client_sdk_python.packages.gmssl import  sm2,sm3,func
 from hexbytes import HexBytes
 # import binascii
 # f = open('D:/juzhen/JS_wasmtest1.wasm','rb')
@@ -79,12 +79,12 @@ vrs = (
                   0x3e5bfbbf4d3e39b1a2fd816a7680c19ebebaf3a141b239934ad43cb33fcec8ce)
 signature = '0xe6ca9bba58c88611fad66a6ce8f996908195593807c4b38bd528d2cff09d4eb33e5bfbbf4d3e39b1a2fd816a7680c19ebebaf3a141b239934ad43cb33fcec8ce1c'
 # Instantiate and deploy contract
-data=b'anything'
-hashdata=HexBytes(sm3.sm3_hash(func.bytes_to_list(data)))
+# data=b'anything'
+# hashdata=HexBytes(sm3.sm3_hash(func.bytes_to_list(data)))
 payable = platon.wasmcontract(abi=cabi, bytecode=bytecode,vmtype=1)
-signhash=platon.account.signHash(hashdata,send_privatekey,'SM')
-verifysign=platon.account.sm_verify(signhash,hashdata,publickey)
-
+# signhash=platon.account.signHash(hashdata,send_privatekey,'SM')
+# verifysign=platon.account.sm_verify(signhash,hashdata,publickey)
+#
 # pubkey=platon.account.recoverHash(msghash, vrs=vrs)
 # keystore=platon.account.encrypt(send_privatekey,'123456','SM')
 # prikey=platon.account.decrypt(keystore,'123456','SM')
