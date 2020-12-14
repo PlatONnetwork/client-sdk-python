@@ -2,7 +2,7 @@ from alaya import Web3, HTTPProvider
 from alaya.eth import PlatON
 from alaya.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
 from alaya.packages.platon_account.account import Account
-from alaya.packages.gmssl import  sm2,sm3,func
+# from alaya.packages.gmssl import  sm2,sm3,func
 from hexbytes import HexBytes
 # import binascii
 # f = open('D:/juzhen/JS_wasmtest1.wasm','rb')
@@ -78,11 +78,11 @@ vrs = (
 signature = '0xe6ca9bba58c88611fad66a6ce8f996908195593807c4b38bd528d2cff09d4eb33e5bfbbf4d3e39b1a2fd816a7680c19ebebaf3a141b239934ad43cb33fcec8ce1c'
 # Instantiate and deploy contract
 data=b'anything'
-hashdata=HexBytes(sm3.sm3_hash(func.bytes_to_list(data)))
-payable = platon.wasmcontract(abi=cabi, bytecode=bytecode,vmtype=1)
-signhash=platon.account.signHash(hashdata,send_privatekey,'SM')
-publickey=platon.account.sm_private_to_publickey(send_privatekey)
-verifysign=platon.account.sm_verify(signhash,hashdata,publickey)
+# hashdata=HexBytes(sm3.sm3_hash(func.bytes_to_list(data)))
+# payable = platon.wasmcontract(abi=cabi, bytecode=bytecode,vmtype=1)
+# signhash=platon.account.signHash(hashdata,send_privatekey,'SM')
+# publickey=platon.account.sm_private_to_publickey(send_privatekey)
+# verifysign=platon.account.sm_verify(signhash,hashdata,publickey)
 
 # pubkey=platon.account.recoverHash(msghash, vrs=vrs)
 # keystore=platon.account.encrypt(send_privatekey,'123456','SM')
