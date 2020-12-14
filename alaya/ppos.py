@@ -150,8 +150,8 @@ class Ppos(Module):
     def getEpochnumber(self):
         """
         Get the number of blocks in a epoch
-        一个结算周期的共识轮数=(向下取整)(MaxEpochMinutes*60)/(NodeBlockTimeWindow*MaxConsensusVals)
-        一个结算周期的区块数=一个结算周期的共识轮数*(MaxConsensusVals*PerRoundBlocks)
+        economiccommon=int((MaxEpochMinutes*60)/(NodeBlockTimeWindow*MaxConsensusVals))
+        Epochnumber=economiccommon*(MaxConsensusVals*PerRoundBlocks)
         """
         debug = Debug(self.web3)
         economiccommon = debug.economicConfig()['common']
@@ -183,8 +183,7 @@ class Ppos(Module):
             amount1 = int(delegateinfo["ret"]['ReleasedHes'])+int(delegateinfo["ret"]['RestrictingPlanHes'])
             if amount1 < amount:
                 Amount = amount1
-                if delegateinfo["ret"]['WithdrewEpoch'] > 0:
-                    print("In this case,you need to redeem the rest of delegation")
+                print("In this case,you need to redeem the rest of delegation")
             else:
                 Amount = amount
             data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)),

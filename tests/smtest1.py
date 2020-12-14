@@ -79,7 +79,7 @@ signature = '0xe6ca9bba58c88611fad66a6ce8f996908195593807c4b38bd528d2cff09d4eb33
 # Instantiate and deploy contract
 data=b'anything'
 # hashdata=HexBytes(sm3.sm3_hash(func.bytes_to_list(data)))
-payable = platon.wasmcontract(abi=cabi, bytecode=bytecode,vmtype=1)
+# payable = platon.wasmcontract(abi=cabi, bytecode=bytecode,vmtype=1)
 # signhash=platon.account.signHash(hashdata,send_privatekey,'SM')
 # publickey=platon.account.sm_private_to_publickey(send_privatekey)
 # verifysign=platon.account.sm_verify(signhash,hashdata,publickey)
