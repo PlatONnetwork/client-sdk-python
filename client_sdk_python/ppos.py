@@ -16,11 +16,12 @@ class Ppos(Module):
     # if you only want to get the transaction hash, please set it to False
     need_analyze = True
 
-    def createStaking(self, typ, benifit_address, node_id, external_id, node_name, website, details, amount,
-                      program_version, program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, transaction_cfg=None):
+    def createStaking(self,  benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
+                       program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None):
         """
         Initiate Staking
-        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount
+        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;
+                    2: Give priority to lock amount , use free amount provided that staking amount over lock amount
         :param benifit_address: Income account for accepting block rewards and staking rewards
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param external_id: External Id (with length limit, Id for the third party to pull the node description)
@@ -84,10 +85,11 @@ class Ppos(Module):
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
         return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
-    def increaseStaking(self, typ, node_id, amount, pri_key, transaction_cfg=None):
+    def increaseStaking(self, node_id, amount, pri_key, typ=2, transaction_cfg=None):
         """
         Increase staking
-        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount
+        :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;
+                    2: Give priority to lock amount , use free amount provided that staking amount over lock amount
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param amount: staking von (unit:von, 1LAT = 10**18 von)
         :param pri_key: Private key for transaction
