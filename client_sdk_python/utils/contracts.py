@@ -62,7 +62,7 @@ from client_sdk_python.utils.toolz import (
 )
 
 from client_sdk_python.packages.platon_keys.utils import bech32,address
-
+from client_sdk_python.packages.platon_keys.utils.address import HRP_LIST
 from client_sdk_python.packages.eth_utils import to_checksum_address
 
 def find_wasm_abi(abi, fn_identifier=None):
@@ -360,7 +360,7 @@ def encodeparameters(types,params,setabi=None):
             elif isinstance(param,tuple):
                 p1 = param[0][0:3]
                 p2 = param[0]
-            if p1 == 'lax' or p1 == 'lat':
+            if p1 in HRP_LIST:
                 hrpgot, data1 = bech32.decode(p1, p2)
                 for i in data1:
                     temp1=hex(i).replace('0x', '')
@@ -410,11 +410,12 @@ def decodeuint(param):
             digit += int(param[i], 16) * (256 ** (len(param) - 1 - i))  #256
         data1 = digit
     return data1
-def wasmdecode_abi(types, data, setabi=None):
+def wasmdecode_abi(hrp,types, data, setabi=None):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
         buf = rlp_decode(hexstr2bytes(to_hex(data)))
     else:
         buf = data
+    hrp1, hrp2 = hrp
     type = types['type']
     name = types['name']
     # data1 = buf
@@ -541,10 +542,10 @@ def wasmdecode_abi(types, data, setabi=None):
         if type.endswith('<20>'):
             temp=[]
             try :
-                temp=tobech32address('lax',data1)
+                temp=tobech32address(hrp2,data1)
             except:
                 try:
-                    temp=tobech32address('lat',data1)
+                    temp=tobech32address(hrp1,data1)
                 except:
                     raise ('wasmdecode error ! can not match FixedHash<20> type !' )
             finally:
@@ -595,24 +596,16 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         for j in range(len(argument_types)):
             if argument_types[j]:
                 if argument_types[j] == 'address':
-                    if arguments[j][:3] == 'lax':
-                        hrpgot, data1 = bech32.decode("lax", arguments[j])
-                        addr = to_checksum_address(bytes(data1))
-                        arguments[j] = addr  # .split(",")
-                    elif arguments[j][:3] == 'lat':
-                        hrpgot, data1 = bech32.decode("lat", arguments[j])
+                    if arguments[j][:3] in HRP_LIST:
+                        hrpgot, data1 = bech32.decode(arguments[j][:3], arguments[j])
                         addr = to_checksum_address(bytes(data1))
                         arguments[j] = addr  # .split(",")
                     else:
                         raise Exception("wrong address")
                 elif argument_types[j] == 'address[]':
                     for i in range(len(arguments[j])):
-                        if arguments[j][i][:3] == 'lax':
-                            hrpgot, data1 = bech32.decode("lax", arguments[j][i])
-                            addr = to_checksum_address(bytes(data1))
-                            arguments[j][i] = addr
-                        elif arguments[j][i][:3] == 'lat':
-                            hrpgot, data1 = bech32.decode("lat", arguments[j][i])
+                        if arguments[j][i][:3] in HRP_LIST:
+                            hrpgot, data1 = bech32.decode(arguments[j][i][:3], arguments[j][i])
                             addr = to_checksum_address(bytes(data1))
                             arguments[j][i] = addr
                         else:
@@ -653,7 +646,8 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         else:
             return encode_hex(encoded_arguments)
 
-def wasmevent_decode(types, data,):
+def wasmevent_decode(types, data,hrp):
+    hrp1, hrp2 = hrp
     if isinstance(data, HexBytes) or isinstance(data, bytes):
         bufs = rlp_decode(hexstr2bytes(to_hex(data)))
     else:
@@ -676,7 +670,7 @@ def wasmevent_decode(types, data,):
             elif isinstance(buf,tuple):
                 data1 = [0 for x in range(len(buf))]
                 for j in range(len(buf)):
-                    data1[j] = wasmevent_decode(types, buf[j])
+                    data1[j] = wasmevent_decode(types, buf[j],hrp)
         elif type.startswith('uint') and not type.endswith(']'):
             digit = 0
             if len(buf) <= 1:
@@ -717,16 +711,16 @@ def wasmevent_decode(types, data,):
                     data1[i] = hex(int(buf[i],16))
             else:
                 for i in range(len(buf)):
-                    data1[i] = wasmevent_decode(types, buf[i])
+                    data1[i] = wasmevent_decode(types, buf[i],hrp)
         elif type.startswith('FixedHash'):
             data1 = '0x'+tostring_hex(buf)
             if type.endswith('<20>'):
                 temp=[]
                 try :
-                    temp=tobech32address('lax',data1)
+                    temp=tobech32address(hrp2,data1)
                 except:
                     try:
-                        temp=tobech32address('lat',data1)
+                        temp=tobech32address(hrp1,data1)
                     except:
                         raise ('wasmdecode error ! can not match FixedHash<20> type !' )
                 finally:
@@ -738,13 +732,13 @@ def wasmevent_decode(types, data,):
                 for i in range(len(bufs[0])):
                     buf = bufs[0][i]
                     type = types[i]
-                    data1[i] = wasmevent_decode(type, buf)
+                    data1[i] = wasmevent_decode(type, buf,hrp)
         else:
             data1 = [0 for x in range(len(bufs))]
             for i in range(len(bufs)):
                 buf = bufs[i]
                 type = types[i]
-                data1[i]=wasmevent_decode(type, buf)
+                data1[i]=wasmevent_decode(type, buf,hrp)
     return data1
 
 def prepare_transaction(

@@ -1,7 +1,7 @@
 from client_sdk_python.packages.platon_account.signers.base import (
     BaseAccount,
 )
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP
 
 
 class LocalAccount(BaseAccount):
@@ -31,11 +31,7 @@ class LocalAccount(BaseAccount):
         :param web3.account.Account account: the key-unaware management API
         '''
         self._publicapi = account
-
-        addr_dict = {MIANNETHRP: key.public_key.to_bech32_address(),
-                     TESTNETHRP: key.public_key.to_bech32_test_address()}
-
-        self._address = addr_dict[net_type]
+        self._address = key.public_key.to_bech32_address(net_type)
 
         key_raw = key.to_bytes()
         self._privateKey = key_raw

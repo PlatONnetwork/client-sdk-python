@@ -12,6 +12,7 @@ from .hexadecimal import (
     remove_0x_prefix,
 )
 from .types import is_bytes, is_text
+from client_sdk_python.packages.platon_keys.utils.address import HRP_LIST
 
 
 def is_hex_address(value: Any) -> bool:
@@ -135,9 +136,9 @@ def is_checksum_address(value: Any) -> bool:
 
     if not is_hex_address(value):
         return False
-    if isinstance(value,str):
-        if value[0:3]=='lat' or value[0:3]=='lax':
-            if len(value)==42:
+    if isinstance(value, str):
+        if value[0:3] in HRP_LIST:
+            if len(value) == 42:
                 return True
     return value == to_checksum_address(value)
 

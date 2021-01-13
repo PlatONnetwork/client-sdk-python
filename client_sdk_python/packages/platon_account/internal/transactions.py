@@ -29,16 +29,14 @@ from rlp.sedes import (
     binary,
 )
 
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import HRP_LIST
 from client_sdk_python.packages.platon_keys.utils.bech32 import decode
 
 
 def bech32_address_bytes(val):
     if not is_empty_or_checksum_address(val):
-        if val[0:3] == MIANNETHRP:
-            _, result = decode(MIANNETHRP, val)
-        elif val[0:3] == TESTNETHRP:
-            _, result = decode(TESTNETHRP, val)
+        if val[0:3] in HRP_LIST:
+            _, result = decode(val[0:3], val)
         else:
             raise ValueError(val)
         val = bytes(result)

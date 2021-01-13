@@ -3,9 +3,9 @@ from client_sdk_python.packages.eth_utils import (
 )
 from client_sdk_python.packages.platon_keys.utils.bech32 import encode, decode, bech32_decode
 
-
 MIANNETHRP = "lat"
 TESTNETHRP = "lax"
+HRP_LIST = ['lat', 'lax', 'atp', 'atx']
 
 
 def public_key_bytes_to_address(public_key_bytes: bytes) -> bytes:
