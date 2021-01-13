@@ -15,6 +15,7 @@ class Ppos(Module):
     # If you want to get the result of the transaction, please set it to True,
     # if you only want to get the transaction hash, please set it to False
     need_analyze = True
+    need_quota_gas = True
 
     def createStaking(self,  benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
                        program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None):

@@ -1,6 +1,6 @@
 from client_sdk_python import Web3, HTTPProvider
 from client_sdk_python.eth import PlatON
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import DEFAULTHRP
 from client_sdk_python.packages.platon_account import Account
 # from client_sdk_python.packages.gmssl import  sm2,sm3,func
 from hexbytes import HexBytes
@@ -97,7 +97,7 @@ txn = payable.constructor().buildTransaction({
     }
 )
 def SendTxn(txn):
-    signed_txn = platon.account.signTransaction(txn,private_key=send_privatekey,net_type=TESTNETHRP,mode='SM') #,mode='SM'
+    signed_txn = platon.account.signTransaction(txn, private_key=send_privatekey, net_type=DEFAULTHRP, mode='SM') #,mode='SM'
     res = platon.sendRawTransaction(signed_txn.rawTransaction).hex()
     txn_receipt = platon.waitForTransactionReceipt(res)
     print(res)

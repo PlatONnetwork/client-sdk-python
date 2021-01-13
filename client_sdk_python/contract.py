@@ -91,7 +91,7 @@ from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
 
-from client_sdk_python.packages.platon_keys.utils import bech32
+from client_sdk_python.packages.platon_keys.utils.address import DEFAULTHRP
 
 
 DEPRECATED_SIGNATURE_MESSAGE = (
@@ -1078,7 +1078,7 @@ class ContractFunction:
 
         self.arguments = merge_args_and_kwargs(self.abi, self.args, self.kwargs)
 
-    def call(self, transaction=None, block_identifier='latest'):
+    def call(self, transaction=None, block_identifier='latest', hrp=DEFAULTHRP):
         """
         Execute a contract function call using the `platon_call` interface.
 
@@ -1131,6 +1131,7 @@ class ContractFunction:
         block_id = parse_block_identifier(self.web3, block_identifier)
 
         return call_contract_function(
+            hrp,
             self.web3,
             self.address,
             self._return_data_normalizers,
@@ -1366,6 +1367,7 @@ class ContractEvent:
 
 
 def call_contract_function(
+        hrp,
         web3,
         address,
         normalizers,
@@ -1407,7 +1409,7 @@ def call_contract_function(
         # if not isinstance(output_types, list):
         #     output_types = [output_types]
         try:
-            output_data = wasmdecode_abi(output_types, return_data, contract_abi)
+            output_data = wasmdecode_abi(hrp,output_types, return_data, contract_abi)
         except DecodingError as e:
             # Provide a more helpful error message than the one provided by
             # eth-abi-utils
