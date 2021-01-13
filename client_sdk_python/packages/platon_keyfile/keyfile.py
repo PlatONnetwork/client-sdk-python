@@ -35,10 +35,11 @@ def load_keyfile(path_or_file_obj):
         return json.load(path_or_file_obj)
 
 
-def create_keyfile_json(private_key, password, version=3, kdf="scrypt",
+def create_keyfile_json(hrp,private_key, password, version=3, kdf="scrypt",
                         iterations=None, salt_size=16):
     if version == 3:
         return _create_v3_keyfile_json(
+            hrp,
             private_key,
             password,
             kdf,
@@ -88,7 +89,7 @@ SCRYPT_R = 1
 SCRYPT_P = 8
 
 
-def _create_v3_keyfile_json(private_key, password, kdf,
+def _create_v3_keyfile_json(hrp,private_key, password, kdf,
                             work_factor=None, salt_size=16):
     salt = Random.get_random_bytes(salt_size)
 
@@ -133,14 +134,8 @@ def _create_v3_keyfile_json(private_key, password, kdf,
     ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
     mac = keccak(derived_key[16:32] + ciphertext)
     pub = keys.PrivateKey(private_key).public_key
-
-    address = pub.to_bech32_address()
-    test_address = pub.to_bech32_test_address()
     return {
-        'address': {
-            "mainnet": remove_0x_prefix(address),
-            "testnet": remove_0x_prefix(test_address),
-        },
+        'address': pub.to_bech32_address(hrp),
         'crypto': {
             'cipher': 'aes-128-ctr',
             'cipherparams': {
@@ -280,4 +275,4 @@ def get_default_work_factor_for_kdf(kdf):
         raise ValueError("Unsupported key derivation function: {0}".format(kdf))
 
 if __name__ == '__main__':
-    print(create_keyfile_json(bytes.fromhex("deb2bd10eedef6d89cd8fac224dc8f1bdd26ed1c4b5c513995efb1b33404db17"),"88888888"))
+    print(create_keyfile_json('atp',bytes.fromhex("deb2bd10eedef6d89cd8fac224dc8f1bdd26ed1c4b5c513995efb1b33404db17"),"88888888"))

@@ -19,9 +19,6 @@ from hexbytes import (
 from client_sdk_python.contract import (
     Contract,
 )
-from  client_sdk_python.wasmcontract import (
-    WasmContract,
-)
 from client_sdk_python.iban import (
     Iban,
 )
@@ -113,6 +110,10 @@ class Eth(Module):
     @property
     def blockNumber(self):
         return self.web3.manager.request_blocking("platon_blockNumber", [])
+
+    @property
+    def getAddressHrp(self):
+        return self.web3.manager.request_blocking("platon_getAddressHrp", [])
 
     @property
     def evidences(self):

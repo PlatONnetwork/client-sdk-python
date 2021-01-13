@@ -28,21 +28,16 @@ from rlp.sedes import (
     big_endian_int,
     binary,
 )
-
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 from client_sdk_python.packages.platon_keys.utils.bech32 import decode
 
 
 def bech32_address_bytes(val):
     if not is_empty_or_checksum_address(val):
-        if val[0:3] == MIANNETHRP:
-            _, result = decode(MIANNETHRP, val)
-        elif val[0:3] == TESTNETHRP:
-            _, result = decode(TESTNETHRP, val)
-        else:
-            raise ValueError(val)
+        _, result = decode(val[0:3], val)
         val = bytes(result)
-    return val
+        return val
+    else:
+        raise ValueError(val)
 
 
 def modify_address(transaction_dict):

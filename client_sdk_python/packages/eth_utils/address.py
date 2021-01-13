@@ -135,10 +135,9 @@ def is_checksum_address(value: Any) -> bool:
 
     if not is_hex_address(value):
         return False
-    if isinstance(value,str):
-        if value[0:3]=='lat' or value[0:3]=='lax':
-            if len(value)==42:
-                return True
+    if isinstance(value, str):
+        if len(value) == 42:
+            return True
     return value == to_checksum_address(value)
 
 
