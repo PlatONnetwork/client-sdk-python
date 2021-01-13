@@ -10,6 +10,9 @@ false = False
 # platon = PlatON(w3)
 w3 = Web3(HTTPProvider("http://10.1.1.5:6789"))
 platon = PlatON(w3)
+w3.net_type = platon.getAddressHrp
+w3.init_contract_address(w3)
+print(w3.net_type, w3.stakingAddress, w3.penaltyAddress)
 print(w3.isConnected())
 from_address = "lax1yjjzvjph3tw4h2quw6mse25y492xy7fzwdtqja"
 send_privatekey = "b7a7372e78160f71a1a75e03c4aa72705806a05cf14ef39c87fdee93d108588c"

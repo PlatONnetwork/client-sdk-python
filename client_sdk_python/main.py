@@ -9,7 +9,6 @@ from client_sdk_python.packages.eth_utils import (
     # to_checksum_address,
     to_wei,
 )
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from client_sdk_python.packages.ens import ENS
 
@@ -88,16 +87,13 @@ def get_default_modules():
     }
 
 
-def default_address(mainnet, testnet):
-    return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
-
-
-restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
-staking = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
-penalty = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
-pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
-delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
-
+defaut_address_info = {
+    'res': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw"),
+    'sta': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3"),
+    'pen': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x"),
+    'pip': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5"),
+    'del': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt"),
+}
 
 def to_checksum_address(val):
     return val
@@ -144,18 +140,7 @@ class Web3:
 
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
-
-        if chain_id == 100:
-            self.net_type = MIANNETHRP
-        else:
-            self.net_type = TESTNETHRP
-        # platon contract address
-        self.restrictingAddress = restricting[self.net_type]
-        self.stakingAddress = staking[self.net_type]
-        self.penaltyAddress = penalty[self.net_type]
-        self.pipAddress = pipAddr[self.net_type]
-        self.delegateRewardAddress = delegateReward[self.net_type]
-
+        self.net_type = None
         self.ens = ens
 
         self.chain_id = chain_id
@@ -240,7 +225,15 @@ class Web3:
     def ens(self, new_ens):
         self._ens = new_ens
 
+    def init_contract_address(self, w3):
+        try:
+            attr = ['restrictingAddress', 'stakingAddress', 'penaltyAddress', 'pipAddress', 'delegateRewardAddress']
+            for ar in attr:
+                main, test = defaut_address_info[ar[:3]]
+                result = main if self.net_type == main[:3] else test
+                setattr(w3, ar, result)
+        except Exception:
+            raise
+
     def pubkey_to_address(self, pubkey):
-        addr_dict = {MIANNETHRP: pubkey.to_bech32_address(),
-                     TESTNETHRP: pubkey.to_bech32_test_address()}
-        return addr_dict[self.net_type]
+        return pubkey.to_bech32_address(self.net_type)

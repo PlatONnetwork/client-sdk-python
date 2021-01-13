@@ -115,6 +115,10 @@ class Eth(Module):
         return self.web3.manager.request_blocking("platon_blockNumber", [])
 
     @property
+    def getAddressHrp(self):
+        return self.web3.manager.request_blocking("platon_getAddressHrp", [])
+
+    @property
     def evidences(self):
         data = self.web3.manager.request_blocking("platon_evidences", [])
         return json.loads(data)
