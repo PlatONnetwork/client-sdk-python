@@ -67,6 +67,7 @@ from client_sdk_python.utils.encoding import (
 from client_sdk_python.utils.normalizers import (
     abi_ens_resolver,
 )
+from client_sdk_python.utils.encoding import tobech32address
 
 
 def get_default_modules():
@@ -87,13 +88,13 @@ def get_default_modules():
     }
 
 
-defaut_address_info = {
-    'res': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw"),
-    'sta': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3"),
-    'pen': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x"),
-    'pip': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5"),
-    'del': ("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt"),
-}
+base_address = {'sta': '0x1000000000000000000000000000000000000002',
+                'pip': '0x1000000000000000000000000000000000000005',
+                'res': '0x1000000000000000000000000000000000000001',
+                'del': '0x1000000000000000000000000000000000000006',
+                'pen': '0x1000000000000000000000000000000000000004'
+                }
+
 
 def to_checksum_address(val):
     return val
@@ -140,7 +141,9 @@ class Web3:
 
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
+
         self.net_type = None
+        # platon contract address
         self.ens = ens
 
         self.chain_id = chain_id
@@ -229,8 +232,10 @@ class Web3:
         try:
             attr = ['restrictingAddress', 'stakingAddress', 'penaltyAddress', 'pipAddress', 'delegateRewardAddress']
             for ar in attr:
-                main, test = defaut_address_info[ar[:3]]
-                result = main if self.net_type == main[:3] else test
+                prefix = ar[:3]
+                result = tobech32address(self.net_type, base_address[prefix])
+                if result is None:
+                    raise Exception('Invalid address:{}'.format(base_address[prefix]))
                 setattr(w3, ar, result)
         except Exception:
             raise

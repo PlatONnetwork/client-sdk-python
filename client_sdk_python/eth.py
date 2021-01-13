@@ -19,9 +19,6 @@ from hexbytes import (
 from client_sdk_python.contract import (
     Contract,
 )
-from  client_sdk_python.wasmcontract import (
-    WasmContract,
-)
 from client_sdk_python.iban import (
     Iban,
 )

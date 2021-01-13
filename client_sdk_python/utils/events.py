@@ -146,7 +146,7 @@ def get_event_abi_types_for_decoding(event_inputs):
             yield input_abi['type']
 
 
-def get_event_data(event_abi, log_entry, vmtype=None):
+def get_event_data(event_abi, log_entry, vmtype=None,hrp=('lat','lax')):
     """
     Given an event ABI and a log entry for that event, return the decoded
     event data
@@ -196,7 +196,7 @@ def get_event_data(event_abi, log_entry, vmtype=None):
         decoded_topic_data
     )
     if vmtype:
-        normalized_log_data = wasmevent_decode(log_data_types, log_data)
+        normalized_log_data = wasmevent_decode(log_data_types, log_data,hrp)
         if isinstance(normalized_topic_data[0],bytes):
             if normalized_topic_data[0][0]==0:
                 normalized_topic_data = topic_decode(normalized_topic_data)

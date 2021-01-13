@@ -242,8 +242,8 @@ class PublicKey(BaseKey, LazyBackend):
         return public_key_bytes_to_address(self.to_bytes())
 
     # PlatON address conversions
-    def to_bech32_address(self, hrp):
-        return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()), hrp)
+    def to_bech32_address(self,hrp):
+        return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()),hrp)
 
 
 class PrivateKey(BaseKey, LazyBackend):
