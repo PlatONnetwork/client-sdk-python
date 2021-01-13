@@ -228,7 +228,7 @@ class Web3:
     def ens(self, new_ens):
         self._ens = new_ens
 
-    def init_contract_address(self, w3):
+    def init_contract_address(self):
         try:
             attr = ['restrictingAddress', 'stakingAddress', 'penaltyAddress', 'pipAddress', 'delegateRewardAddress']
             for ar in attr:
@@ -236,7 +236,7 @@ class Web3:
                 result = tobech32address(self.net_type, base_address[prefix])
                 if result is None:
                     raise Exception('Invalid address:{}'.format(base_address[prefix]))
-                setattr(w3, ar, result)
+                setattr(self, ar, result)
         except Exception:
             raise
 
