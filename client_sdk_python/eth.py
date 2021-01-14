@@ -69,6 +69,10 @@ class Eth(Module):
     iban = Iban
     gasPriceStrategy = None
 
+    def __init__(self, web3):
+        super().__init__(web3)
+        self.net_type = self.web3.net_type
+
     @deprecated_for("doing nothing at all")
     def enable_unaudited_features(self):
         pass
@@ -110,10 +114,6 @@ class Eth(Module):
     @property
     def blockNumber(self):
         return self.web3.manager.request_blocking("platon_blockNumber", [])
-
-    @property
-    def getAddressHrp(self):
-        return self.web3.manager.request_blocking("platon_getAddressHrp", [])
 
     @property
     def evidences(self):
@@ -501,5 +501,6 @@ class Eth(Module):
 
 
 class PlatON(Eth):
-    pass
-
+    def __init__(self, web3):
+        super().__init__(web3)
+        self.net_type = self.web3.net_type

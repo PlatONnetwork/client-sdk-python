@@ -25,7 +25,7 @@ from client_sdk_python.providers.websocket import (  # noqa: E402
 try:
     __version__ = pkg_resources.get_distribution("client_sdk_python").version
 except:
-    __version__ = '0.13.1.'
+    __version__ = '0.15.1.'
 
 __all__ = [
     "__version__",
