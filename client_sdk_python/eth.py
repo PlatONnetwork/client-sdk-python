@@ -501,6 +501,4 @@ class Eth(Module):
 
 
 class PlatON(Eth):
-    def __init__(self, web3):
-        super().__init__(web3)
-        self.net_type = self.web3.net_type
+    pass

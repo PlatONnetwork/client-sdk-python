@@ -68,6 +68,15 @@ def to_checksum_address(val):
 
 
 @curry
+def spacial_to_hexbytes(val):
+    if isinstance(val, (str, int, bytes)):
+        result = HexBytes(val)
+    else:
+        raise TypeError("Cannot convert %r to HexBytes" % val)
+    return result
+
+
+@curry
 def to_hexbytes(num_bytes, val, variable_length=False):
     if isinstance(val, (str, int, bytes)):
         result = HexBytes(val)
@@ -155,7 +164,7 @@ RECEIPT_FORMATTERS = {
 receipt_formatter = apply_formatters_to_dict(RECEIPT_FORMATTERS)
 
 BLOCK_FORMATTERS = {
-    'extraData': to_hexbytes(32, variable_length=True),
+    'extraData': spacial_to_hexbytes(),
     'gasLimit': to_integer_if_hex,
     'gasUsed': to_integer_if_hex,
     'size': to_integer_if_hex,
