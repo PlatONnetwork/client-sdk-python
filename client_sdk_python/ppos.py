@@ -9,6 +9,8 @@ from eth_utils.hexadecimal import remove_0x_prefix
 from client_sdk_python.utils.encoding import parse_str
 from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
 from client_sdk_python.packages.platon_account.internal.transactions import bech32_address_bytes
+from client_sdk_python.packages.platon_keys.utils.address import BASE_ADDRESS
+from client_sdk_python.utils.encoding import tobech32address
 
 
 class Ppos(Module):
@@ -16,6 +18,13 @@ class Ppos(Module):
     # if you only want to get the transaction hash, please set it to False
     need_analyze = True
     need_quota_gas = True
+
+    def __init__(self, web3):
+        super().__init__(web3)
+        self.stakingAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['sta'])
+        self.delegateRewardAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['del'])
+        self.penaltyAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['pen'])
+        self.restrictingAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['res'])
 
     def createStaking(self,  benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
                        program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None):
@@ -55,7 +64,7 @@ class Ppos(Module):
                                     rlp.encode(amount), rlp.encode(reward_per), rlp.encode(program_version),
                                     rlp.encode(bytes.fromhex(program_version_sign)), rlp.encode(bytes.fromhex(bls_pubkey)),
                                     rlp.encode(bytes.fromhex(bls_proof))])).hex()
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def editCandidate(self, benifit_address, node_id, external_id, node_name, website, details, pri_key, reward_per, transaction_cfg=None):
         """
@@ -84,7 +93,7 @@ class Ppos(Module):
         data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp.encode(benifit_address), rlp.encode(bytes.fromhex(node_id)),
                                     rlp.encode(reward_per),
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def increaseStaking(self, node_id, amount, pri_key, typ=2, transaction_cfg=None):
         """
@@ -105,7 +114,7 @@ class Ppos(Module):
                 if is not need analyze return transaction hash
         """
         data = HexBytes(rlp.encode([rlp.encode(int(1002)), rlp.encode(bytes.fromhex(node_id)), rlp.encode(typ), rlp.encode(amount)])).hex()
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def withdrewStaking(self, node_id, pri_key, transaction_cfg=None):
         """
@@ -123,7 +132,7 @@ class Ppos(Module):
                 if is not need analyze return transaction hash
         """
         data = rlp.encode([rlp.encode(int(1003)), rlp.encode(bytes.fromhex(node_id))])
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def delegate(self, typ, node_id, amount, pri_key, transaction_cfg=None):
         """
@@ -143,7 +152,7 @@ class Ppos(Module):
                   if is not need analyze return transaction hash
         """
         data = rlp.encode([rlp.encode(int(1004)), rlp.encode(typ), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def withdrewDelegate(self, staking_blocknum, node_id, amount, pri_key, transaction_cfg=None):
         """
@@ -163,7 +172,7 @@ class Ppos(Module):
                   if is not need analyze return transaction hash
         """
         data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def getVerifierList(self, from_address=None):
         """
@@ -173,7 +182,7 @@ class Ppos(Module):
         todo fill
         """
         data = rlp.encode([rlp.encode(int(1100))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         parse = parse_str(raw_data)
         try:
             raw_data = parse["Ret"]
@@ -190,7 +199,7 @@ class Ppos(Module):
         todo fill
         """
         data = rlp.encode([rlp.encode(int(1101))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         parse = parse_str(raw_data)
         try:
             raw_data = parse["Ret"]
@@ -207,7 +216,7 @@ class Ppos(Module):
         todo fill
         """
         data = rlp.encode([rlp.encode(int(1102))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         parse = parse_str(raw_data)
         try:
             raw_data = parse["Ret"]
@@ -230,7 +239,7 @@ class Ppos(Module):
         """
         del_addr = bech32_address_bytes(del_addr)
         data = rlp.encode([rlp.encode(int(1103)), rlp.encode(del_addr)])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         return parse_str(raw_data)
 
     def getDelegateInfo(self, staking_blocknum, del_address, node_id, from_address=None):
@@ -245,7 +254,7 @@ class Ppos(Module):
         """
         del_address = bech32_address_bytes(del_address)
         data = rlp.encode([rlp.encode(int(1104)), rlp.encode(staking_blocknum), rlp.encode(del_address), rlp.encode(bytes.fromhex(node_id))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="utf8"))
         try:
             raw_data_dict = receive["Ret"]
@@ -268,7 +277,7 @@ class Ppos(Module):
         todo fill
         """
         data = rlp.encode([rlp.encode(int(1105)), rlp.encode(bytes.fromhex(node_id))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         parse = str(raw_data, encoding="utf8").replace('\\', '').replace('"{', '{').replace('}"', '}')
         receive = json.loads(parse)
         try:
@@ -302,7 +311,7 @@ class Ppos(Module):
                 if is not need analyze return transaction hash
         """
         data = rlp.encode([rlp.encode(int(3000)), rlp.encode(typ), rlp.encode(data)])
-        return send_obj_transaction(self, data, self.web3.penaltyAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.penaltyAddress, pri_key, transaction_cfg)
 
     def checkDuplicateSign(self, typ, node_id, block_number, from_address=None):
         """
@@ -315,7 +324,7 @@ class Ppos(Module):
         todo fill
         """
         data = rlp.encode([rlp.encode(int(3001)), rlp.encode(int(typ)), rlp.encode(bytes.fromhex(node_id)), rlp.encode(block_number)])
-        raw_data = call_obj(self, from_address, self.web3.penaltyAddress, data)
+        raw_data = call_obj(self, from_address, self.penaltyAddress, data)
         receive = str(raw_data, encoding="ISO-8859-1")
         if receive == "":
             return receive
@@ -356,7 +365,7 @@ class Ppos(Module):
             plan_list.append(v)
         rlp_list = rlp.encode(plan_list)
         data = rlp.encode([rlp.encode(int(4000)), rlp.encode(account), rlp_list])
-        return send_obj_transaction(self, data, self.web3.restrictingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.restrictingAddress, pri_key, transaction_cfg)
 
     def getRestrictingInfo(self, account, from_address=None):
         """
@@ -370,7 +379,7 @@ class Ppos(Module):
         #     account = account[2:]
         account = bech32_address_bytes(account)
         data = rlp.encode([rlp.encode(int(4100)), rlp.encode(account)])
-        raw_data = call_obj(self, from_address, self.web3.restrictingAddress, data)
+        raw_data = call_obj(self, from_address, self.restrictingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         try:
             raw_data_dict = receive["Ret"]
@@ -386,7 +395,7 @@ class Ppos(Module):
 
     def getPackageReward(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1200))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         ret = receive["Ret"]
         receive["Ret"] = int(str(ret), 16)
@@ -394,7 +403,7 @@ class Ppos(Module):
 
     def getStakingReward(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1201))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         ret = receive["Ret"]
         receive["Ret"] = int(str(ret), 16)
@@ -402,7 +411,7 @@ class Ppos(Module):
 
     def getAvgPackTime(self, from_address=None):
         data = rlp.encode([rlp.encode(int(1202))])
-        raw_data = call_obj(self, from_address, self.web3.stakingAddress, data)
+        raw_data = call_obj(self, from_address, self.stakingAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         return receive
 
@@ -411,7 +420,7 @@ class Ppos(Module):
         tmp_from_address = bech32_address_bytes(from_address)
         data = [rlp.encode(int(5100)), rlp.encode(tmp_from_address), rlp.encode(node_id_bytes)]
         data = rlp.encode(data)
-        raw_data = call_obj(self, from_address, self.web3.delegateRewardAddress, data)
+        raw_data = call_obj(self, from_address, self.delegateRewardAddress, data)
         receive = json.loads(str(raw_data, encoding="ISO-8859-1"))
         try:
             raw_data_dict = receive["Ret"]
@@ -425,4 +434,4 @@ class Ppos(Module):
 
     def withdrawDelegateReward(self, pri_key, transaction_cfg=None):
         data = rlp.encode([rlp.encode(int(5000))])
-        return send_obj_transaction(self, data, self.web3.delegateRewardAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.delegateRewardAddress, pri_key, transaction_cfg)

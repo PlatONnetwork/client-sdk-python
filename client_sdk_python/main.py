@@ -87,15 +87,6 @@ def get_default_modules():
         "ppos": Ppos
     }
 
-
-base_address = {'sta': '0x1000000000000000000000000000000000000002',
-                'pip': '0x1000000000000000000000000000000000000005',
-                'res': '0x1000000000000000000000000000000000000001',
-                'del': '0x1000000000000000000000000000000000000006',
-                'pen': '0x1000000000000000000000000000000000000004'
-                }
-
-
 def to_checksum_address(val):
     return val
 
@@ -135,14 +126,13 @@ class Web3:
 
     def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
         self.manager = RequestManager(self, providers, middlewares)
-
+        self.net_type = self.getAddressHrp
         if modules is None:
             modules = get_default_modules()
 
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
 
-        self.net_type = None
         # platon contract address
         self.ens = ens
 
@@ -224,21 +214,13 @@ class Web3:
         else:
             return self._ens
 
+    @property
+    def getAddressHrp(self):
+        return self.manager.request_blocking("platon_getAddressHrp", [])
+
     @ens.setter
     def ens(self, new_ens):
         self._ens = new_ens
-
-    def init_contract_address(self):
-        try:
-            attr = ['restrictingAddress', 'stakingAddress', 'penaltyAddress', 'pipAddress', 'delegateRewardAddress']
-            for ar in attr:
-                prefix = ar[:3]
-                result = tobech32address(self.net_type, base_address[prefix])
-                if result is None:
-                    raise Exception('Invalid address:{}'.format(base_address[prefix]))
-                setattr(self, ar, result)
-        except Exception:
-            raise
 
     def pubkey_to_address(self, pubkey):
         return pubkey.to_bech32_address(self.net_type)

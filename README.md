@@ -32,18 +32,6 @@ client-sdk-python 是一个服务于Platon底层链的python sdk。通过web3对
 
 ​    $ git clone https://github.com/PlatONnetwork/client-sdk-python.git
 
-#### **3** 安装python sdk 依赖项
-
-​    建议使用pycharm编辑器，按照编辑器提示，安装setup中的第三方依赖包。若因网络问题安装失败，可使用清华镜像安装   
-
-```python
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 第三方包名称
-```
-
-​       或者根据requirements.txt安装依赖项
-
-​         pip install -r requirements.txt  
-
 
 
 ### 二、使用
@@ -355,10 +343,11 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   - `position`：Number - 存储中的索引编号
   - `defaultBlock`：Number|String - 可选，使用该参数覆盖platon.defaultBlock属性值
   
+
 返回值：
-  
+
 一个AttributeDict对象，其解析值为存储中指定位置的内容。
-  
+
 - ##### (9) platon.getCode
 
   返回指定地址处的代码。
@@ -374,12 +363,13 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   - `address`：String - 要读取代码的地址
   - `defaultBlock`：Number|String - 可选，使用该参数覆盖platon.defaultBlock属性值
   
-返回值：
-  
-一个AttributeDict对象，其解析值为指定地址处的代码字符串。
-  
 
-  
+返回值：
+
+一个AttributeDict对象，其解析值为指定地址处的代码字符串。
+
+
+
 - ##### (10) platon.getBlock()
 
   返回指定块编号或块哈希对应的块。
@@ -395,10 +385,11 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
   - `blockHashOrBlockNumber`：String|Number - 块编号或块哈希值，或者使用以下字符串："genesis"、"latest" 或 "pending" 。
   - `returnTransactionObjects`：Boolean -  可选，默认值为false。当设置为true时,返回块中将包括所有交易详情，否则仅返回交易哈希。
   
+
 返回值：
-  
+
 一个AttributeDict对象，其解析值为满足搜索条件的块对象，具有以下字段：
-  
+
 - number - Number: 块编号，处于pending状态的块为null
   
 - hash 32 Bytes - String: 块哈希，处于pending状态的块为null
@@ -451,12 +442,13 @@ AttributeDict({'blockTree': AttributeDict({'root': AttributeDict({'viewNumber': 
 
   - `blockHashOrBlockNumber`：String|Number - 块编号或块的哈希值，或者使用以下字符串："genesis"、"latest" 或 "pending" 来指定块
   
+
 返回值：
-  
+
 一个AttributeDict对象，其解析值为指定块中的交易数量，Number类型。
+
   
-  
-  
+
 - ##### (12) platon.getTransaction()
 
   返回具有指定哈希值的交易对象。
@@ -1057,7 +1049,15 @@ platon.sendRawTransaction(signTransaction，private-key)
 
   
 
- 
+ #### 7.获取hrp
+
+~~~
+w3 = Web3(HTTPProvider("http://localhost:6789"))
+platon = PlatON(w3)
+print(platon.getAddressHrp)
+~~~
+
+
 
 ### 三、合约
 

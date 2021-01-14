@@ -7,7 +7,3 @@ from client_sdk_python.packages.eth_abi.abi import (
     encode_abi,
     is_encodable,
 )
-try:
-   __version__ = pkg_resources.get_distribution('eth-abi').version
-except:
-    __version__='0.7.1'
