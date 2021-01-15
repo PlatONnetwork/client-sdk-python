@@ -1470,5 +1470,641 @@ print(topic_param)
 
 ​              
 
-​       
 
+
+### 四、Ppos
+
+#### 1.staking
+
+~~~
+from client_sdk_python import Web3, HTTPProvider
+from client_sdk_python.ppos import Ppos
+w3 = Web3(HTTPProvider("http://localhost:6789"))
+ppos = Ppos(w3)
+~~~
+
+##### 发起质押
+
+- 调用方式
+
+~~~
+ppos.createStaking(benifit_address, node_id, external_id, node_name, website, details, amount,program_version,program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**typ**: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;2: Give priority to lock amount , use free amount provided that staking amount over lock amount
+>**benifit_address**: Income account for accepting block rewards and staking rewards
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**external_id**: External Id (with length limit, Id for the third party to pull the node description)
+>**node_name**: The name of the staking node (with a length limit indicating the name of the node)
+>**website**: The third-party home page of the node (with a length limit indicating the home page of the node)
+>**details**: Description of the node (with a length limit indicating the description of the node)
+>**amount**: staking von (unit:von, 1LAT = 10\*\*18 von)
+>**program_version**: The real version of the program, admin_getProgramVersion
+>**program_version_sign**: The real version of the program is signed, admin_getProgramVersion
+>**bls_pubkey**: Bls public key
+>**bls_proof**: Proof of bls, obtained by pulling the proof interface, admin_getSchnorrNIZKProve
+>**pri_key**: Private key for transaction
+>**reward_per**: Proportion of the reward share obtained from the commission, using BasePoint 1BP = 0.01%
+>**transaction_cfg**: Transaction basic configuration
+>      type: dict
+>      example:cfg = {
+>          "gas":100000000,
+>          "gasPrice":2000000000000,
+>          "nonce":1,
+>      }
+>
+>
+
+##### 修改质押信息
+
+- 调用方式
+
+~~~
+ppos.editCandidate(benifit_address, node_id, external_id, node_name, website, details, pri_key, reward_per, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**benifit_address**: Income account for accepting block rewards and staking rewards
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**external_id**: External Id (with length limit, Id for the third party to pull the node description)
+>**node_name**: The name of the staking node (with a length limit indicating the name of the node)
+>**website**: The third-party home page of the node (with a length limit indicating the home page of the node)
+>**details**: Description of the node (with a length limit indicating the description of the node)
+>**pri_key**: Private key for transaction
+>**reward_per**: Proportion of the reward share obtained from the commission, using BasePoint 1BP = 0.01%
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 增持质押
+
+- 调用方式
+
+~~~
+ppos.increaseStaking(node_id, amount, pri_key, typ=2, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**typ**: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;2: Give priority to lock amount , use free amount provided that staking amount over lock amount
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**amount**: staking von (unit:von, 1LAT = 10\*\*18 von)
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 撤销质押(一次性发起全部撤销，多次到账)
+
+- 调用方式
+
+~~~
+ppos.withdrewStaking(node_id, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+#### 2 .delegate
+
+##### 发起委托
+
+- 调用方式
+
+~~~
+ppos.delegate(typ, node_id, amount, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**typ**: Indicates whether the account free amount or the account's lock amount is used for delegate, 0: free amount; 1: lock amount
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**amount**: Amount of delegate (unit:von, 1LAT = 10\*\*18 von)
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 减持/撤销委托
+
+- 调用方式
+
+~~~
+ppos.withdrewDelegate(staking_blocknum, node_id, amount, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**staking_blocknum**: A unique indication of a pledge of a node
+>**node_id**: The idled node Id (also called the candidate's node Id)
+>**amount**: The amount of the entrusted reduction (unit:von, 1LAT = 10\*\*18 von)
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>type: dict
+>example:cfg = {
+>    "gas":100000000,
+>    "gasPrice":2000000000000,
+>    "nonce":1,
+>}
+
+##### 提取委托奖励
+
+- 调用方式
+
+~~~
+ppos.withdrawDelegateReward(pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>type: dict
+>example:cfg = {
+>    "gas":100000000,
+>    "gasPrice":2000000000000,
+>    "nonce":1,
+>}
+
+#### 3.query
+
+##### 查询当前结算周期的验证人队列
+
+- 调用方式
+
+~~~
+ppos.getVerifierList(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询当前共识周期的验证人列表
+
+- 调用方式
+
+~~~
+ppos.getValidatorList(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询所有实时的候选人列表
+
+- 调用方式
+
+~~~
+ppos.getCandidateList(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询当前账户地址所委托的节点的NodeID和质押Id
+
+- 调用方式
+
+~~~
+ppos.getRelatedListByDelAddr(del_addr, from_address=None)
+~~~
+
+- 参数说明
+
+>**del_addr**: Client's account address
+>**from_address**: Used to call the rpc call method
+
+##### 查询当前单个节点的委托信息
+
+- 调用方式
+
+~~~
+ppos.getDelegateInfo(staking_blocknum, del_address, node_id, from_address=None)
+~~~
+
+- 参数说明
+
+>**staking_blocknum**: Block height at the time of staking
+>**del_address**: Client's account address
+>**node_id**: Verifier's node ID
+>**from_address**: Used to call the rpc call method
+
+##### 查询当前节点的质押信息
+
+- 调用方式
+
+~~~
+ppos.getCandidateInfo(node_id, from_address=None)
+~~~
+
+- 参数说明
+
+>**node_id**: Verifier's node ID
+>**from_address**: Used to call the rpc call method
+
+##### 查询当前结算周期的区块奖励
+
+- 调用方式
+
+~~~
+ppos.getPackageReward(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+#####  查询当前结算周期的质押奖励
+
+- 调用方式
+
+~~~
+ppos.getStakingReward(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询打包区块的平均时间
+
+- 调用方式
+
+~~~
+ppos.getAvgPackTime(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询账户在各节点未提取委托奖励。
+
+- 调用方式
+
+~~~
+ppos.getDelegateReward(address, node_ids=[])
+~~~
+
+- 参数说明
+
+>**address**:account address to be queried
+>
+>**node_ids**:the string array of the node id to be queried, if it is empty, query all nodes delegated by the account
+
+#### 4.双签
+
+##### 举报双签
+
+- 调用方式
+
+~~~
+ppos.reportDuplicateSign(typ, data, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**typ**: Represents duplicate sign type, 1:prepareBlock, 2: prepareVote, 3:viewChange
+>**data**: Json value of single evidence, format reference RPC interface Evidences
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 查询节点是否已被举报过多签
+
+- 调用方式
+
+~~~
+ppos.checkDuplicateSign(typ, node_id, block_number, from_address=None)
+~~~
+
+- 参数说明
+
+>**typ**: Represents double sign type, 1:prepareBlock, 2: prepareVote, 3:viewChange
+>**check_address**: Reported node address
+>**block_number**: Duplicate-signed block height
+>**from_address**: Used to call the rpc call method
+
+#### 5.锁仓
+
+##### 创建锁仓计划
+
+- 调用方式
+
+~~~
+ppos.createRestrictingPlan(account, plan, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**account**: Locked account release account
+>**plan**:
+>  An is a list of RestrictingPlan types (array), and RestrictingPlan is defined as follows:
+>  type RestrictingPlan struct {
+>      Epoch uint64
+>      Amount *big.Int
+>      }
+>   where Epoch: represents a multiple of the billing period.
+>   The product of the number of blocks per billing cycle indicates that the locked fund
+>   s are released at the target block height. Epoch * The number of blocks per cycle is
+>   at least greater than the maximum irreversible block height.
+>   Amount: indicates the amount to be released on the target block.
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 获取锁仓信息
+
+- 调用方式
+
+~~~
+ppos.getRestrictingInfo(account, from_address=None)
+~~~
+
+- 参数说明
+
+>**account**: Locked account release account
+>**from_address**: Used to call the rpc call method
+
+#### 6.治理
+
+~~~
+from client_sdk_python import Web3, HTTPProvider
+from client_sdk_python.pip import Pip
+w3 = Web3(HTTPProvider("http://localhost:6789"))
+pip = Pip(w3)
+~~~
+
+##### 文本提案
+
+- 调用方式
+
+~~~
+pip.submitText(verifier, pip_id, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**verifier**: The certified submitting the proposal
+>**pip_id**: PIPID
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 升级提案
+
+- 调用方式
+
+~~~
+pip.submitVersion(verifier, pip_id, new_version, end_voting_rounds, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**verifier**:  The certified submitting the proposal
+>**pip_id**:  PIPID
+>**new_version**: upgraded version
+>**end_voting_rounds**: The number of voting consensus rounds.
+>      Explanation: Assume that the transaction submitted by the proposal is rounded when the consensus round
+>      number of the package is packed into the block, then the proposal voting block is high,
+>      which is the 230th block height of the round of the round1 + endVotingRounds
+>      (assuming a consensus round out of block 250, ppos The list is 20 blocks high in advance,
+>       250, 20 are configurable), where 0 < endVotingRounds <= 4840 (about 2 weeks, the actual discussion
+>       can be calculated according to the configuration), and is an integer)
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 参数提案
+
+- 调用方式
+
+~~~
+pip.submitParam(verifier, pip_id, module, name, new_value, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**verifier**: The certified submitting the proposal
+>**pip_id**: PIPID
+>**module**: parameter module
+>**name**: parameter name
+>**new_value**: New parameter value
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 删除提案
+
+- 调用方式
+
+~~~
+pip.submitCancel(verifier, pip_id, end_voting_rounds, tobe_canceled_proposal_id, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**verifier**: The certified submitting the proposal
+>**pip_id**: PIPID
+>**end_voting_rounds**:
+>     The number of voting consensus rounds. Refer to the instructions for submitting the upgrade proposal.
+>     At the same time, the value of this parameter in this interface
+>     cannot be greater than the value in the corresponding upgrade proposal.
+>**tobe_canceled_proposal_id**: Upgrade proposal ID to be cancelled
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 投票
+
+- 调用方式
+
+~~~
+pip.vote(verifier, proposal_id, option, program_version, version_sign, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**verifier**:  The certified submitting the proposal
+>**proposal_id**: Proposal ID
+>**option**: Voting option
+>**program_version**: Node code version, obtained by rpc getProgramVersion interface
+>**version_sign**: Code version signature, obtained by rpc getProgramVersion interface
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 版本声明
+
+- 调用方式
+
+~~~
+pip.declareVersion(active_node, program_version, version_sign, pri_key, transaction_cfg=None)
+~~~
+
+- 参数说明
+
+>**active_node**: The declared node can only be a verifier/candidate
+>**program_version**: The declared version, obtained by rpc's getProgramVersion interface
+>**version_sign**: The signed version signature, obtained by rpc's getProgramVersion interface
+>**pri_key**: Private key for transaction
+>**transaction_cfg**: Transaction basic configuration
+>        type: dict
+>        example:cfg = {
+>            "gas":100000000,
+>            "gasPrice":2000000000000,
+>            "nonce":1,
+>        }
+
+##### 查询提案
+
+- 调用方式
+
+~~~
+pip.getProposal(proposal_id, from_address=None)
+~~~
+
+- 参数说明
+
+>**proposal_id**: proposal id
+>**from_address**: Used to call the rpc call method
+
+##### 查询提案结果
+
+- 调用方式
+
+~~~
+pip.getTallyResult(proposal_id, from_address=None)
+~~~
+
+- 参数说明
+
+>**proposal_id**: proposal id
+>**from_address**: Used to call the rpc call method
+
+##### 查询提案的累积可投票人数
+
+- 调用方式
+
+~~~
+pip.getAccuVerifiersCount(proposal_id, block_hash, from_address=None)
+~~~
+
+- 参数说明
+
+>**proposal_id**:  proposal id
+>**block_hash**: block hash
+>**from_address**: Used to call the rpc call method
+
+##### 查询提案列表
+
+- 调用方式
+
+~~~
+pip.listProposal(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询节点的链生效版本
+
+- 调用方式
+
+~~~
+pip.getActiveVersion(from_address=None)
+~~~
+
+- 参数说明
+
+> **from_address**: Used to call the rpc call method
+
+##### 查询当前块高的治理参数值
+
+- 调用方式
+
+~~~
+pip.getGovernParamValue(module, name, from_address=None)
+~~~
+
+- 参数说明
+
+>**module**: Parameter module
+>**name**: parameter name
+>**from_address**:Used to call the rpc call method
+
+##### 查询治理参数列表
+
+- 调用方式
+
+~~~
+pip.listGovernParam(self, module=None, from_address=None)
+~~~
+
+- 参数说明
+
+>module:Parameter module
+>from_address: Used to call the rpc call method
