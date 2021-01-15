@@ -9,7 +9,7 @@ from client_sdk_python.utils.toolz import (
     curry,
     merge,
 )
-
+from client_sdk_python.error_code import ERROR_INFO
 from hexbytes import HexBytes
 
 from client_sdk_python.packages.platon_keys.datatypes import PrivateKey
@@ -82,8 +82,10 @@ def send_obj_transaction(obj, data, to_address, pri_key, transaction_cfg: dict):
     signed_data = signed_transaction_dict.rawTransaction
     tx_hash = HexBytes(obj.web3.platon.sendRawTransaction(signed_data)).hex()
     if obj.need_analyze:
-        return obj.web3.platon.analyzeReceiptByHash(tx_hash)
-    return tx_hash
+        code = obj.web3.platon.analyzeReceiptByHash(tx_hash)
+        code_info = ERROR_INFO.get(code, 'Unknown code info')
+        return {'hash': tx_hash, 'code': code, 'code_info': code_info}
+    return {'hash': tx_hash, 'code': '', 'code_info': ''}
 
 @curry
 def fill_nonce(web3, transaction):
