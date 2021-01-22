@@ -7,7 +7,7 @@ from client_sdk_python.pip import Pip
 def unit_test_address(url):
     w3 = Web3(HTTPProvider(url))
     platon = PlatON(w3)
-    print(platon.net_type)
+    print(platon.net_type,w3.getAddressHrp,platon.web3.getAddressHrp)
     ppos = Ppos(w3)
     pip = Pip(w3)
     print(ppos.getPackageReward())

@@ -1,6 +1,6 @@
 import json
 import rlp
-
+from client_sdk_python.eth import PlatON
 from hexbytes import HexBytes
 from client_sdk_python.module import (
     Module,
@@ -11,6 +11,7 @@ from client_sdk_python.utils.transactions import send_obj_transaction, call_obj
 from client_sdk_python.packages.platon_account.internal.transactions import bech32_address_bytes
 from client_sdk_python.packages.platon_keys.utils.address import BASE_ADDRESS
 from client_sdk_python.utils.encoding import tobech32address
+from client_sdk_python.debug import Debug
 
 
 class Ppos(Module):
@@ -154,12 +155,57 @@ class Ppos(Module):
         data = rlp.encode([rlp.encode(int(1004)), rlp.encode(typ), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
         return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
-    def withdrewDelegate(self, staking_blocknum, node_id, amount, pri_key, transaction_cfg=None):
+    def getEpochnumber(self):
+        """
+        Get the number of blocks in a epoch
+        economiccommon=int((MaxEpochMinutes*60)/(NodeBlockTimeWindow*MaxConsensusVals))
+        Epochnumber=economiccommon*(MaxConsensusVals*PerRoundBlocks)
+        """
+        debug = Debug(self.web3)
+        economiccommon = debug.economicConfig()['common']
+        Epochnumber = int((economiccommon['maxEpochMinutes'] * 60) / (
+                economiccommon['nodeBlockTimeWindow'] * economiccommon['maxConsensusVals'])) * \
+                      (economiccommon['maxConsensusVals']) * economiccommon['perRoundBlocks']
+        return Epochnumber
+
+    def withdrewDelegate(self, staking_blocknum, node_id, amount, pri_key, del_address, transaction_cfg=None):
         """
         Reduction/revocation of entrustment (all reductions are revoked)
         :param staking_blocknum: A unique indication of a pledge of a node
         :param node_id: The idled node Id (also called the candidate's node Id)
         :param amount: The amount of the entrusted reduction (unit:von, 1LAT = 10**18 von)
+        :param pri_key: Private key for transaction
+        :param del_address: Client's account address
+        :param transaction_cfg: Transaction basic configuration
+              type: dict
+              example:cfg = {
+                  "gas":100000000,
+                  "gasPrice":2000000000000,
+                  "nonce":1,
+              }
+        :return: if is need analyze return transaction result dict
+                  if is not need analyze return transaction hash
+        """
+        delegateinfo = self.getDelegateInfo(staking_blocknum, del_address, node_id, None)
+        if (delegateinfo["ret"]['ReleasedHes'] or delegateinfo["ret"]['RestrictingPlanHes']) and not delegateinfo["ret"]['WithdrewEpoch']:
+            amount1 = int(delegateinfo["ret"]['ReleasedHes'])+int(delegateinfo["ret"]['RestrictingPlanHes'])
+            if amount1 < amount:
+                Amount = amount1
+                print("In this case,you need to redeem the rest of delegation")
+            else:
+                Amount = amount
+            data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)),
+                               rlp.encode(Amount)])
+            return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
+        elif delegateinfo["ret"]['WithdrewEpoch'] > 0:
+            print("you need to redeem the whole delegation")
+            return None
+
+    def redeemDelegation(self,staking_blocknum, node_id, pri_key, del_address, transaction_cfg=None):
+        """
+        redeem the delegation which during the effective period
+        :param staking_blocknum: A unique indication of a pledge of a node
+        :param node_id: The idled node Id (also called the candidate's node Id)
         :param pri_key: Private key for transaction
         :param transaction_cfg: Transaction basic configuration
               type: dict
@@ -171,8 +217,15 @@ class Ppos(Module):
         :return: if is need analyze return transaction result dict
                   if is not need analyze return transaction hash
         """
-        data = rlp.encode([rlp.encode(int(1005)), rlp.encode(staking_blocknum), rlp.encode(bytes.fromhex(node_id)), rlp.encode(amount)])
-        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
+        delegateinfo = self.getDelegateInfo(staking_blocknum, del_address, node_id, None)
+        if delegateinfo["ret"]['WithdrewEpoch'] > 0:
+            if delegateinfo["ret"]['Released'] or delegateinfo["ret"]['RestrictingPlan']:
+                Epochnumber = self.getEpochnumber()
+                blocknumber = PlatON(self.web3).blockNumber
+                if (blocknumber/Epochnumber) > delegateinfo["ret"]['UnLockEpoch']:
+                    data = rlp.encode([rlp.encode(int(1006)),rlp.encode(staking_blocknum),rlp.encode(bytes.fromhex(node_id))])
+                    return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
+
 
     def getVerifierList(self, from_address=None):
         """
@@ -264,6 +317,9 @@ class Ppos(Module):
             raw_data_dict["RestrictingPlanHes"] = int(raw_data_dict["RestrictingPlanHes"], 16)
             raw_data_dict["CumulativeIncome"] = int(raw_data_dict["CumulativeIncome"], 16)
             # raw_data_dict["Reduction"] = int(raw_data_dict["Reduction"], 16)
+            raw_data_dict["WithdrewEpoch"] = raw_data_dict["WithdrewEpoch"]
+            raw_data_dict["WithdrewAmount"] = raw_data_dict["WithdrewAmount"]
+            raw_data_dict["UnLockEpoch"] = raw_data_dict["UnLockEpoch"]
             receive["Ret"] = raw_data_dict
         except:...
         return receive

@@ -1061,11 +1061,93 @@ platon.sendRawTransaction(signTransaction，private-key)
 
 ~~~
 w3 = Web3(HTTPProvider("http://localhost:6789"))
+print(w3.getAddressHrp)
 platon = PlatON(w3)
-print(platon.getAddressHrp)
+print(platon.w3.getAddressHrp)
 ~~~
 
+#### 7 委托、撤销、赎回
 
+* ##### (1) 发起委托
+
+  调用
+
+  delegate(params) : 
+
+  参数说明：
+
+  * typ - uint16(2bytes) : 表示使用账户自由金额还是账户的锁仓金额做委托，0: 自由金额； 1: 锁仓金额
+  * nodeId - 64bytes : 被质押的节点的NodeId
+  * amount - *big.Int(bytes) : 委托的金额(按照最小单位算，1ATP = 10**18 von) 
+  * pri_key - 32bytes : 账户的私钥
+
+  ```python
+  from client_sdk_python.ppos import Ppos
+  web3 = connect_web3(url)
+  ppos = Ppos(web3)
+  result = ppos.delegate(typ, node_id, amount, pri_key)
+  ```
+
+     首次委托：委托金处于犹豫期，过了当前结算周期之后属于有效委托
+
+     增加委托：
+
+            新增的委托处于犹豫期，过了当前结算周期之后属于有效委托，并且在此之前优先计算之前委托的收   益（参见领取收益。当已经存在撤销中/等待被赎回委托时，新增的委托任然成功并进入犹豫期）。
+
+* ##### (2) 撤销委托
+
+  当前结算周期没有撤销委托记录，则可以发起委托撤销。
+
+  调用 
+
+   withdrewDelegation(params)
+
+  参数说明：
+
+  * stakingBlockNum : 代表着某个node的某次质押的唯一标示
+  * node_id : 被质押的节点的NodeId
+  * amount : 减持生效的委托的金额(按照最小单位算，1ATP = 10**18 von)
+  * prikey : 账户的私钥
+  * del_address : 账户地址
+
+  ```python
+  result = ppos.withdrewDelegate(staking_blocknum, node_id, amount, pri_key, del_address,)
+  ```
+
+  
+
+* 撤销委托时如果有部分锁定了一定结算周期，需等待锁定期过后再发起一笔赎回交易赎回，撤销的委托才能到账。在撤销委托并且未赎回期间是不允许再次撤销，需等撤销的委托赎回后才能再次发起撤销委托。撤销委托的委托金所在的结算周期能参与节点的分红，该结算周期之后不参与分红。
+
+   		* 根据委托信息中撤销委托的WithdrewEpoch字段是否有值来判断是否已存在撤销委托
+
+  * 撤销犹豫期委托 : 立马到账，底层自动计算之前未计算的委托收益。
+  * 撤销锁定期的委托：在当前撤销结算周期过后，使用赎回委托，领取Token。委托收益可使用withdrawDelegateReward()提取账户当前所有的可提取的委托奖励。
+
+* ##### （3）赎回委托
+
+  根据委托信息中UnLockEpoch字段判断是否可赎回,在当前撤销委托结算周期过后，使用赎回委托，领取Token
+
+  调用：
+
+   redeemDelegation(params)
+
+  参数：
+
+  - stakingBlockNum : 代表着某个node的某次质押的唯一标示
+  
+  - node_id : 被质押的节点的NodeId
+  
+- prikey : 账户的私钥
+  
+  - del_address : 账户地址
+  
+  
+  
+```python
+  result = ppos.redeemDelegation(staking_blocknum, node_id, pri_key, del_address,)
+```
+
+  委托收益可使用withdrawDelegateReward()提取账户当前所有的可提取的委托奖励。
 
 ### 三、合约
 
