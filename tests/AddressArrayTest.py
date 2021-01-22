@@ -1,5 +1,5 @@
-from alaya import Web3,HTTPProvider
-from alaya.eth import PlatON
+from client_sdk_python import Web3,HTTPProvider
+from client_sdk_python.eth import PlatON
 
 
 true = True

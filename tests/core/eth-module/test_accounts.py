@@ -308,7 +308,7 @@ def test_eth_account_sign_transaction_from_eth_test(acct, transaction_info):
     # There is some ambiguity about whether `r` will always be deterministically
     # generated from the transaction hash and private key, mostly due to code
     # author's ignorance. The example test fixtures and implementations seem to agree, so far.
-    # See ecdsa_raw_sign() in /eth_keys/backends/native/ecdsa.py
+    # See ecdsa_raw_sign() in /platon_keys/backends/native/ecdsa.py
     signed = acct.signTransaction(transaction, key)
     assert signed.r == Web3.toInt(hexstr=expected_raw_txn[-130:-66])
 
