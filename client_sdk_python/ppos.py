@@ -26,8 +26,8 @@ class Ppos(Module):
         self.penaltyAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['pen'])
         self.restrictingAddress = tobech32address(self.web3.net_type, BASE_ADDRESS['res'])
 
-    def createStaking(self,  benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
-                       program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, typ=2, transaction_cfg=None):
+    def createStaking(self, typ, benifit_address, node_id, external_id, node_name, website, details, amount,program_version,
+                       program_version_sign, bls_pubkey, bls_proof, pri_key, reward_per, transaction_cfg=None):
         """
         Initiate Staking
         :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;
@@ -95,7 +95,7 @@ class Ppos(Module):
                                     rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
         return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
-    def increaseStaking(self, node_id, amount, pri_key, typ=2, transaction_cfg=None):
+    def increaseStaking(self, typ, node_id, amount, pri_key, transaction_cfg=None):
         """
         Increase staking
         :param typ: Indicates whether the account free amount or the account's lock amount is used for staking, 0: free amount; 1: lock amount;
