@@ -89,11 +89,15 @@ class Ppos(Module):
         """
         # if benifit_address[:2] == '0x':
         #     benifit_address = benifit_address[2:]
-        benifit_address = bech32_address_bytes(benifit_address)
-        data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp.encode(benifit_address), rlp.encode(bytes.fromhex(node_id)),
-                                    rlp.encode(reward_per),
-                                    rlp.encode(external_id), rlp.encode(node_name), rlp.encode(website), rlp.encode(details)])).hex()
-        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
+        rlp_benifit_address = rlp.encode(bech32_address_bytes(benifit_address)) if benifit_address else b''
+        rlp_external_id = rlp.encode(external_id) if external_id else b''
+        rlp_node_name = rlp.encode(node_name) if node_name else b''
+        rlp_website = rlp.encode(website) if website else b''
+        rlp_details = rlp.encode(details) if details else b''
+        rlp_reward_per = rlp.encode(reward_per) if reward_per else b''
+        data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp_benifit_address, rlp.encode(bytes.fromhex(node_id)), rlp_reward_per, rlp_external_id,
+                                    rlp_node_name, rlp_website, rlp_details])).hex()
+        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
 
     def increaseStaking(self, typ, node_id, amount, pri_key, transaction_cfg=None):
         """
