@@ -97,7 +97,7 @@ class Ppos(Module):
         rlp_reward_per = rlp.encode(reward_per) if reward_per else b''
         data = HexBytes(rlp.encode([rlp.encode(int(1001)), rlp_benifit_address, rlp.encode(bytes.fromhex(node_id)), rlp_reward_per, rlp_external_id,
                                     rlp_node_name, rlp_website, rlp_details])).hex()
-        return send_obj_transaction(self, data, self.web3.stakingAddress, pri_key, transaction_cfg)
+        return send_obj_transaction(self, data, self.stakingAddress, pri_key, transaction_cfg)
 
     def increaseStaking(self, typ, node_id, amount, pri_key, transaction_cfg=None):
         """
