@@ -391,7 +391,7 @@ class WasmContract:
         if data is None:
             data = fn_selector
 
-        return encode_abi(cls.web3, fn_abi, fn_arguments, data, cls.abi)
+        return encode_abi(cls.web3, fn_abi, fn_arguments, cls.vmtype, data, cls.abi)
 
     @combomethod
     @deprecated_for("contract.events.<event name>.createFilter")
@@ -804,7 +804,7 @@ class WasmContract:
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
 
             deploy_data = add_0x_prefix(
-                encode_abi(cls.web3, constructor_abi, arguments, cls.bytecode, cls.abi)
+                encode_abi(cls.web3, constructor_abi, arguments, cls.vmtype, cls.bytecode, cls.abi)
             )
         else:
             deploy_data = to_hex(cls.bytecode)
@@ -1266,7 +1266,7 @@ class ContractFunction:
 
     @combomethod
     def _encode_transaction_data(cls):
-        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.selector, cls.abi))
+        return add_0x_prefix(encode_abi(cls.web3, cls.abi, cls.arguments, cls.vmtype, cls.selector, cls.abi))
 
     _return_data_normalizers = tuple()
 
