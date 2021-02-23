@@ -792,7 +792,7 @@ class Contract:
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
 
             deploy_data = add_0x_prefix(
-                encode_abi(cls.web3, constructor_abi, arguments, cls.bytecode, cls.abi)
+                encode_abi(cls.web3, constructor_abi, arguments, cls.vmtype, cls.bytecode, cls.abi)
             )
         else:
             deploy_data = to_hex(cls.bytecode)
