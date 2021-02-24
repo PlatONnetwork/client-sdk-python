@@ -35,9 +35,7 @@ def bech32_address_bytes(val):
     if not is_empty_or_checksum_address(val):
         _, result = decode(val[0:3], val)
         val = bytes(result)
-        return val
-    else:
-        raise ValueError(val)
+    return val
 
 
 def modify_address(transaction_dict):
