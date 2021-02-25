@@ -1,6 +1,13 @@
+RestrictTxPlanSize = 36
 ERROR_INFO = {
     # successful error code
     0: 'sendRawTransaction successful',
+    # System error
+    1: 'System error',
+    # Object not found
+    2: 'Object not found',
+    # Invalid parameter
+    3: 'Invalid parameter',
     # staking error code
     301000: 'Invalid BLS public key length',
     301001: 'The BLS proof is incorrect',
@@ -88,6 +95,7 @@ ERROR_INFO = {
     303010: "Can't report yourself",
     # restricting error code
     304001: 'The initial epoch for staking cannot be zero',
+    304002: 'The number of the restricting plan cannot be (0, {}]'.format(RestrictTxPlanSize),
     304003: 'Total staking amount shall be more than 1 LAT',
     304004: 'Create plan,the sender balance is not enough in restrict',
     304005: 'Account is not found on restricting contract',
