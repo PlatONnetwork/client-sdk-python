@@ -124,9 +124,16 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100, hrp_type=None):
         self.manager = RequestManager(self, providers, middlewares)
-        self.net_type = self.getAddressHrp
+        if providers:
+            self.net_type = self.getAddressHrp
+        else:
+            if not hrp_type:
+                raise ValueError(
+                    "Offline mode needs to specify the network type and cannot be empty,parameter hrp_type must be specified"
+                )
+            self.net_type = hrp_type
         if modules is None:
             modules = get_default_modules()
 
