@@ -87,11 +87,14 @@ def get_default_modules():
         "ppos": Ppos
     }
 
+
 def to_checksum_address(val):
     return val
 
+
 def is_checksum_address(val):
     return True
+
 
 class Web3:
     # Providers
@@ -127,7 +130,15 @@ class Web3:
     def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100, hrp_type=None):
         self.manager = RequestManager(self, providers, middlewares)
         if providers:
-            self.net_type = self.getAddressHrp
+            try:
+                self.net_type = self.getAddressHrp
+            except Exception as e:
+                if not hrp_type:
+                    raise ValueError(
+                        "Failed to obtain hrp automatically,need to be passed in from outside,exception info:{}".format(e)
+                    )
+                else:
+                    self.net_type = hrp_type
         else:
             if not hrp_type:
                 raise ValueError(
