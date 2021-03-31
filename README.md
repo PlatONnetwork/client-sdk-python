@@ -26,18 +26,12 @@ client-sdk-python 是一个服务于Platon底层链的python sdk。通过web3对
 
 #### **2** 可使用pip直接安装：
 
-    ~~~
- pip install client-sdk-python
-    ~~~
-
+     pip install client-sdk-python
 
 
 ​    或下载代码，在python编辑器中使用。git bash 拉取源代码，如下操作
 
-    ~~~
-git clone https://github.com/PlatONnetwork/client-sdk-python.git
-    ~~~
-
+    git clone https://github.com/PlatONnetwork/client-sdk-python.git
 
 
 
