@@ -61,11 +61,11 @@ if TYPE_CHECKING:
 if sys.version_info[0] == 2:
     ByteString = type(
         b'BaseString',
-        (collections.abc.Sequence, basestring),  # noqa: F821
+        (collections.Sequence, basestring),  # noqa: F821
         {},
     )  # type: Any
 else:
-    ByteString = collections.abc.ByteString
+    ByteString = collections.ByteString
 
 
 class LazyBackend:
@@ -112,7 +112,7 @@ class LazyBackend:
         return get_backend(*args, **kwargs)
 
 
-class BaseKey(ByteString, collections.abc.Hashable):
+class BaseKey(ByteString, collections.Hashable):
     _raw_key = None  # type: bytes
 
     def to_hex(self) -> str:

@@ -171,6 +171,13 @@ class ContractEvents:
                         vmtype=vmtype,
                         event_name=event['name']))
 
+    def __iter__(self):
+        if not hasattr(self, '_events') or not self._events:
+            return
+
+        for event in self._events:
+            yield event['name']
+
     def __getattr__(self, event_name):
         if '_events' not in self.__dict__:
             raise NoABIEventsFound(

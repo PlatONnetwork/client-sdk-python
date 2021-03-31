@@ -557,6 +557,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
     return data1
 
 def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
+    arguments = list(arguments)
     if vmtype == 1:
         arrinputs=[]
         inputlength=len(abi['inputs'])
