@@ -18,7 +18,7 @@ remap_geth_poa_fields = apply_key_map({
 })
 
 pythonic_geth_poa = apply_formatters_to_dict({
-    'platon_keys': HexBytes,
+    'proofOfAuthorityData': HexBytes,
 })
 
 geth_poa_cleanup = compose(pythonic_geth_poa, remap_geth_poa_fields)
