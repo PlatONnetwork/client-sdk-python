@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import numbers
 from typing import Any
 
@@ -33,7 +33,7 @@ def is_dict(obj: Any) -> bool:
 
 
 def is_list_like(obj: Any) -> bool:
-    return not is_string(obj) and isinstance(obj, collections.Sequence)
+    return not is_string(obj) and isinstance(obj, collections.abc.Sequence)
 
 
 def is_list(obj: Any) -> bool:
