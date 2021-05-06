@@ -428,13 +428,13 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
             else:
                 data1 = [0 for x in range(len(buf))]
                 for j in range(len(buf)):
-                    data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+                    data1[j] = wasmdecode_abi(hrp,{'type': type, 'name': ''}, buf[j], setabi)
         elif isinstance(buf, str):
             data1 = bytes.decode(HexBytes(buf))
         elif isinstance(buf,tuple):
             data1 = [0 for x in range(len(buf))]
             for j in range(len(buf)):
-                data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+                data1[j] = wasmdecode_abi(hrp,{'type': type, 'name': ''}, buf[j], setabi)
 
     elif type.startswith('uint') and not type.endswith(']'):
         digit = 0
@@ -478,7 +478,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
                 data1[i] = hex(int(buf[i],16))
         else:
             for i in range(len(buf)):
-                data1[i] = wasmdecode_abi({'type':vectype,'name':''}, buf[i], setabi)
+                data1[i] = wasmdecode_abi(hrp,{'type':vectype,'name':''}, buf[i], setabi)
 
     elif type.startswith('list'):
         i1 = type.index('<')
@@ -488,7 +488,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
             buf =buf[0]
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
-            data1[j] = (wasmdecode_abi({'type': itype, 'name': ''}, buf[j], setabi))
+            data1[j] = (wasmdecode_abi(hrp, {'type': itype, 'name': ''}, buf[j], setabi))
     elif type.startswith('map'):
         i1 = type.index('<')
         i2 = type.index(',')
@@ -498,11 +498,11 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
             if len(buf[j])<=1 and len(buf[j][0])>=2:
-                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0][0], setabi)
-                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][0][1], setabi)
+                kvalue = wasmdecode_abi(hrp,{'type': ktype, 'name': ''}, buf[j][0][0], setabi)
+                vvalue = wasmdecode_abi(hrp,{'type': vtype, 'name': ''}, buf[j][0][1], setabi)
             else:
-                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0], setabi)
-                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][1], setabi)
+                kvalue = wasmdecode_abi(hrp,{'type': ktype, 'name': ''}, buf[j][0], setabi)
+                vvalue = wasmdecode_abi(hrp,{'type': vtype, 'name': ''}, buf[j][1], setabi)
             data1[j] = [kvalue,vvalue]
     elif type.startswith('pair'):
         i1=type.index('<')
@@ -513,8 +513,8 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         if isinstance(buf, tuple) and len(buf) <= 1:
             buf = buf[0]
         data1 = [0 for x in range(len(buf))]
-        data1[0]=wasmdecode_abi({'type':ktype, 'name':''}, buf[0], setabi)
-        data1[1]=wasmdecode_abi({'type':vtype, 'name':''}, buf[1], setabi)
+        data1[0]=wasmdecode_abi(hrp,{'type':ktype, 'name':''}, buf[0], setabi)
+        data1[1]=wasmdecode_abi(hrp,{'type':vtype, 'name':''}, buf[1], setabi)
     elif type.startswith('set'):
         i1=type.index('<')
         i2 = type.index('>')
@@ -523,7 +523,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
             buf = buf[0]
         data1 = [0 for x in range(len(buf))]
         for j in range(len(buf)):
-            data1[j] = wasmdecode_abi({'type':stype,'name':''},buf[j], setabi)
+            data1[j] = wasmdecode_abi(hrp,{'type':stype,'name':''},buf[j], setabi)
         data1=set(data1)
     elif type == 'struct':
         structtype = [item for item in setabi if item['type'] == 'struct' and item['name'] == name]
@@ -532,7 +532,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         else:
             data1 = [0 for x in range(len(structtype[0]['inputs']))]
             for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(structtype[0]['inputs'][i], buf[i], setabi)
+                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
 
     elif type.startswith('FixedHash'):
         data1 = '0x'+tostring_hex(buf)
@@ -552,7 +552,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         else:
             data1 = [0 for x in range(len(structtype[0]['inputs']))]
             for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(structtype[0]['inputs'][i], buf[i], setabi)
+                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
 
     return data1
 
