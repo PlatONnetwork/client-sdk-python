@@ -384,7 +384,6 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
     elif type.endswith(']'):
         lasti=type.rindex('[')
         vectype=type[0:lasti]
-        data1 = []
         if vectype == 'uint8':
             data1 = buf
         else:
@@ -539,7 +538,7 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
 
 def wasmevent_decode(types, data,hrp):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
-        bufs = rlp_decode(hexstr2bytes(to_hex(data)))
+        bufs = detail_decode_data(rlp.decode(data))
     else:
         bufs = data
     data1 = []
@@ -551,16 +550,17 @@ def wasmevent_decode(types, data,hrp):
         type = types
         if type == 'string':
             tem = []
-            if isinstance(buf,list):
-                for i in buf:
-                    tem.append(bytes.decode(HexBytes(i)))
-                data1 = ''.join(tem)
+            if isinstance(buf, list):
+                if not isinstance(buf[0], list):
+                    for i in buf:
+                        tem.append(bytes.decode(HexBytes(i)))
+                    data1 = ''.join(tem)
+                else:
+                    data1 = [wasmevent_decode(hrp, {'type': type, 'name': ''}, j) for j in buf]
             elif isinstance(buf, str):
                 data1 = bytes.decode(HexBytes(buf))
-            elif isinstance(buf,tuple):
-                data1 = [0 for x in range(len(buf))]
-                for j in range(len(buf)):
-                    data1[j] = wasmevent_decode(types, buf[j],hrp)
+            elif isinstance(buf, tuple):
+                data1 = [wasmevent_decode(hrp, {'type': type, 'name': ''}, j) for j in buf]
         elif type.startswith('uint') and not type.endswith(']'):
             digit = 0
             if len(buf) <= 1:
@@ -576,32 +576,22 @@ def wasmevent_decode(types, data,hrp):
                 data1 = True
             else:
                 data1 = False
-        elif type == 'int8':
-            temp = np.uint8(decodeuint(buf))
-            data1 = np.int8(temp)
-        elif type == 'int16':
-            temp = np.uint16(decodeuint(buf))
-            data1 = np.int16(temp)
-        elif type == 'int32':
-            temp = np.uint32(decodeuint(buf))
-            data1 = np.int32(temp)
-        elif type == 'int64':
-            temp = np.uint64(decodeuint(buf))
-            data1 = np.int64(temp)
+        elif type in ['int8', 'int16', 'int32', 'int64']:
+            if isinstance(buf, list):
+                buf = ''.join(buf)
+            temp = int(buf, 16)
+            data1 = (temp >> 1) ^ (temp & 1) * (-1)
         elif type == 'float':
             data1 = struct.unpack('>f', HexBytes(buf))
         elif type == 'double':
             data1 = struct.unpack('>d', HexBytes(buf))
         elif type.endswith(']'):
-            lasti=type.rindex('[')
-            vectype=type[0:lasti]
-            data1 = [0 for x in range(len(buf))]
+            lasti = type.rindex('[')
+            vectype = type[0:lasti]
             if vectype == 'uint8':
-                for i in range(len(buf)):
-                    data1[i] = hex(int(buf[i],16))
+                data1 = buf
             else:
-                for i in range(len(buf)):
-                    data1[i] = wasmevent_decode(types, buf[i],hrp)
+                data1 = [wasmevent_decode(hrp, {'type': vectype, 'name': ''}, i) for i in buf]
         elif type.startswith('FixedHash'):
             data1 = '0x'+tostring_hex(buf)
             if type.endswith('<20>'):
@@ -615,17 +605,17 @@ def wasmevent_decode(types, data,hrp):
     else:
         if len(bufs) != len(types):
             if len(bufs[0]) == len(types):
-                data1 = [0 for x in range(len(types))]
+                data1 = []
                 for i in range(len(bufs[0])):
                     buf = bufs[0][i]
                     type = types[i]
-                    data1[i] = wasmevent_decode(type, buf,hrp)
+                    data1.append(wasmevent_decode(hrp,type, buf))
         else:
-            data1 = [0 for x in range(len(bufs))]
+            data1 = []
             for i in range(len(bufs)):
                 buf = bufs[i]
                 type = types[i]
-                data1[i]=wasmevent_decode(type, buf,hrp)
+                data1.append(wasmevent_decode(hrp, type, buf))
     return data1
 
 def prepare_transaction(

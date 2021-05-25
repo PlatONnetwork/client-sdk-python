@@ -198,7 +198,7 @@ def get_event_data(event_abi, log_entry, vmtype=None, hrp=DEFAULTHRP):
         decoded_topic_data
     )
     if vmtype:
-        normalized_log_data = wasmevent_decode(log_data_types, log_data,hrp)
+        normalized_log_data = wasmevent_decode(hrp,log_data_types, log_data)
         if isinstance(normalized_topic_data[0],bytes):
             if normalized_topic_data[0][0]==0:
                 normalized_topic_data = topic_decode(normalized_topic_data)
