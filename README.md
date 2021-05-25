@@ -15,6 +15,14 @@ The main functions are used to obtain block data, send transactions, interact wi
 
 ## Quick start
 
+### Special Note
+
+- chain_id
+
+  - 210309 is the chain id of the development network.
+
+  - 100 is the chain id of the main net.
+
 ### One part: installation
 
 #### **1** Python environment requirements
@@ -31,7 +39,6 @@ The main functions are used to obtain block data, send transactions, interact wi
     git clone -b 0.15.1-develop https://github.com/PlatONnetwork/client-sdk-python.git
 
 > Where `0.15.1-develop` is the currently used branch.
-
 
 ### Second part: use
 
@@ -1443,6 +1450,11 @@ print(topic_param)
 
 
 ### Four part: Ppos
+
+#### Special note
+
+- node_id
+  - When the node_id parameter needs to be passed in each api , '0x' should be removed.
 
 #### 1.staking
 
