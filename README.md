@@ -44,7 +44,7 @@ The main functions are used to obtain block data, send transactions, interact wi
 - Take HTTP connection as an example, connect to a Platon node
 
   ```python
-  w3 = Web3(HTTPProvider("http://localhost:6789"))
+  w3 = Web3(HTTPProvider("http://localhost:6789"),chain_id = 100)
   platon = PlatON(w3)
   print(w3.isConnected())
   ```
@@ -58,7 +58,7 @@ The main functions are used to obtain block data, send transactions, interact wi
   code show as below:
 
   ```python
-  w3 = Web3(WebsocketProvider("ws://localhost:6790"))
+  w3 = Web3(WebsocketProvider("ws://localhost:6790"),chain_id = 100)
   platon = PlatON(w3)
   print(w3.isConnected())
   ```
@@ -68,7 +68,7 @@ The main functions are used to obtain block data, send transactions, interact wi
   code show as below:
 
   ```python
-  w3 = Web3(IPCProvider("./platon.ipc"))
+  w3 = Web3(IPCProvider("./platon.ipc"),chain_id = 100)
   platon = PlatON(w3)
   print(w3.isConnected())
   ```
@@ -291,7 +291,7 @@ from client_sdk_python.eth import PlatON
 from hexbytes import HexBytes
 
 # get blockNumber syncing gasPrice accounts evidences consensusStatus
-w3 = Web3(HTTPProvider("http://localhost:6789"))
+w3 = Web3(HTTPProvider("http://localhost:6789"),chain_id = 100)
 platon = PlatON(w3)
 block_number = platon.blockNumber
 print(block_number)
@@ -1034,7 +1034,7 @@ True
  #### 7. Get hrp
 
 ```
-w3 = Web3(HTTPProvider("http://localhost:6789"))
+w3 = Web3(HTTPProvider("http://localhost:6789"),chain_id = 100)
 platon = PlatON(w3)
 print(platon.getAddressHrp)
 ```
@@ -1086,7 +1086,7 @@ The python sdk currently supports bin and abi formed after the evm and wasm cont
   true = True
   false = False
   
-  w3 = Web3(HTTPProvider("http://10.1.1.5:6789"))
+  w3 = Web3(HTTPProvider("http://10.1.1.5:6789"),chain_id = 100)
   platon = PlatON(w3)
   print(w3.isConnected())
   
@@ -1329,7 +1329,7 @@ print(topic_param)
   true = True
   false = False
   
-  w3 = Web3(HTTPProvider("http://10.1.1.2:6789"))
+  w3 = Web3(HTTPProvider("http://10.1.1.2:6789"),chain_id = 100)
   platon = PlatON(w3)
   print(w3.isConnected())
   from_address = "lax1uqug0zq7rcxddndleq4ux2ft3tv6dqljphydrl"
@@ -1449,7 +1449,7 @@ print(topic_param)
 ```python
 from client_sdk_python import Web3, HTTPProvider
 from client_sdk_python.ppos import Ppos
-w3 = Web3(HTTPProvider("http://localhost:6789"))
+w3 = Web3(HTTPProvider("http://localhost:6789"),chain_id = 100)
 ppos = Ppos(w3)
 ```
 
@@ -1945,7 +1945,7 @@ Parameter Description
 ```python
 from client_sdk_python import Web3, HTTPProvider
 from client_sdk_python.pip import Pip
-w3 = Web3(HTTPProvider("http://localhost:6789"))
+w3 = Web3(HTTPProvider("http://localhost:6789"),chain_id = 100)
 pip = Pip(w3)
 ```
 

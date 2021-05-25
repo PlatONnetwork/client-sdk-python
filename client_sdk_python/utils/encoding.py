@@ -40,7 +40,7 @@ from client_sdk_python.utils.validation import (
 from client_sdk_python.packages.platon_keys.utils import bech32
 
 def parse_str(raw_data):
-    data = str(raw_data, encoding="utf-8").replace('\\', '').replace('"[', '[').replace(']"', ']')
+    data = str(raw_data, encoding="utf-8")
     return json.loads(data)
 
 
