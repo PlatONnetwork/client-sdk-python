@@ -1,0 +1,62 @@
+[
+    {
+        "anonymous": false,
+        "input": [
+            {
+                "name": "topic1",
+                "type": "string"
+            },
+            {
+                "name": "topic2",
+                "type": "int32"
+            }
+        ],
+        "name": "Add",
+        "topic": 2,
+        "type": "Event"
+    },
+    {
+        "constant": false,
+        "input": [],
+        "name": "init",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "constant": false,
+        "input": [],
+        "name": "makeNumber",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "constant": false,
+        "input": [],
+        "name": "deleteNumber",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "constant": true,
+        "input": [],
+        "name": "get_Numbers",
+        "output": "list<int32>",
+        "type": "Action"
+    },
+    {
+        "constant": false,
+        "input": [
+            {
+                "name": "a",
+                "type": "int32"
+            },
+            {
+                "name": "b",
+                "type": "int32"
+            }
+        ],
+        "name": "calcAdd",
+        "output": "int32",
+        "type": "Action"
+    }
+]
