@@ -1,11 +1,10 @@
 import functools
 import struct
 import numpy as np
+import rlp
 from client_sdk_python.param_encode import (
-    stringfnv,
-    rlp_encode,
+    fnv1_64,
     rlp_decode,
-    hexstr2bytes,
 )
 
 from client_sdk_python.packages.eth_abi import (
@@ -149,8 +148,6 @@ def encodeuint(param):
     if param:
         temp1 = int(param)
         while (temp1 % 0xff) or (temp1 & 0xff) :
-            temp = []
-
             temp = (hex(temp1 & 0xff)).replace('0x', '')
             if len(temp) == 1:
                 temp = '0' + temp
@@ -200,102 +197,42 @@ def encodeparameters(types,params,setabi=None):
         type = types[i]['type']
         name = types[i]['name']
         if type == 'string':
-            temp = stringtohex(bytes(param,'utf-8'))
-            if isinstance(param, str) and len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(bytes(param,'utf-8'))
         elif type.startswith('uint') and not type.endswith(']'):
             temp=encodeuint(param)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(int(''.join(temp),16))
         elif type == 'bool':
-            if param:
-                temp = '01'
-            else:
-                temp = '0'
-            if len(params) <= 1:
-                arrlp.append(temp)
-            else:
-                arrlp = handlearrlp(arrlp, temp)
-        elif type == 'int8':
-            temp1 = np.uint8(param)
+           arrlp.append(1 if param else 0)
+        elif type.startswith("int") and not type.endswith("]"):
+            temp1 = (param << 1) ^ (param >> 63)
             temp = encodeuint(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
-        elif type == 'int16':
-            temp1 = np.uint16(param)
-            temp = encodeuint(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
-        elif type == 'int32':
-            temp1 = np.uint32(param)
-            temp = encodeuint(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
-        elif type == 'int64':
-            temp1 = np.uint64(param)
-            temp = encodeuint(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(int(''.join(temp),16))
         elif type =='float':
             temp1 =float_to_hex(param)
             temp = hexstr2bytes(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(temp)
         elif type =='double':
             temp1 =double_to_hex(param)
             temp = hexstr2bytes(temp1)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(temp)
         elif type.endswith(']'):
             vectype = type.split('[')[0]
             temp=[]
-            if vectype == 'uint8':
-                for i in param:
-                    if isinstance(i,list):
-                        temp.append(hex(i[0]).replace('0x',''))
-                    else:
-                        if isinstance(i,str):
-                            temp.append(hex(int(i,16)).replace('0x', ''))
-                        else:
-                            temp.append(hex(i).replace('0x', ''))
-                if len(params) <= 1:
-                    arrlp = temp
-                else:
-                    arrlp = handlearrlp(arrlp, temp)
+            vecLen = type[type.index('[') + 1:].split(']')[0]
+            if vectype == 'uint8' and vecLen =="":
+               arrlp.append(param)
             else:
                 for i in param:
-                    temp.append(encodeparameters([{'type':vectype,'name':''}],[i],setabi))
-                if len(params) <= 1:
-                    arrlp = tuple(temp) ##转化为字节数组列表模式
-                else:
-                    arrlp = tuplearrlp(arrlp, temp)
+                    temp.append(encodeparameters([{'type':vectype,'name':''}],[i],setabi)[0])
+                arrlp.append(temp)
         elif type.startswith('list'):
             i1 = type.index('<')
             i2 = type.index('>')
             itype = type[i1+1:i2]
             temp=[]
             for j in param:
-                temp.append(encodeparameters([{'type':itype,'name':''}], [j], setabi))
-            if len(params) <= 1:
-                arrlp = tuple(temp)  ##转化为字节数组列表模式
-            else:
-                arrlp = tuplearrlp(arrlp, temp)
+                temp.append(encodeparameters([{'type':itype,'name':''}], [j], setabi)[0])
+            arrlp.append(temp)
         elif type.startswith('map'):
             i1=type.index('<')
             i2=type.index(',')
@@ -304,29 +241,19 @@ def encodeparameters(types,params,setabi=None):
             vtype=type[i2+1:i3]
             temp = []
             for j in param:
-                kvalue=encodeparameters([{'type':ktype,'name':''}], [j[0]], setabi)
-                vvalue=encodeparameters([{'type':vtype,'name':''}], [j[1]], setabi)
-                temp1=(kvalue,vvalue)
-                temp.append(temp1)
-            if len(params) <= 1:
-                arrlp = tuple(temp)  ##转化为字节数组列表模式
-            else:
-                arrlp = tuplearrlp(arrlp, temp)
+                kvalue=encodeparameters([{'type':ktype,'name':''}], [j[0]], setabi)[0]
+                vvalue=encodeparameters([{'type':vtype,'name':''}], [j[1]], setabi)[0]
+                temp.append([kvalue,vvalue])
+            arrlp.append(temp)
         elif type.startswith('pair'):
-            temp=[]
             i1=type.index('<')
             i2=type.index(',')
             i3=type.index('>')
             ktype=type[i1+1:i2]
             vtype=type[i2+1:i3]
-            kvalue=encodeparameters([{'type':ktype, 'name':''}], [param[0]], setabi)
-            vvalue=encodeparameters([{'type':vtype, 'name':''}], [param[1]], setabi)
-            temp.append(kvalue)
-            temp.append(vvalue)
-            if len(params) <= 1:
-                arrlp = tuple(temp)  ##转化为字节数组列表模式
-            else:
-                arrlp = tuplearrlp(arrlp, temp)
+            kvalue=encodeparameters([{'type':ktype, 'name':''}], [param[0]], setabi)[0]
+            vvalue=encodeparameters([{'type':vtype, 'name':''}], [param[1]], setabi)[0]
+            arrlp.append([kvalue,vvalue])
 
         elif type.startswith('set'):
             temp=[]
@@ -334,11 +261,8 @@ def encodeparameters(types,params,setabi=None):
             i2 = type.index('>')
             stype=type[i1+1:i2]
             for j in param:
-                temp.append(encodeparameters([{'type':stype,'name':''}],[j], setabi))
-            if len(params) <= 1:
-                arrlp = tuple(temp)  ##转化为字节数组列表模式
-            else:
-                arrlp = tuplearrlp(arrlp, temp)
+                temp.append(encodeparameters([{'type':stype,'name':''}],[j], setabi)[0])
+            arrlp.append(temp)
         elif type == 'struct':
             temp=[]
             structtype = [item for item in setabi if item['type'] == 'struct' and item['name'] == name]
@@ -346,10 +270,7 @@ def encodeparameters(types,params,setabi=None):
                 raise Exception('can not find struct in {} .'.format(name))
             else:
                 temp.append(encodeparameters(structtype[0]['inputs'], param, setabi))
-            if len(params) <= 1:
-                arrlp = tuple(temp)  ##转化为字节数组列表模式
-            else:
-                arrlp = tuplearrlp(arrlp, temp)
+            arrlp.append(temp)
 
         elif type=='FixedHash<20>':
             temp=[]
@@ -359,6 +280,7 @@ def encodeparameters(types,params,setabi=None):
             elif isinstance(param,tuple):
                 p1 = param[0][0:3]
                 p2 = param[0]
+            if p1 == 'lax' or p1 == 'lat':
                 hrpgot, data1 = bech32.decode(p1, p2)
                 for i in data1:
                     temp1=hex(i).replace('0x', '')
@@ -366,32 +288,16 @@ def encodeparameters(types,params,setabi=None):
                         temp1='0'+temp1
                     temp.append(temp1)
                     del temp1
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(temp)
         elif type.startswith('FixedHash'): # 不是很确定，把'FixedHash'开头的类型理解为 ['0x33','0x6a'.'0x5e']这样的字节数组
-            temp=[]
-            for i in param:
-                if isinstance(i, list):
-                    temp.append(hex(i[0]).replace('0x', ''))
-                else:
-                    temp.append(hex(i).replace('0x', ''))
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(param)
         else :
             structtype = [item for item in setabi if item['name'] == type]
             if not structtype:
                 raise Exception('can not find struct through {} .'.format(type))
             else:
-                temp=[]
                 temp=encodeparameters(structtype[0]['inputs'], param, setabi)
-            if len(params) <= 1:
-                arrlp = temp
-            else:
-                arrlp = handlearrlp(arrlp, temp)
+            arrlp.append(temp)
     return arrlp
 
 #针对转化为uint的float和double,解码中以float a1=1.4为例，转化为uint32后为 a2='0x3fb33333'
@@ -408,13 +314,32 @@ def decodeuint(param):
             digit += int(param[i], 16) * (256 ** (len(param) - 1 - i))  #256
         data1 = digit
     return data1
-def wasmdecode_abi(hrp,types, data, setabi=None):
+
+
+def detail_decode_data(data_list):
+    detail_after = []
+    for i in data_list:
+        if isinstance(i, list) and (detail_decode_data(i) not in detail_after):
+            detail_after.append(detail_decode_data(i))
+        else:
+            if i not in detail_after:
+                str_i = to_hex(i)
+                if str_i[:2] == '0x':
+                    detail_after.append(str_i[2:])
+                else:
+                    detail_after.append(str_i)
+    return detail_after
+
+def wasmdecode_abi(hrp, types, data, setabi=None):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
-        buf = rlp_decode(hexstr2bytes(to_hex(data)))
+        buf = detail_decode_data(rlp.decode(data))
     else:
         buf = data
+    # print(f'wasmdecode_abi:{types,buf}')
     type = types['type']
     name = types['name']
+    if (not buf) and ('int' in type):
+        buf = ['0']
     # data1 = buf
     # if isinstance(data,HexBytes):
     #    decode_data = hexstr2bytes(to_hex(data))
@@ -426,15 +351,11 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
                     tem.append(bytes.decode(HexBytes(i)))
                 data1 = ''.join(tem)
             else:
-                data1 = [0 for x in range(len(buf))]
-                for j in range(len(buf)):
-                    data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+                data1 = [wasmdecode_abi(hrp,{'type': type, 'name': ''}, j, setabi) for j in buf]
         elif isinstance(buf, str):
             data1 = bytes.decode(HexBytes(buf))
         elif isinstance(buf,tuple):
-            data1 = [0 for x in range(len(buf))]
-            for j in range(len(buf)):
-                data1[j] = wasmdecode_abi({'type': type, 'name': ''}, buf[j], setabi)
+            data1 = [wasmdecode_abi(hrp,{'type': type, 'name': ''}, j, setabi) for j in buf]
 
     elif type.startswith('uint') and not type.endswith(']'):
         digit = 0
@@ -451,18 +372,11 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
             data1 = True
         else:
             data1 = False
-    elif type == 'int8':
-        temp = np.uint8(decodeuint(buf))
-        data1 = np.int8(temp)
-    elif type == 'int16':
-        temp = np.uint16(decodeuint(buf))
-        data1 = np.int16(temp)
-    elif type == 'int32':
-        temp = np.uint32(decodeuint(buf))
-        data1 = np.int32(temp)
-    elif type == 'int64':
-        temp = np.uint64(decodeuint(buf))
-        data1 = np.int64(temp)
+    elif type in ['int8', 'int16', 'int32', 'int64']:
+        if isinstance(buf, list):
+            buf = ''.join(buf)
+        temp = int(buf, 16)
+        data1 = (temp >> 1) ^ (temp & 1) * (-1)
     elif type == 'float':
         data1 = struct.unpack('>f', HexBytes(buf))
     elif type == 'double':
@@ -470,15 +384,11 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
     elif type.endswith(']'):
         lasti=type.rindex('[')
         vectype=type[0:lasti]
-        if isinstance(buf, tuple) and len(buf) <= 1:
-            buf =buf[0]
-        data1 = [0 for x in range(len(buf))]
+        data1 = []
         if vectype == 'uint8':
-            for i in range(len(buf)):
-                data1[i] = hex(int(buf[i],16))
+            data1 = buf
         else:
-            for i in range(len(buf)):
-                data1[i] = wasmdecode_abi({'type':vectype,'name':''}, buf[i], setabi)
+            data1 = [wasmdecode_abi(hrp,{'type':vectype,'name':''}, i, setabi) for i in buf]
 
     elif type.startswith('list'):
         i1 = type.index('<')
@@ -486,44 +396,37 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         itype = type[i1 + 1:i2]
         if isinstance(buf, tuple) and len(buf) <= 1:
             buf =buf[0]
-        data1 = [0 for x in range(len(buf))]
-        for j in range(len(buf)):
-            data1[j] = (wasmdecode_abi({'type': itype, 'name': ''}, buf[j], setabi))
+        data1 = [wasmdecode_abi(hrp,{'type': itype, 'name': ''}, j, setabi) for j in buf]
     elif type.startswith('map'):
         i1 = type.index('<')
         i2 = type.index(',')
         i3 = type.index('>')
         ktype = type[i1 + 1:i2]
         vtype = type[i2 + 1:i3]
-        data1 = [0 for x in range(len(buf))]
+        data1 = []
         for j in range(len(buf)):
             if len(buf[j])<=1 and len(buf[j][0])>=2:
-                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0][0], setabi)
-                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][0][1], setabi)
+                kvalue = wasmdecode_abi(hrp,{'type': ktype, 'name': ''}, buf[j][0][0], setabi)
+                vvalue = wasmdecode_abi(hrp,{'type': vtype, 'name': ''}, buf[j][0][1], setabi)
             else:
-                kvalue = wasmdecode_abi({'type': ktype, 'name': ''}, buf[j][0], setabi)
-                vvalue = wasmdecode_abi({'type': vtype, 'name': ''}, buf[j][1], setabi)
-            data1[j] = [kvalue,vvalue]
+                kvalue = wasmdecode_abi(hrp,{'type': ktype, 'name': ''}, buf[j][0], setabi)
+                vvalue = wasmdecode_abi(hrp,{'type': vtype, 'name': ''}, buf[j][1], setabi)
+            data1.append([kvalue,vvalue])
     elif type.startswith('pair'):
         i1=type.index('<')
         i2=type.index(',')
         i3=type.index('>')
         ktype=type[i1+1:i2]
         vtype=type[i2+1:i3]
-        if isinstance(buf, tuple) and len(buf) <= 1:
-            buf = buf[0]
-        data1 = [0 for x in range(len(buf))]
-        data1[0]=wasmdecode_abi({'type':ktype, 'name':''}, buf[0], setabi)
-        data1[1]=wasmdecode_abi({'type':vtype, 'name':''}, buf[1], setabi)
+        data1 = [wasmdecode_abi(hrp,{'type': ktype, 'name': ''}, buf[0], setabi),
+                 wasmdecode_abi(hrp,{'type': vtype, 'name': ''}, buf[1], setabi)]
     elif type.startswith('set'):
         i1=type.index('<')
         i2 = type.index('>')
         stype=type[i1+1:i2]
         if isinstance(buf, tuple) and len(buf) <= 1:
             buf = buf[0]
-        data1 = [0 for x in range(len(buf))]
-        for j in range(len(buf)):
-            data1[j] = wasmdecode_abi({'type':stype,'name':''},buf[j], setabi)
+        data1 = [ wasmdecode_abi(hrp,{'type':stype,'name':''},j, setabi) for j in buf]
         data1=set(data1)
     elif type == 'struct':
         structtype = [item for item in setabi if item['type'] == 'struct' and item['name'] == name]
@@ -532,7 +435,7 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         else:
             data1 = [0 for x in range(len(structtype[0]['inputs']))]
             for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(structtype[0]['inputs'][i], buf[i], setabi)
+                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
 
     elif type.startswith('FixedHash'):
         data1 = '0x'+tostring_hex(buf)
@@ -552,39 +455,38 @@ def wasmdecode_abi(hrp,types, data, setabi=None):
         else:
             data1 = [0 for x in range(len(structtype[0]['inputs']))]
             for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(structtype[0]['inputs'][i], buf[i], setabi)
+                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
 
     return data1
 
 def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
     arguments = list(arguments)
     if vmtype == 1:
-        arrinputs=[]
         inputlength=len(abi['inputs'])
         if inputlength == len(arguments):
            if arguments:
                arrinputs=abi['inputs']
-               paramABI= encodeparameters(arrinputs, arguments, setabi)
+               paramabi= encodeparameters(arrinputs, arguments, setabi)
            else :
-               paramABI= []
+               paramabi= []
         else :
             raise Exception('The number of arguments is not matching the methods required number.'
                             'You need to pass {} arguments.'.format(inputlength))
         magicnum=['00','61','73','6d']
-        paramabi=(stringfnv(abi['name']),paramABI)
+        paramabi.insert(0, fnv1_64(bytes(abi['name'], 'utf8')))
+        # print(f'paramabi:{paramabi}')
         if abi['type']=='constructor':
             if data:
-                data1=hexstr2bytes(to_hex(data))
-                deploydata=rlp_encode((data1,rlp_encode(paramabi)))
-                encodata=tostring_hex(magicnum)+tostring_hex(deploydata)
-                return '0x'+encodata
+                data1 = bytes.fromhex(str(data, encoding='utf8'))
+                deploydata = rlp.encode([data1, rlp.encode(paramabi)])
+                encodata = ''.join(magicnum) + deploydata.hex()
+                return '0x' + encodata
             else :
-                encodata=tostring_hex(rlp_encode(paramabi))
-                return '0x'+encodata
+                return '0x' + rlp.encode(paramabi).hex()
         else :
-            deploydata = rlp_encode(paramabi)
-            encodata=tostring_hex(deploydata)
-            return '0x'+encodata
+            encodata = rlp.encode(paramabi).hex()
+            # print(f'encodata:{encodata}')
+            return '0x' + encodata
 
     else:
         argument_types = get_abi_input_types(abi)

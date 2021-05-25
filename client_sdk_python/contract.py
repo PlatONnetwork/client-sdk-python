@@ -1474,9 +1474,9 @@ def call_contract_function(
         normalized_data = map_abi_data(_normalizers, output_types, output_data)
         # laxdata = []
         for i in range(len(normalized_data)):
-            if output_types[i] == ['address']:
+            if output_types[i] == 'address':
                 normalized_data[i] = tobech32address(address[:3], normalized_data[i])
-            elif output_types[i] == ['address[]']:
+            elif output_types[i] == 'address[]':
                 for j in range(len(normalized_data[i])):
                     normalized_data[i][j]=tobech32address(address[:3], normalized_data[i][j])
         return normalized_data
