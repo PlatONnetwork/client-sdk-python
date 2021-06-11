@@ -338,7 +338,7 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
     # print(f'wasmdecode_abi:{types,buf}')
     type = types['type']
     name = types['name']
-    if (not buf) and ('int' in type):
+    if (not any(buf)) and ('int' in type):
         buf = ['0']
     # data1 = buf
     # if isinstance(data,HexBytes):
@@ -536,15 +536,14 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         else:
             return encode_hex(encoded_arguments)
 
-def wasmevent_decode(types, data,hrp):
+def wasmevent_decode(hrp,types, data):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
         bufs = detail_decode_data(rlp.decode(data))
     else:
         bufs = data
     data1 = []
-    # for i in range(len(bufs)):
-    #     buf = bufs[i]
-    #     type = types[i]
+    if (not any(bufs)) and ('int' in types):
+        bufs = ['0']
     if (not isinstance(bufs, tuple)) and (not isinstance(types, tuple)):
         buf = bufs
         type = types
