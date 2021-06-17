@@ -5,7 +5,7 @@ from abc import (
     abstractmethod,
 )
 import codecs
-import collections
+import collections.abc
 import sys
 from typing import (    # noqa: F401
     Any,
@@ -242,11 +242,8 @@ class PublicKey(BaseKey, LazyBackend):
         return public_key_bytes_to_address(self.to_bytes())
 
     # PlatON address conversions
-    def to_bech32_address(self):
-        return address_bytes_to_address(public_key_bytes_to_address(self.to_bytes()))
-
-    def to_bech32_test_address(self):
-        return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()))
+    def to_bech32_address(self,hrp):
+        return address_bytes_to_bech32_address(public_key_bytes_to_address(self.to_bytes()),hrp)
 
 
 class PrivateKey(BaseKey, LazyBackend):

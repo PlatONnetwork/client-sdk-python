@@ -29,7 +29,7 @@ def is_boolean(value: Any) -> bool:
 
 
 def is_dict(obj: Any) -> bool:
-    return isinstance(obj, collections.abc.Mapping)
+    return isinstance(obj, collections.Mapping)
 
 
 def is_list_like(obj: Any) -> bool:

@@ -91,7 +91,7 @@ from client_sdk_python.utils.transactions import (
     fill_transaction_defaults,
 )
 
-from client_sdk_python.packages.platon_keys.utils import bech32
+from client_sdk_python.packages.platon_keys.utils.address import DEFAULTHRP
 
 
 DEPRECATED_SIGNATURE_MESSAGE = (
@@ -170,6 +170,13 @@ class ContractEvents:
                         address=address,
                         vmtype=vmtype,
                         event_name=event['name']))
+
+    def __iter__(self):
+        if not hasattr(self, '_events') or not self._events:
+            return
+
+        for event in self._events:
+            yield event['name']
 
     def __getattr__(self, event_name):
         if '_events' not in self.__dict__:
@@ -792,7 +799,7 @@ class Contract:
             arguments = merge_args_and_kwargs(constructor_abi, args, kwargs)
 
             deploy_data = add_0x_prefix(
-                encode_abi(cls.web3, constructor_abi, arguments, cls.bytecode, cls.abi)
+                encode_abi(cls.web3, constructor_abi, arguments, cls.vmtype, cls.bytecode, cls.abi)
             )
         else:
             deploy_data = to_hex(cls.bytecode)
@@ -1078,7 +1085,7 @@ class ContractFunction:
 
         self.arguments = merge_args_and_kwargs(self.abi, self.args, self.kwargs)
 
-    def call(self, transaction=None, block_identifier='latest'):
+    def call(self, transaction=None, block_identifier='latest', hrp=DEFAULTHRP):
         """
         Execute a contract function call using the `platon_call` interface.
 
@@ -1131,6 +1138,7 @@ class ContractFunction:
         block_id = parse_block_identifier(self.web3, block_identifier)
 
         return call_contract_function(
+            hrp,
             self.web3,
             self.address,
             self._return_data_normalizers,
@@ -1366,6 +1374,7 @@ class ContractEvent:
 
 
 def call_contract_function(
+        hrp,
         web3,
         address,
         normalizers,
@@ -1407,7 +1416,7 @@ def call_contract_function(
         # if not isinstance(output_types, list):
         #     output_types = [output_types]
         try:
-            output_data = wasmdecode_abi(output_types, return_data, contract_abi)
+            output_data = wasmdecode_abi(hrp,output_types, return_data, contract_abi)
         except DecodingError as e:
             # Provide a more helpful error message than the one provided by
             # eth-abi-utils
@@ -1465,9 +1474,9 @@ def call_contract_function(
         normalized_data = map_abi_data(_normalizers, output_types, output_data)
         # laxdata = []
         for i in range(len(normalized_data)):
-            if output_types[i] == ['address']:
+            if output_types[i] == 'address':
                 normalized_data[i] = tobech32address(address[:3], normalized_data[i])
-            elif output_types[i] == ['address[]']:
+            elif output_types[i] == 'address[]':
                 for j in range(len(normalized_data[i])):
                     normalized_data[i][j]=tobech32address(address[:3], normalized_data[i][j])
         return normalized_data

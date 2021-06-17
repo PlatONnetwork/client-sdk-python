@@ -1,0 +1,145 @@
+[
+    {
+        "constant": false,
+        "input": [
+            {
+                "name": "ele",
+                "type": "int32"
+            }
+        ],
+        "name": "putElement",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "constant": true,
+        "input": [],
+        "name": "makeCall",
+        "output": "int32",
+        "type": "Action"
+    },
+    {
+        "constant": false,
+        "input": [],
+        "name": "clearElement",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "anonymous": false,
+        "input": [
+            {
+                "name": "topic",
+                "type": "string"
+            },
+            {
+                "name": "arg1",
+                "type": "uint32"
+            }
+        ],
+        "name": "Add",
+        "topic": 1,
+        "type": "Event"
+    },
+    {
+        "anonymous": false,
+        "input": [
+            {
+                "name": "topic",
+                "type": "string"
+            },
+            {
+                "name": "arg1",
+                "type": "int32"
+            }
+        ],
+        "name": "call2",
+        "topic": 1,
+        "type": "Event"
+    },
+    {
+        "anonymous": false,
+        "input": [
+            {
+                "name": "topic",
+                "type": "string"
+            },
+            {
+                "name": "arg1",
+                "type": "int32"
+            }
+        ],
+        "name": "put",
+        "topic": 1,
+        "type": "Event"
+    },
+    {
+        "anonymous": false,
+        "input": [
+            {
+                "name": "topic",
+                "type": "string"
+            },
+            {
+                "name": "arg1",
+                "type": "uint32"
+            }
+        ],
+        "name": "clear",
+        "topic": 1,
+        "type": "Event"
+    },
+    {
+        "baseclass": [],
+        "fields": [
+            {
+                "name": "myParams",
+                "type": "int32[]"
+            }
+        ],
+        "name": "inputParams",
+        "type": "struct"
+    },
+    {
+        "constant": false,
+        "input": [
+            {
+                "name": "ipa",
+                "type": "inputParams"
+            }
+        ],
+        "name": "init",
+        "output": "void",
+        "type": "Action"
+    },
+    {
+        "constant": true,
+        "input": [],
+        "name": "getParams",
+        "output": "int32[]",
+        "type": "Action"
+    },
+    {
+        "constant": false,
+        "input": [],
+        "name": "AddCalc",
+        "output": "int32",
+        "type": "Action"
+    },
+    {
+        "constant": true,
+        "input": [
+            {
+                "name": "a",
+                "type": "int32"
+            },
+            {
+                "name": "b",
+                "type": "int32"
+            }
+        ],
+        "name": "makeCall2",
+        "output": "int32",
+        "type": "Action"
+    }
+]

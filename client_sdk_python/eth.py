@@ -19,9 +19,6 @@ from hexbytes import (
 from client_sdk_python.contract import (
     Contract,
 )
-from  client_sdk_python.wasmcontract import (
-    WasmContract,
-)
 from client_sdk_python.iban import (
     Iban,
 )
@@ -71,6 +68,10 @@ class Eth(Module):
     defaultContractFactory = Contract
     iban = Iban
     gasPriceStrategy = None
+
+    def __init__(self, web3):
+        super().__init__(web3)
+        self.net_type = self.web3.net_type
 
     @deprecated_for("doing nothing at all")
     def enable_unaudited_features(self):
@@ -501,4 +502,3 @@ class Eth(Module):
 
 class PlatON(Eth):
     pass
-

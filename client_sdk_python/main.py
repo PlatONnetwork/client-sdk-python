@@ -9,7 +9,6 @@ from client_sdk_python.packages.eth_utils import (
     # to_checksum_address,
     to_wei,
 )
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP, TESTNETHRP
 
 from client_sdk_python.packages.ens import ENS
 
@@ -68,6 +67,7 @@ from client_sdk_python.utils.encoding import (
 from client_sdk_python.utils.normalizers import (
     abi_ens_resolver,
 )
+from client_sdk_python.utils.encoding import tobech32address
 
 
 def get_default_modules():
@@ -88,22 +88,13 @@ def get_default_modules():
     }
 
 
-def default_address(mainnet, testnet):
-    return {MIANNETHRP: mainnet, TESTNETHRP: testnet}
-
-
-restricting = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp7pn3ep","lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqp3yp7hw")
-staking = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzsjx8h7", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzlh5ge3")
-penalty = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyva9ztf", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyrchd9x")
-pipAddr = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq93t3hkm", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq97wrcc5")
-delegateReward = default_address("lat1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxlcypcy", "lax1zqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqxsakwkt")
-
-
 def to_checksum_address(val):
     return val
 
+
 def is_checksum_address(val):
     return True
+
 
 class Web3:
     # Providers
@@ -136,26 +127,31 @@ class Web3:
     isChecksumAddress = staticmethod(is_checksum_address)
     toChecksumAddress = staticmethod(to_checksum_address)
 
-    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100):
+    def __init__(self, providers=empty, middlewares=None, modules=None, ens=empty, chain_id=100, hrp_type=None):
         self.manager = RequestManager(self, providers, middlewares)
-
+        if providers:
+            try:
+                self.net_type = self.getAddressHrp
+            except Exception as e:
+                if not hrp_type:
+                    raise ValueError(
+                        "Failed to obtain hrp automatically,need to be passed in from outside,exception info:{}".format(e)
+                    )
+                else:
+                    self.net_type = hrp_type
+        else:
+            if not hrp_type:
+                raise ValueError(
+                    "Offline mode needs to specify the network type and cannot be empty,parameter hrp_type must be specified"
+                )
+            self.net_type = hrp_type
         if modules is None:
             modules = get_default_modules()
 
         for module_name, module_class in modules.items():
             module_class.attach(self, module_name)
 
-        if chain_id == 100:
-            self.net_type = MIANNETHRP
-        else:
-            self.net_type = TESTNETHRP
         # platon contract address
-        self.restrictingAddress = restricting[self.net_type]
-        self.stakingAddress = staking[self.net_type]
-        self.penaltyAddress = penalty[self.net_type]
-        self.pipAddress = pipAddr[self.net_type]
-        self.delegateRewardAddress = delegateReward[self.net_type]
-
         self.ens = ens
 
         self.chain_id = chain_id
@@ -236,11 +232,13 @@ class Web3:
         else:
             return self._ens
 
+    @property
+    def getAddressHrp(self):
+        return self.manager.request_blocking("platon_getAddressHrp", [])
+
     @ens.setter
     def ens(self, new_ens):
         self._ens = new_ens
 
     def pubkey_to_address(self, pubkey):
-        addr_dict = {MIANNETHRP: pubkey.to_bech32_address(),
-                     TESTNETHRP: pubkey.to_bech32_test_address()}
-        return addr_dict[self.net_type]
+        return pubkey.to_bech32_address(self.net_type)

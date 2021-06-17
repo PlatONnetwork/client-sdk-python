@@ -1,4 +1,4 @@
-from collections import (
+from collections.abc import (
     Mapping,
 )
 import json
@@ -15,7 +15,7 @@ from client_sdk_python.packages.platon_keys import (
     KeyAPI,
     keys,
 )
-from client_sdk_python.packages.platon_keys.utils.address import MIANNETHRP,TESTNETHRP
+from client_sdk_python.packages.platon_keys.utils.address import DEFAULTHRP
 from client_sdk_python.packages.platon_keys.exceptions import (
     ValidationError,
 )
@@ -60,7 +60,7 @@ class Account(object):
     _keys = keys
 
     @combomethod
-    def create(self, extra_entropy='', net_type=MIANNETHRP):
+    def create(self, extra_entropy='', net_type=DEFAULTHRP):
         '''
         Creates a new private key, and returns it as a :class:`~platon_account.local.LocalAccount`.
 
@@ -175,7 +175,7 @@ class Account(object):
         return create_keyfile_json(key_bytes, password_bytes)
 
     @combomethod
-    def privateKeyToAccount(self, private_key, net_type=MIANNETHRP):
+    def privateKeyToAccount(self, private_key, net_type=DEFAULTHRP):
         '''
         Returns a convenient object for working with the given private key.
 
@@ -372,7 +372,7 @@ class Account(object):
         })
 
     @combomethod
-    def signTransaction(self, transaction_dict, private_key, net_type=MIANNETHRP):
+    def signTransaction(self, transaction_dict, private_key, net_type=DEFAULTHRP):
         '''
         Sign a transaction using a local private key. Produces signature details
         and the hex-encoded transaction suitable for broadcast using
@@ -469,5 +469,5 @@ class Account(object):
 
 
 if __name__ == '__main__':
-    account = Account().create(net_type=TESTNETHRP)
+    account = Account().create(net_type=DEFAULTHRP)
     print(account.address, account.privateKey)
