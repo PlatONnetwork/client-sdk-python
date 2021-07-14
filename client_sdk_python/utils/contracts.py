@@ -288,7 +288,7 @@ def encodeparameters(types,params,setabi=None):
                         temp1='0'+temp1
                     temp.append(temp1)
                     del temp1
-            arrlp.append(temp)
+            arrlp.append(int(''.join(temp), 16))
         elif type.startswith('FixedHash'): # 不是很确定，把'FixedHash'开头的类型理解为 ['0x33','0x6a'.'0x5e']这样的字节数组
             arrlp.append(param)
         else :
