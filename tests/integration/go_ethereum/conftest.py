@@ -4,7 +4,7 @@ import pytest
 import shutil
 import subprocess
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_checksum_address,
     is_dict,
     to_text,

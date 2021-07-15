@@ -1,18 +1,19 @@
 import itertools
 
-from eth_abi import (
+from client_sdk_python.packages.eth_abi import (
     decode_abi,
     decode_single,
     encode_single,
 )
-from eth_abi.abi import (
+from client_sdk_python.packages.eth_abi.abi import (
     process_type,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     encode_hex,
     event_abi_to_log_topic,
     is_list_like,
     to_tuple,
+    topic_decode,
 )
 
 from client_sdk_python.datastructures import (
@@ -40,6 +41,8 @@ from .abi import (
     map_abi_data,
     normalize_event_input_types,
 )
+from client_sdk_python.utils.contracts import wasmevent_decode
+from client_sdk_python.packages.platon_keys.utils.address import DEFAULTHRP
 
 
 def construct_event_topic_set(event_abi, arguments=None):
@@ -145,7 +148,7 @@ def get_event_abi_types_for_decoding(event_inputs):
             yield input_abi['type']
 
 
-def get_event_data(event_abi, log_entry):
+def get_event_data(event_abi, log_entry, vmtype=None, hrp=DEFAULTHRP):
     """
     Given an event ABI and a log entry for that event, return the decoded
     event data
@@ -154,7 +157,7 @@ def get_event_data(event_abi, log_entry):
         log_topics = log_entry['topics']
     elif not log_entry['topics']:
         raise MismatchedABI("Expected non-anonymous event to have 1 or more topics")
-    elif event_abi_to_log_topic(event_abi) != log_entry['topics'][0]:
+    elif event_abi_to_log_topic(event_abi,vmtype) != log_entry['topics'][0]:
         raise MismatchedABI("The event signature did not match the provided ABI")
     else:
         log_topics = log_entry['topics'][1:]
@@ -184,14 +187,6 @@ def get_event_data(event_abi, log_entry):
             "Invalid Event ABI:  The following argument names are duplicated "
             "between event inputs: '{0}'".format(', '.join(duplicate_names))
         )
-
-    decoded_log_data = decode_abi(log_data_types, log_data)
-    normalized_log_data = map_abi_data(
-        BASE_RETURN_NORMALIZERS,
-        log_data_types,
-        decoded_log_data
-    )
-
     decoded_topic_data = [
         decode_single(topic_type, topic_data)
         for topic_type, topic_data
@@ -202,6 +197,18 @@ def get_event_data(event_abi, log_entry):
         log_topic_types,
         decoded_topic_data
     )
+    if vmtype:
+        normalized_log_data = wasmevent_decode(hrp,log_data_types, log_data)
+        if isinstance(normalized_topic_data[0],bytes):
+            if normalized_topic_data[0][0]==0:
+                normalized_topic_data = topic_decode(normalized_topic_data)
+    else:
+        decoded_log_data = decode_abi(log_data_types, log_data)
+        normalized_log_data = map_abi_data(
+            BASE_RETURN_NORMALIZERS,
+            log_data_types,
+            decoded_log_data
+        )
 
     event_args = dict(itertools.chain(
         zip(log_topic_names, normalized_topic_data),

@@ -4,15 +4,15 @@ from unittest.mock import (
     patch,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_same_address,
     to_bytes,
 )
 
-from ens.constants import (
+from client_sdk_python.packages.ens .constants import (
     EMPTY_ADDR_HEX,
 )
-from ens.main import (
+from client_sdk_python.packages.ens .main import (
     UnauthorizedError,
 )
 from client_sdk_python import Web3

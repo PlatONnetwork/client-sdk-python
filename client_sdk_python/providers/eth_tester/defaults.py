@@ -8,7 +8,7 @@ from eth_tester.exceptions import (
     TransactionNotFound,
     ValidationError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     decode_hex,
     encode_hex,
     is_null,

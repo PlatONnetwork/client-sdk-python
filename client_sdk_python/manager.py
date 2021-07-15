@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_list_like,
 )
 

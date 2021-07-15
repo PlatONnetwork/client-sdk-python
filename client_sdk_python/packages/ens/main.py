@@ -1,21 +1,21 @@
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_binary_address,
     is_checksum_address,
     to_checksum_address,
 )
 
-from ens import abis
-from ens.constants import (
+from client_sdk_python.packages.ens import abis
+from client_sdk_python.packages.ens.constants import (
     EMPTY_ADDR_HEX,
     REVERSE_REGISTRAR_DOMAIN,
 )
-from ens.exceptions import (
+from client_sdk_python.packages.ens.exceptions import (
     AddressMismatch,
     UnauthorizedError,
     UnownedName,
 )
-from ens.utils import (
+from client_sdk_python.packages.ens.utils import (
     address_in,
     address_to_reverse_domain,
     default,

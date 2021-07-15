@@ -3,7 +3,7 @@ from collections import (
     Mapping,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_dict,
     is_list_like,
     is_string,
