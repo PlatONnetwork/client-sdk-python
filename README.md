@@ -1,8 +1,8 @@
 # client-sdk-python
 
-[![Join the chat at https://gitter.im/ethereum/web3.py](https://badges.gitter.im/ethereum/web3.py.svg)](https://github.com/PlatONnetwork/client-sdk-python)
+[![Join the chat at https://gitter.im/ethereum/web3.py](https://badges.gitter.im/ethereum/web3.py.svg)](https://github.com/AlayaNetwork/client-sdk-python)
 
-[![Build Status](https://circleci.com/gh/ethereum/web3.py.svg?style=shield)](https://github.com/PlatONnetwork/client-sdk-python)
+[![Build Status](https://circleci.com/gh/ethereum/web3.py.svg?style=shield)](https://github.com/AlayaNetwork/client-sdk-python)
 
 
 ## Description
@@ -11,7 +11,7 @@ client-sdk-python is a python sdk serving the Platon underlying chain. Interact 
 
 The main functions are used to obtain block data, send transactions, interact with smart contracts, and other applications.
 
-[client-sdk-python download link](https://github.com/PlatONnetwork/client-sdk-python)
+[client-sdk-python download link](https://github.com/AlayaNetwork/client-sdk-python)
 
 ## Quick start
 
@@ -19,9 +19,9 @@ The main functions are used to obtain block data, send transactions, interact wi
 
 - chain_id
 
-  - 210309 is the chain id of the development network.
+  - 201030 is the chain id of the development network.
 
-  - 100 is the chain id of the main net.
+  - 201018 is the chain id of the main net.
 
 ### One part: installation
 
@@ -36,7 +36,7 @@ The main functions are used to obtain block data, send transactions, interact wi
 
  Or download the code and use it in the python editor. git bash pull the source code, the following operations
 
-    git clone -b 0.15.1-develop https://github.com/PlatONnetwork/client-sdk-python.git
+    git clone -b 0.15.1-develop https://github.com/AlayaNetwork/client-sdk-python.git
 
 > Where `0.15.1-develop` is the currently used branch.
 
@@ -1062,8 +1062,8 @@ For details on the introduction, creation, and compilation of evm and wasm contr
 
 The python sdk currently supports bin and abi formed after the evm and wasm contracts are compiled as contract data to interact with the PlatON blockchain.
 
-**(1)** The evm contract (created in solidity language) can be compiled, deployed, and invoked using platon-truffle. For details, please refer to [solidity compiler](https://github.com/PlatONnetwork/solidity) and [platon-truffle](https://platon-truffle.readthedocs.io/en/v0.13.1/getting-started/ installation.html)
-**(2)** The wasm contract (created in C/C++/Rust and other languages) can be compiled, deployed, and invoked using PlatON-CDT or platon-truffle. For details, please refer to [PlatON-CDT Compiler](https://github.com/PlatONnetwork/PlatON-CDT/tree/feature/wasm)
+**(1)** The evm contract (created in solidity language) can be compiled, deployed, and invoked using platon-truffle. For details, please refer to [solidity compiler](https://github.com/AlayaNetwork/solidity) and [platon-truffle](https://platon-truffle.readthedocs.io/en/v0.13.1/getting-started/ installation.html)
+**(2)** The wasm contract (created in C/C++/Rust and other languages) can be compiled, deployed, and invoked using PlatON-CDT or platon-truffle. For details, please refer to [PlatON-CDT Compiler](https://github.com/AlayaNetwork/PlatON-CDT/tree/feature/wasm)
 
 
 
