@@ -3,14 +3,14 @@ import copy
 import datetime
 import functools
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_same_address,
     remove_0x_prefix,
     to_normalized_address,
 )
 import idna
 
-from ens.constants import (
+from client_sdk_python.packages.ens.constants import (
     ACCEPTABLE_STALE_HOURS,
     AUCTION_START_GAS_CONSTANT,
     AUCTION_START_GAS_MARGINAL,
@@ -19,7 +19,7 @@ from ens.constants import (
     RECOGNIZED_TLDS,
     REVERSE_REGISTRAR_DOMAIN,
 )
-from ens.exceptions import (
+from client_sdk_python.packages.ens.exceptions import (
     InvalidLabel,
     InvalidName,
 )

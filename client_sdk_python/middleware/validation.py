@@ -1,4 +1,4 @@
-from eth_utils.curried import (
+from client_sdk_python.packages.eth_utils.curried import (
     apply_formatter_at_index,
     apply_formatter_if,
     apply_formatters_to_dict,
@@ -42,20 +42,21 @@ def validate_chain_id(web3, chain_id):
 
 
 def check_extradata_length(val):
-    if not isinstance(val, (str, int, bytes)):
-        return val
-    result = HexBytes(val)
-    if len(result) > MAX_EXTRADATA_LENGTH:
-        raise ValidationError(
-            "The field extraData is %d bytes, but should be %d. "
-            "It is quite likely that you are connected to a POA chain. "
-            "Refer "
-            "http://web3py.readthedocs.io/en/stable/middleware.html#geth-style-proof-of-authority "
-            "for more details. The full extraData is: %r" % (
-                len(result), MAX_EXTRADATA_LENGTH, result
-            )
-        )
     return val
+    # if not isinstance(val, (str, int, bytes)):
+    #     return val
+    # result = HexBytes(val)
+    # if len(result) > MAX_EXTRADATA_LENGTH:
+    #     raise ValidationError(
+    #         "The field extraData is %d bytes, but should be %d. "
+    #         "It is quite likely that you are connected to a POA chain. "
+    #         "Refer "
+    #         "http://web3py.readthedocs.io/en/stable/middleware.html#geth-style-proof-of-authority "
+    #         "for more details. The full extraData is: %r" % (
+    #             len(result), MAX_EXTRADATA_LENGTH, result
+    #         )
+    #     )
+    # return val
 
 
 def transaction_normalizer(transaction):

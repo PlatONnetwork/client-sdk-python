@@ -4,7 +4,7 @@ from unittest.mock import (
     patch,
 )
 
-from ens import ENS
+from client_sdk_python.packages.ens  import ENS
 from client_sdk_python import Web3
 
 

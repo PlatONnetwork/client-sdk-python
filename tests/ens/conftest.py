@@ -6,8 +6,8 @@ from eth_tester import (
     EthereumTester,
 )
 
-from ens import ENS
-from ens.contract_data import (
+from client_sdk_python.packages.ens  import ENS
+from client_sdk_python.packages.ens .contract_data import (
     registrar_abi,
     registrar_bytecode,
     registrar_bytecode_runtime,

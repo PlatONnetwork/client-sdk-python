@@ -1,11 +1,11 @@
 import pytest
 
-import eth_account
-import eth_keys
+from client_sdk_python.packages import platon_account
+from client_sdk_python.packages import platon_keys
 from eth_tester.exceptions import (
     ValidationError,
 )
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     to_bytes,
     to_hex,
 )

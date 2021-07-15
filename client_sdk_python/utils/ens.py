@@ -2,13 +2,13 @@ from contextlib import (
     contextmanager,
 )
 
-from eth_utils import (
+from client_sdk_python.packages.eth_utils import (
     is_0x_prefixed,
     is_hex,
     is_hex_address,
 )
 
-from ens import ENS
+from client_sdk_python.packages.ens import ENS
 from client_sdk_python.exceptions import (
     NameNotFound,
 )
