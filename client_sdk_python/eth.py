@@ -78,6 +78,10 @@ class Eth(Module):
         raise NotImplementedError()
 
     @property
+    def chainId(self):
+        return self.web3.manager.request_blocking("platon_chainId", [])
+
+    @property
     def protocolVersion(self):
         return self.web3.manager.request_blocking("platon_protocolVersion", [])
 
