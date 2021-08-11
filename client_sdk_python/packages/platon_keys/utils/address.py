@@ -29,10 +29,3 @@ def address_bytes_to_bech32_address(address_bytes: bytes, hrp=DEFAULTHRP) -> str
 def bech32_address_to_address_bytes(address_bytes: bytes, hrp=DEFAULTHRP) -> str:
     _, data = decode(hrp, address_bytes)
     return bytes(data).hex()
-
-
-if __name__ == "__main__":
-    address_bytes = bytes.fromhex('3D452519bB81D4D622840F710B54e074717780A3')
-    address_bech32 = 'atx184zj2xdms82dvg5ypacsk48qw3ch0q9rhumxrm'
-    print(address_bytes_to_bech32_address(address_bytes, DEFAULTHRP))
-    print(bech32_address_to_address_bytes(address_bech32, DEFAULTHRP))

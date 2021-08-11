@@ -87,7 +87,6 @@ class RequestManager:
     def _make_request(self, method, params):
         for provider in self.providers:
             request_func = provider.request_func(self.web3, tuple(self.middleware_stack))
-            self.logger.debug("Making request. Method: %s", method)
             try:
                 return request_func(method, params)
             except CannotHandleRequest:

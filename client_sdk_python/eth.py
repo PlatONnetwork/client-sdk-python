@@ -59,8 +59,11 @@ from client_sdk_python.utils.transactions import (
 from client_sdk_python.packages.platon_account.internal.signing import (
     to_standard_signature_bytes,
 )
+
 true = True
 false = False
+
+
 class Eth(Module):
     account = Account()
     defaultAccount = empty
@@ -68,10 +71,6 @@ class Eth(Module):
     defaultContractFactory = Contract
     iban = Iban
     gasPriceStrategy = None
-
-    def __init__(self, web3):
-        super().__init__(web3)
-        self.net_type = self.web3.net_type
 
     @deprecated_for("doing nothing at all")
     def enable_unaudited_features(self):
@@ -82,6 +81,10 @@ class Eth(Module):
 
     def icapNamereg(self):
         raise NotImplementedError()
+
+    @property
+    def chainId(self):
+        return self.web3.manager.request_blocking("platon_chainId", [])
 
     @property
     def protocolVersion(self):
@@ -123,6 +126,9 @@ class Eth(Module):
     @property
     def consensusStatus(self):
         return self.web3.manager.request_blocking("platon_consensusStatus", [])
+
+    def getAddressHrp(self):
+        return self.web3.manager.request_blocking("platon_getAddressHrp", [])
 
     def getPrepareQC(self, block_number):
         return self.web3.manager.request_blocking("platon_getPrepareQC", [block_number])
@@ -391,34 +397,34 @@ class Eth(Module):
         return self.web3.manager.request_blocking(
             "platon_uninstallFilter", [filter_id],
         )
-    def wasm_type(self,abi_data):
+
+    def wasm_type(self, abi_data):
         for i in range(len(abi_data)):
-            if abi_data[i]['type']=='Action':
-                abi_data[i]['type']='function'
-            if abi_data[i]['type']=='Event':
+            if abi_data[i]['type'] == 'Action':
+                abi_data[i]['type'] = 'function'
+            if abi_data[i]['type'] == 'Event':
                 abi_data[i]['type'] = 'event'
                 abi_data[i]['anonymous'] = False
                 if len(abi_data[i]['input']) > 0:
                     for j in range(len(abi_data[i]['input'])):
-                       abi_data[i]['input'][j]['indexed'] = ((j+1) <= abi_data[i]['topic'])
+                        abi_data[i]['input'][j]['indexed'] = ((j + 1) <= abi_data[i]['topic'])
             if abi_data[i]['type'] == 'struct':
                 if 'fields' in abi_data[i] and 'inputs' not in abi_data[i]:
                     abi_data[i]['inputs'] = abi_data[i].pop('fields')
-                    if len(abi_data[i]['baseclass'])>0:
+                    if len(abi_data[i]['baseclass']) > 0:
                         for j in range(len(abi_data[i]['baseclass'])):
-                           abi_data[i]['inputs'].insert(j,{'name':abi_data[i]['baseclass'][j],'type':'struct'})
+                            abi_data[i]['inputs'].insert(j, {'name': abi_data[i]['baseclass'][j], 'type': 'struct'})
                     # else :
                     #     abi_data[i]['inputs'].insert(0, {'name': abi_data[i]['baseclass'], 'type': 'struct'})
                     del abi_data[i]['baseclass']
-            if abi_data[i]['name']== 'init':
-                abi_data[i]['type']='constructor'
+            if abi_data[i]['name'] == 'init':
+                abi_data[i]['type'] = 'constructor'
             if 'input' in abi_data[i]:
                 abi_data[i]['inputs'] = abi_data[i].pop('input')
             if 'output' in abi_data[i]:
-                abi_data[i]['outputs'] = {'name':"",'type':abi_data[i]['output']}
+                abi_data[i]['outputs'] = {'name': "", 'type': abi_data[i]['output']}
                 del abi_data[i]['output']
         return abi_data
-
 
     def contract(self,
                  address=None,
@@ -433,12 +439,12 @@ class Eth(Module):
             return ContractFactory
 
     def wasmcontract(self,
-                 address=None,
-                 **kwargs):
+                     address=None,
+                     **kwargs):
         if 'vmtype' in kwargs:
             if kwargs['vmtype'] == 1:
-                abi_data=copy.deepcopy(kwargs['abi'])
-                kwargs['abi']= self.wasm_type(abi_data)
+                abi_data = copy.deepcopy(kwargs['abi'])
+                kwargs['abi'] = self.wasm_type(abi_data)
             # del kwargs['vmtype']
         ContractFactoryClass = kwargs.pop('ContractFactoryClass', self.defaultContractFactory)
         # 若kwargs中有'ContractFactoryClass'这个key，则返回对应的value值，若无这个key，则返回self.defaultContractFactory

@@ -466,8 +466,3 @@ class Account(object):
                 "The private key must be exactly 32 bytes long, instead of "
                 "%d bytes." % len(key)
             ) from original_exception
-
-
-if __name__ == '__main__':
-    account = Account().create(net_type=DEFAULTHRP)
-    print(account.address, account.privateKey)

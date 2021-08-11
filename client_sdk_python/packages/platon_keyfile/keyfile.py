@@ -273,6 +273,3 @@ def get_default_work_factor_for_kdf(kdf):
         return 262144
     else:
         raise ValueError("Unsupported key derivation function: {0}".format(kdf))
-
-if __name__ == '__main__':
-    print(create_keyfile_json('atp',bytes.fromhex("deb2bd10eedef6d89cd8fac224dc8f1bdd26ed1c4b5c513995efb1b33404db17"),"88888888"))

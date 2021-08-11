@@ -335,14 +335,10 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
         buf = detail_decode_data(rlp.decode(data))
     else:
         buf = data
-    # print(f'wasmdecode_abi:{types,buf}')
     type = types['type']
     name = types['name']
     if (not any(buf)) and ('int' in type):
         buf = ['0']
-    # data1 = buf
-    # if isinstance(data,HexBytes):
-    #    decode_data = hexstr2bytes(to_hex(data))
     if type == 'string':
         tem = []
         if isinstance(buf,list):
@@ -473,7 +469,6 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
                             'You need to pass {} arguments.'.format(inputlength))
         magicnum=['00','61','73','6d']
         paramabi.insert(0, fnv1_64(bytes(abi['name'], 'utf8')))
-        # print(f'paramabi:{paramabi}')
         if abi['type']=='constructor':
             if data:
                 data1 = bytes.fromhex(str(data, encoding='utf8'))
@@ -484,7 +479,6 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
                 return '0x' + rlp.encode(paramabi).hex()
         else :
             encodata = rlp.encode(paramabi).hex()
-            # print(f'encodata:{encodata}')
             return '0x' + encodata
 
     else:
