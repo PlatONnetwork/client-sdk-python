@@ -264,13 +264,11 @@ def encodeparameters(types,params,setabi=None):
                 temp.append(encodeparameters([{'type':stype,'name':''}],[j], setabi)[0])
             arrlp.append(temp)
         elif type == 'struct':
-            temp=[]
             structtype = [item for item in setabi if item['type'] == 'struct' and item['name'] == name]
             if not structtype:
                 raise Exception('can not find struct in {} .'.format(name))
             else:
-                temp.append(encodeparameters(structtype[0]['inputs'], param, setabi))
-            arrlp.append(temp)
+                arrlp.append(encodeparameters(structtype[0]['inputs'], param, setabi))
 
         elif type=='FixedHash<20>':
             temp=[]
@@ -288,7 +286,7 @@ def encodeparameters(types,params,setabi=None):
                         temp1='0'+temp1
                     temp.append(temp1)
                     del temp1
-            arrlp.append(temp)
+            arrlp.append(int(''.join(temp), 16))
         elif type.startswith('FixedHash'): # 不是很确定，把'FixedHash'开头的类型理解为 ['0x33','0x6a'.'0x5e']这样的字节数组
             arrlp.append(param)
         else :
@@ -319,16 +317,18 @@ def decodeuint(param):
 def detail_decode_data(data_list):
     detail_after = []
     for i in data_list:
-        if isinstance(i, list) and (detail_decode_data(i) not in detail_after):
+        if isinstance(i, list):
             detail_after.append(detail_decode_data(i))
         else:
             if i not in detail_after:
                 str_i = to_hex(i)
                 if str_i[:2] == '0x':
-                    detail_after.append(str_i[2:])
-                else:
-                    detail_after.append(str_i)
+                    str_i = str_i[2:]
+                if len(str_i) == 1:
+                    str_i = '0' + str_i
+                detail_after.append(str_i)
     return detail_after
+
 
 def wasmdecode_abi(hrp, types, data, setabi=None):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
@@ -338,8 +338,10 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
     # print(f'wasmdecode_abi:{types,buf}')
     type = types['type']
     name = types['name']
-    if (not any(buf)) and ('int' in type):
-        buf = ['0']
+    special_treatment = ['int8', 'int16', 'int32', 'int64']
+    if not any(buf):
+        if (type in special_treatment) or type.startswith('uint'):
+            buf = ['0']
     # data1 = buf
     # if isinstance(data,HexBytes):
     #    decode_data = hexstr2bytes(to_hex(data))
@@ -358,13 +360,10 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
             data1 = [wasmdecode_abi(hrp,{'type': type, 'name': ''}, j, setabi) for j in buf]
 
     elif type.startswith('uint') and not type.endswith(']'):
-        digit = 0
         if len(buf) <= 1:
            data1 = int(buf[0],16)
         else:
-           for i in range(len(buf)):
-              digit += int(buf[i],16)*(256**(len(buf)-1-i))
-           data1 = digit
+           data1 = int(''.join(buf),16)
     elif type == 'bool':
         if not buf:
             data1 = False
@@ -432,9 +431,7 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
         if not structtype:
             raise Exception('can not find struct in {} .'.format(name))
         else:
-            data1 = [0 for x in range(len(structtype[0]['inputs']))]
-            for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
+            data1 = [wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi) for i in range(len(structtype[0]['inputs']))]
 
     elif type.startswith('FixedHash'):
         data1 = '0x'+tostring_hex(buf)
@@ -443,7 +440,7 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
             try :
                 temp=tobech32address(hrp,data1)
             except:
-                    raise ('wasmdecode error ! can not match FixedHash<20> type !' )
+                    raise Exception('wasmdecode error ! can not match FixedHash<20> type !' )
             finally:
                 data1 = temp
 
@@ -452,10 +449,8 @@ def wasmdecode_abi(hrp, types, data, setabi=None):
         if not structtype:
             raise Exception('can not find struct through {} .'.format(type))
         else:
-            data1 = [0 for x in range(len(structtype[0]['inputs']))]
-            for i in range(len(structtype[0]['inputs'])):
-                data1[i]=wasmdecode_abi(hrp,structtype[0]['inputs'][i], buf[i], setabi)
-
+            data1 = [wasmdecode_abi(hrp, structtype[0]['inputs'][i], buf[i], setabi) for i in
+                     range(len(structtype[0]['inputs']))]
     return data1
 
 def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
@@ -536,17 +531,20 @@ def encode_abi(web3, abi, arguments, vmtype, data=None, setabi=None):
         else:
             return encode_hex(encoded_arguments)
 
-def wasmevent_decode(hrp,types, data):
+def wasmevent_decode(hrp,types, data,setabi):
     if isinstance(data, HexBytes) or isinstance(data, bytes):
         bufs = detail_decode_data(rlp.decode(data))
     else:
         bufs = data
     data1 = []
-    if (not any(bufs)) and ('int' in types):
-        bufs = ['0']
+
     if (not isinstance(bufs, tuple)) and (not isinstance(types, tuple)):
         buf = bufs
         type = types
+        special_treatment = ['int8', 'int16', 'int32', 'int64']
+        if not any(buf):
+            if (type in special_treatment) or type.startswith('uint'):
+                buf = ['0']
         if type == 'string':
             tem = []
             if isinstance(buf, list):
@@ -555,11 +553,11 @@ def wasmevent_decode(hrp,types, data):
                         tem.append(bytes.decode(HexBytes(i)))
                     data1 = ''.join(tem)
                 else:
-                    data1 = [wasmevent_decode(hrp, {'type': type, 'name': ''}, j) for j in buf]
+                    data1 = [wasmevent_decode(hrp, type, j,setabi) for j in buf]
             elif isinstance(buf, str):
                 data1 = bytes.decode(HexBytes(buf))
             elif isinstance(buf, tuple):
-                data1 = [wasmevent_decode(hrp, {'type': type, 'name': ''}, j) for j in buf]
+                data1 = [wasmevent_decode(hrp, type, j,setabi) for j in buf]
         elif type.startswith('uint') and not type.endswith(']'):
             digit = 0
             if len(buf) <= 1:
@@ -590,7 +588,7 @@ def wasmevent_decode(hrp,types, data):
             if vectype == 'uint8':
                 data1 = buf
             else:
-                data1 = [wasmevent_decode(hrp, {'type': vectype, 'name': ''}, i) for i in buf]
+                data1 = [wasmevent_decode(hrp, vectype, i,setabi) for i in buf]
         elif type.startswith('FixedHash'):
             data1 = '0x'+tostring_hex(buf)
             if type.endswith('<20>'):
@@ -601,6 +599,13 @@ def wasmevent_decode(hrp,types, data):
                         raise ('wasmdecode error ! can not match FixedHash<20> type !' )
                 finally:
                     data1 = temp
+        else:
+            structtype = [item for item in setabi if item['name'] == type]
+            if not structtype:
+                raise Exception('can not find struct through {} .'.format(type))
+            else:
+                data1 = [wasmevent_decode(hrp, structtype[0]['inputs'][i]['type'], buf[i], setabi) for i in
+                         range(len(structtype[0]['inputs']))]
     else:
         if len(bufs) != len(types):
             if len(bufs[0]) == len(types):
@@ -608,13 +613,13 @@ def wasmevent_decode(hrp,types, data):
                 for i in range(len(bufs[0])):
                     buf = bufs[0][i]
                     type = types[i]
-                    data1.append(wasmevent_decode(hrp,type, buf))
+                    data1.append(wasmevent_decode(hrp,type, buf,setabi))
         else:
             data1 = []
             for i in range(len(bufs)):
                 buf = bufs[i]
                 type = types[i]
-                data1.append(wasmevent_decode(hrp, type, buf))
+                data1.append(wasmevent_decode(hrp, type, buf,setabi))
     return data1
 
 def prepare_transaction(

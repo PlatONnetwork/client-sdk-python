@@ -379,13 +379,20 @@ class Contract:
 
         :param data: defaults to function selector
         """
+        fn_abi = None
+        if cls.vmtype == 1:
+            for _abi in cls.abi:
+                if _abi['type'] == 'function' and _abi['name'] == fn_name:
+                    fn_abi = _abi
+                    break
+
         fn_abi, fn_selector, fn_arguments = get_function_info(
-            fn_name, contract_abi=cls.abi, args=args, kwargs=kwargs,
+            fn_name, contract_abi=cls.abi, args=args, kwargs=kwargs,fn_abi=fn_abi
         )
 
         if data is None:
             data = fn_selector
-
+        # print('--------------',fn_abi,fn_arguments,data)
         return encode_abi(cls.web3, fn_abi, fn_arguments, cls.vmtype, data, cls.abi)
 
     @combomethod
@@ -1323,7 +1330,10 @@ class ContractEvent:
     def _parse_logs(self, txn_receipt):
         for log in txn_receipt['logs']:
             try:
-                decoded_log = get_event_data(self.abi, log, self.vmtype)
+                if self.vmtype:
+                    decoded_log = get_event_data(self.abi, log, self.vmtype,contract_abi=self.contract_abi)
+                else:
+                    decoded_log = get_event_data(self.abi, log, self.vmtype)
             except MismatchedABI:
                 continue
             yield decoded_log
