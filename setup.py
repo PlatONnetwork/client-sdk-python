@@ -60,7 +60,7 @@ extras_require['dev'] = (
 setup(
     name='client-sdk-python',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='1.1.0.0',
+    version='1.1.1',
     description="""PlatON python SDK""",
     # long_description_markdown_filename='README.md',
     author='Piper shinnng',
@@ -78,7 +78,7 @@ setup(
         "lru-dict>=1.1.6,<2.0.0",
         "eth-hash[pycryptodome]>=0.2.0,<1.0.0",
         "requests>=2.11.0,<3.0.0",
-        "websockets>=6.0.0,<7.0.0",
+        "websockets>=8.1.0",
         "pypiwin32>=223;platform_system=='Windows'", 'rlp', 'pysha3', 'eth_rlp',
         "attrdict>=2.0.1",
         "parsimonious>=0.8.1"
