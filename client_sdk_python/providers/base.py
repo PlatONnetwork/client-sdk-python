@@ -65,6 +65,7 @@ class JSONBaseProvider(BaseProvider):
     def encode_rpc_request(self, method, params):
         rpc_dict = {
             "jsonrpc": "2.0",
+            "bech32": True,
             "method": method,
             "params": params or [],
             "id": next(self.request_counter),
