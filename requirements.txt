@@ -2,7 +2,7 @@ pywin32==227
 idna==2.7
 hexbytes==0.1.0
 eth_rlp==0.1.2
-numpy==1.19.1
+numpy==1.22.0
 requests==2.20.0
 pysha3==1.0.2
 websockets==6.0
